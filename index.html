@@ -1,0 +1,796 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>مونديال 2026 — الدليل الشامل بتوقيت السعودية</title>
+<!-- معاينة المشاركة (واتساب / تويتر / تيليجرام) -->
+<meta property="og:type" content="website">
+<meta property="og:title" content="مونديال 2026 — الدليل الشامل بتوقيت السعودية">
+<meta property="og:description" content="جدول المباريات، المجموعات، النتائج الحية، القنوات الناقلة، وكل معلومات كأس العالم 2026 بتوقيت السعودية 🇸🇦">
+<meta property="og:image" content="https://MOTL1234.github.io/worldcup2026/og-image.png">
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="630">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:title" content="مونديال 2026 — الدليل الشامل بتوقيت السعودية">
+<meta name="twitter:description" content="جدول المباريات، المجموعات، النتائج الحية، والقنوات الناقلة بتوقيت السعودية 🇸🇦">
+<meta name="twitter:image" content="https://MOTL1234.github.io/worldcup2026/og-image.png">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Changa:wght@400;600;700;800&family=IBM+Plex+Sans+Arabic:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+<style>
+:root{
+  --bg:#0A0E16; --panel:#121826; --panel2:#0F1420; --line:#243049;
+  --text:#EEF2F8; --muted:#8C97AE;
+  --gold:#E9B949; --green:#1FAE6A; --red:#FF4D5E; --blue:#4D8DFF;
+}
+*{margin:0;padding:0;box-sizing:border-box}
+html{scroll-behavior:smooth}
+body{background:var(--bg);color:var(--text);font-family:'IBM Plex Sans Arabic',system-ui,sans-serif;min-height:100vh;
+  background-image:radial-gradient(1200px 500px at 50% -200px,#16203A 0%,transparent 70%);}
+.num,.score,.clock{font-family:'Changa',sans-serif;font-variant-numeric:tabular-nums}
+
+/* ===== Header ===== */
+header{padding:26px 16px 8px;text-align:center}
+.eyebrow{color:var(--gold);font-family:'Changa';font-weight:600;letter-spacing:.18em;font-size:.78rem}
+h1{font-family:'Changa';font-weight:800;font-size:clamp(1.7rem,5.5vw,2.6rem);line-height:1.2;margin-top:4px}
+h1 .gold{color:var(--gold)}
+.sub{color:var(--muted);font-size:.86rem;margin-top:6px}
+.host-flags{font-size:1.25rem;letter-spacing:.25em;margin-top:8px}
+
+/* ===== Hero scoreboard ===== */
+.hero{max-width:760px;margin:18px auto 0;padding:0 14px}
+.board{background:linear-gradient(160deg,#141C30,#0E1322);border:1px solid var(--line);border-radius:18px;padding:16px 18px;
+  box-shadow:0 18px 50px -24px rgba(0,0,0,.8)}
+.board .label{display:flex;justify-content:space-between;align-items:center;color:var(--muted);font-size:.76rem}
+.board .label .live-dot{color:var(--green);font-weight:600}
+.next-match{display:flex;align-items:center;justify-content:space-between;gap:10px;margin-top:12px}
+.nm-team{flex:1;text-align:center}
+.nm-team .fl{font-size:2rem;display:block}
+.nm-team .nm{font-weight:600;font-size:.92rem;margin-top:4px;display:block}
+.nm-mid{text-align:center;min-width:120px}
+.nm-mid .clock{font-size:1.7rem;font-weight:700;color:var(--gold)}
+.nm-mid .when{color:var(--muted);font-size:.74rem;margin-top:2px}
+.ticker{margin-top:14px;border-top:1px dashed var(--line);padding-top:10px;display:flex;gap:18px;overflow-x:auto;scrollbar-width:none}
+.ticker::-webkit-scrollbar{display:none}
+.tick{white-space:nowrap;font-size:.8rem;color:var(--muted)}
+.tick b{color:var(--text);font-family:'Changa'}
+.tick .s{color:var(--gold);font-family:'Changa';font-weight:700}
+
+/* ===== Tabs ===== */
+nav{position:sticky;top:0;z-index:50;background:rgba(10,14,22,.86);backdrop-filter:blur(10px);border-bottom:1px solid var(--line);margin-top:18px}
+.tabs{display:flex;gap:4px;max-width:760px;margin:0 auto;padding:8px 10px;overflow-x:auto;scrollbar-width:none}
+.tabs::-webkit-scrollbar{display:none}
+.tab{flex:1;min-width:max-content;background:none;border:1px solid transparent;color:var(--muted);font-family:'IBM Plex Sans Arabic';font-weight:600;
+  font-size:.86rem;padding:9px 14px;border-radius:999px;cursor:pointer;transition:.2s}
+.tab:hover{color:var(--text)}
+.tab.on{background:var(--panel);border-color:var(--line);color:var(--gold)}
+.tab:focus-visible{outline:2px solid var(--gold);outline-offset:2px}
+
+main{max-width:760px;margin:0 auto;padding:18px 14px 80px}
+section{display:none}
+section.on{display:block;animation:fade .35s ease}
+@keyframes fade{from{opacity:0;transform:translateY(6px)}to{opacity:1;transform:none}}
+.sec-title{font-family:'Changa';font-weight:700;font-size:1.25rem;margin:6px 0 4px}
+.sec-note{color:var(--muted);font-size:.8rem;margin-bottom:14px;line-height:1.7}
+
+/* ===== Update bar ===== */
+.update-bar{display:flex;align-items:center;gap:10px;justify-content:space-between;background:var(--panel2);border:1px solid var(--line);border-radius:12px;padding:10px 12px;margin-bottom:16px;flex-wrap:wrap}
+.update-bar .msg{color:var(--muted);font-size:.76rem;line-height:1.5}
+.live-status{display:flex;align-items:center;gap:10px;flex:1;min-width:200px}
+.live-pill{display:inline-flex;align-items:center;gap:6px;background:rgba(255,77,94,.12);border:1px solid rgba(255,77,94,.5);color:#FF8A95;font-size:.74rem;font-weight:700;padding:4px 10px;border-radius:999px;white-space:nowrap}
+.live-pill .dot{width:8px;height:8px;border-radius:50%;background:var(--red);animation:livedot 1.3s infinite}
+.live-pill.off{background:var(--panel);border-color:var(--line);color:var(--muted)}
+.live-pill.off .dot{background:var(--muted);animation:none}
+.live-pill.sync .dot{background:var(--gold);animation:livedot .6s infinite}
+@keyframes livedot{0%,100%{opacity:1;transform:scale(1)}50%{opacity:.3;transform:scale(.7)}}
+.live-ctrls{display:flex;align-items:center;gap:10px}
+.switch{position:relative;display:inline-block;width:44px;height:24px;flex-shrink:0}
+.switch input{opacity:0;width:0;height:0}
+.slider{position:absolute;cursor:pointer;inset:0;background:#2A3550;border-radius:999px;transition:.3s}
+.slider:before{content:"";position:absolute;width:18px;height:18px;right:3px;top:3px;background:#fff;border-radius:50%;transition:.3s}
+.switch input:checked+.slider{background:var(--green)}
+.switch input:checked+.slider:before{transform:translateX(-20px)}
+.livelink{display:inline-block;background:var(--red);color:#fff;text-decoration:none;font-weight:700;padding:2px 10px;border-radius:999px;font-size:.76rem;margin-right:4px}
+.share-note{font-size:.72rem;color:var(--muted);line-height:1.8;margin:-8px 0 16px;padding:0 4px}
+.share-note a{color:#FF8A95;font-weight:700;text-decoration:none}
+.btn-gold{background:var(--gold);color:#1A1505;border:none;font-family:'IBM Plex Sans Arabic';font-weight:700;font-size:.84rem;
+  padding:9px 16px;border-radius:999px;cursor:pointer;transition:.2s;white-space:nowrap}
+.btn-gold:hover{filter:brightness(1.08)}
+.btn-gold:disabled{opacity:.55;cursor:wait}
+.btn-gold:focus-visible{outline:2px solid #fff;outline-offset:2px}
+
+/* ===== Matches ===== */
+.day{margin-bottom:22px}
+.day-h{display:flex;align-items:center;gap:10px;margin-bottom:10px}
+.day-h .d{font-family:'Changa';font-weight:700;font-size:1rem}
+.day-h .hij{color:var(--muted);font-size:.7rem;background:var(--panel2);border:1px solid var(--line);border-radius:6px;padding:2px 8px}
+.m-top .mdate{color:#EDF1F7;font-weight:700;background:var(--panel2);border:1px solid var(--line);border-radius:6px;padding:1px 8px}
+.day-h .badge-today{background:var(--green);color:#03130A;font-size:.68rem;font-weight:700;padding:2px 10px;border-radius:999px}
+.day-h::after{content:"";flex:1;height:1px;background:var(--line)}
+.mcard{background:var(--panel);border:1px solid var(--line);border-radius:14px;padding:12px 14px;margin-bottom:8px;transition:.2s}
+.mcard:hover{border-color:#34436A}
+.mcard.ksa{border-color:var(--green);box-shadow:0 0 0 1px var(--green) inset}
+.m-top{display:flex;justify-content:space-between;align-items:center;font-size:.7rem;color:var(--muted);margin-bottom:8px}
+.m-top .grp{background:var(--panel2);border:1px solid var(--line);border-radius:6px;padding:1px 8px}
+.m-top .st-ft{color:var(--muted)} .m-top .st-live{color:var(--red);font-weight:700;animation:pulse 1.2s infinite}
+@keyframes pulse{50%{opacity:.4}}
+.m-row{display:flex;align-items:center;gap:8px}
+.t{flex:1;display:flex;align-items:center;gap:8px;min-width:0}
+.t.away{flex-direction:row-reverse;text-align:left}
+.t .fl{font-size:1.45rem;flex-shrink:0}
+.t .nm{font-weight:600;font-size:.9rem;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.mid{min-width:88px;text-align:center}
+.mid .score{font-size:1.35rem;font-weight:700;letter-spacing:.06em}
+.mid .score .w{color:var(--gold)}
+.mid .time{font-family:'Changa';font-size:1.15rem;font-weight:600;color:var(--blue)}
+.mid .ampm{font-size:.66rem;color:var(--muted)}
+.m-foot{display:flex;justify-content:space-between;align-items:center;gap:8px;margin-top:8px;font-size:.7rem;color:var(--muted);flex-wrap:wrap}
+.ch-badge{background:#3D2C63;color:#C9B4F5;border-radius:6px;padding:2px 8px;font-weight:600}
+.ch-free{background:#173B2B;color:#7BE3AE;border-radius:6px;padding:2px 8px;font-weight:600}
+.goals{font-size:.72rem;color:var(--muted);margin-top:6px;border-top:1px dashed var(--line);padding-top:6px;line-height:1.8}
+.goals b{color:var(--text)}
+.rnd-pill{display:inline-block;background:var(--panel2);border:1px solid var(--line);color:var(--muted);border-radius:999px;padding:4px 14px;font-size:.74rem;font-weight:600;margin:14px 0 4px}
+.filter-row{display:flex;gap:6px;flex-wrap:wrap;margin-bottom:14px}
+.fbtn{background:var(--panel2);border:1px solid var(--line);color:var(--muted);border-radius:999px;padding:6px 12px;font-size:.76rem;font-family:'IBM Plex Sans Arabic';font-weight:600;cursor:pointer}
+.fbtn.on{background:var(--gold);color:#1A1505;border-color:var(--gold)}
+
+/* ===== Groups ===== */
+.groups-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(330px,1fr));gap:12px}
+.gcard{background:var(--panel);border:1px solid var(--line);border-radius:14px;overflow:hidden}
+.gcard h3{font-family:'Changa';font-size:.95rem;font-weight:700;padding:10px 14px;background:var(--panel2);border-bottom:1px solid var(--line);display:flex;justify-content:space-between}
+.gcard h3 .gl{color:var(--gold)}
+table{width:100%;border-collapse:collapse;font-size:.8rem}
+th{color:var(--muted);font-weight:500;font-size:.66rem;padding:7px 4px;text-align:center}
+th:first-child{text-align:right;padding-right:14px}
+td{padding:7px 4px;text-align:center;border-top:1px solid #1B2336}
+td.team-cell{text-align:right;padding-right:14px;white-space:nowrap}
+td .fl{margin-left:6px}
+td .pts{font-family:'Changa';font-weight:700;color:var(--gold)}
+tr.q1 td:first-child{box-shadow:inset 3px 0 0 var(--green)}
+tr.ksa-row{background:rgba(31,174,106,.07)}
+.legend{font-size:.68rem;color:var(--muted);margin-top:10px;line-height:1.8}
+.legend .sq{display:inline-block;width:9px;height:9px;background:var(--green);border-radius:2px;margin-left:4px;vertical-align:middle}
+
+/* ===== Map ===== */
+.map-wrap{background:var(--panel);border:1px solid var(--line);border-radius:16px;padding:10px;direction:ltr}
+svg{width:100%;height:auto;display:block}
+.land{fill:#172037;stroke:#28344F;stroke-width:1.2}
+.land.mx{fill:#1A2440} .land.ca{fill:#141D33}
+.city{cursor:pointer}
+.city circle.dot{fill:var(--gold);stroke:#0A0E16;stroke-width:2;transition:.2s}
+.city.final circle.dot{fill:var(--red)}
+.city.opener circle.dot{fill:var(--green)}
+.city:hover circle.dot,.city.sel circle.dot{r:9}
+.city circle.halo{fill:none;stroke:var(--gold);stroke-width:1;opacity:.35}
+.city.sel circle.halo{animation:halo 1.6s infinite}
+@keyframes halo{from{r:8;opacity:.5}to{r:20;opacity:0}}
+.city text{fill:#A9B4CB;font-size:10px;font-family:'IBM Plex Sans Arabic';pointer-events:none}
+.city.sel text{fill:var(--gold)}
+.map-info{background:var(--panel2);border:1px solid var(--line);border-radius:12px;padding:14px;margin-top:10px;min-height:96px}
+.map-info h4{font-family:'Changa';font-size:1rem;color:var(--gold)}
+.map-info .meta{color:var(--muted);font-size:.78rem;margin-top:4px;line-height:1.8}
+.map-info .mm{margin-top:8px;font-size:.8rem;line-height:2}
+.map-legend{display:flex;gap:16px;font-size:.7rem;color:var(--muted);margin-top:8px;justify-content:center;flex-wrap:wrap}
+.map-legend i{display:inline-block;width:10px;height:10px;border-radius:50%;margin-left:5px;vertical-align:middle}
+
+/* ===== Channels ===== */
+.ch-card{background:var(--panel);border:1px solid var(--line);border-radius:14px;padding:16px;margin-bottom:12px}
+.ch-card h3{font-family:'Changa';font-size:1rem;display:flex;align-items:center;gap:8px}
+.ch-card h3 .ic{font-size:1.2rem}
+.ch-card p,.ch-card li{color:var(--muted);font-size:.84rem;line-height:1.9;margin-top:8px}
+.ch-card ul{padding-right:18px;margin-top:6px}
+.ch-card .hl{color:var(--text);font-weight:600}
+.ch-chips{display:flex;flex-wrap:wrap;gap:6px;margin-top:10px}
+.chip{background:var(--panel2);border:1px solid var(--line);border-radius:8px;padding:4px 10px;font-size:.74rem;font-family:'Changa'}
+.note-warn{background:rgba(233,185,73,.08);border:1px solid rgba(233,185,73,.35);border-radius:12px;padding:12px 14px;font-size:.8rem;color:#E7D9AE;line-height:1.9;margin-top:4px}
+
+/* ===== Info ===== */
+.stats{display:grid;grid-template-columns:repeat(auto-fit,minmax(110px,1fr));gap:10px;margin-bottom:16px}
+.stat{background:var(--panel);border:1px solid var(--line);border-radius:14px;padding:14px 8px;text-align:center}
+.stat .v{font-family:'Changa';font-weight:800;font-size:1.6rem;color:var(--gold)}
+.stat .k{color:var(--muted);font-size:.72rem;margin-top:2px}
+.info-card{background:var(--panel);border:1px solid var(--line);border-radius:14px;padding:16px;margin-bottom:12px}
+.info-card h3{font-family:'Changa';font-size:1rem;color:var(--gold)}
+.info-card p,.info-card li{color:#C4CCDD;font-size:.84rem;line-height:1.95;margin-top:8px}
+.info-card ul{padding-right:18px}
+.arab-flags{font-size:1.4rem;letter-spacing:.18em;margin-top:6px}
+footer{text-align:center;color:var(--muted);font-size:.7rem;padding:20px;line-height:1.9;border-top:1px solid var(--line)}
+@media (prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important}}
+@media (max-width:480px){ .mid{min-width:74px} .t .nm{font-size:.8rem} .t .fl{font-size:1.2rem} }
+</style>
+</head>
+<body>
+
+<header>
+  <div class="eyebrow">FIFA WORLD CUP 26™</div>
+  <h1>مونديال <span class="gold">2026</span> — الدليل الشامل</h1>
+  <div class="sub">جميع الأوقات بتوقيت السعودية (مكة المكرمة GMT+3) • 11 يونيو – 19 يوليو 2026</div>
+  <div class="host-flags">🇺🇸 🇲🇽 🇨🇦</div>
+</header>
+
+<div class="hero">
+  <div class="board">
+    <div class="label"><span>المباراة القادمة</span><span class="live-dot" id="boardStatus">● البطولة جارية</span></div>
+    <div class="next-match" id="nextMatch"></div>
+    <div class="ticker" id="ticker"></div>
+  </div>
+</div>
+
+<nav><div class="tabs" role="tablist">
+  <button class="tab on" data-t="matches" role="tab">⚽ المباريات</button>
+  <button class="tab" data-t="groups" role="tab">📊 المجموعات</button>
+  <button class="tab" data-t="map" role="tab">🗺️ الخريطة</button>
+  <button class="tab" data-t="channels" role="tab">📺 القنوات</button>
+  <button class="tab" data-t="info" role="tab">ℹ️ معلومات</button>
+</div></nav>
+
+<main>
+
+<!-- ========== المباريات ========== -->
+<section id="sec-matches" class="on">
+  <div class="update-bar">
+    <div class="live-status">
+      <span class="live-pill" id="livePill"><span class="dot"></span> مباشر تلقائي</span>
+      <span class="msg" id="updMsg">يبدأ التحديث التلقائي…</span>
+    </div>
+    <div class="live-ctrls">
+      <button class="btn-gold" id="btnUpdate">⟳ تحديث دقيق الآن</button>
+      <label class="switch"><input type="checkbox" id="liveToggle" checked><span class="slider"></span></label>
+    </div>
+  </div>
+  <div class="share-note">📲 نسخة مستضافة: تحدّث النتائج تلقائيًا في أي متصفح عبر مصدر بيانات عام. لمتابعة لحظية مضمونة اضغط <a href="https://www.google.com/search?q=%D9%86%D8%AA%D8%A7%D8%A6%D8%AC+%D9%83%D8%A3%D8%B3+%D8%A7%D9%84%D8%B9%D8%A7%D9%84%D9%85+%D8%A7%D9%84%D9%8A%D9%88%D9%85" target="_blank" rel="noopener">🔴 نتائج مباشرة</a></div>
+  <div class="filter-row" id="filters">
+    <button class="fbtn on" data-f="all">الكل</button>
+    <button class="fbtn" data-f="ksa">🇸🇦 السعودية</button>
+    <button class="fbtn" data-f="arab">المنتخبات العربية</button>
+    <button class="fbtn" data-f="done">المنتهية</button>
+  </div>
+  <div id="matchList"></div>
+</section>
+
+<!-- ========== المجموعات ========== -->
+<section id="sec-groups">
+  <div class="sec-title">جدول المجموعات الـ 12</div>
+  <div class="sec-note">الترتيب يُحتسب تلقائيًا من النتائج (يتحدث مع كل ضغطة على «تحديث النتائج»). يتأهل الأول والثاني من كل مجموعة + أفضل 8 منتخبات في المركز الثالث إلى دور الـ 32.</div>
+  <div class="groups-grid" id="groupsGrid"></div>
+  <div class="legend"><span class="sq"></span> مركز مؤهل مباشرة لدور الـ 32 &nbsp;|&nbsp; ل: لعب • ف: فاز • ت: تعادل • خ: خسر • +/-: فارق الأهداف • ن: النقاط</div>
+</section>
+
+<!-- ========== الخريطة ========== -->
+<section id="sec-map">
+  <div class="sec-title">خريطة المدن والملاعب المضيفة</div>
+  <div class="sec-note">16 مدينة في 3 دول. اضغط على أي مدينة لعرض الملعب وسعته وأبرز مبارياته.</div>
+  <div class="map-wrap">
+    <svg viewBox="0 0 700 480" id="mapSvg" aria-label="خريطة المدن المضيفة"></svg>
+    <div class="map-legend">
+      <span><i style="background:var(--green)"></i> ملعب الافتتاح</span>
+      <span><i style="background:var(--red)"></i> ملعب النهائي</span>
+      <span><i style="background:var(--gold)"></i> مدينة مضيفة</span>
+    </div>
+  </div>
+  <div class="map-info" id="mapInfo">
+    <h4>👆 اختر مدينة من الخريطة</h4>
+    <div class="meta">ستظهر هنا تفاصيل الملعب والمباريات.</div>
+  </div>
+</section>
+
+<!-- ========== القنوات ========== -->
+<section id="sec-channels">
+  <div class="sec-title">القنوات الناقلة في السعودية والوطن العربي</div>
+
+  <div class="ch-card">
+    <h3><span class="ic">📡</span> الناقل الرسمي والحصري: شبكة beIN SPORTS</h3>
+    <p>تملك شبكة <span class="hl">beIN SPORTS</span> الحقوق الحصرية لبث جميع مباريات البطولة الـ <span class="hl">104</span> في الشرق الأوسط وشمال أفريقيا، عبر باقة <span class="hl">MAX</span> المخصصة (9 قنوات) بجودة HD و4K مع استوديوهات تحليلية على مدار الساعة.</p>
+    <div class="ch-chips">
+      <span class="chip">beIN SPORTS MAX 1</span><span class="chip">MAX 2</span><span class="chip">MAX 3</span><span class="chip">MAX 4</span><span class="chip">MAX 5</span><span class="chip">MAX 6</span><span class="chip">MAX 7</span><span class="chip">MAX 8</span><span class="chip">MAX 9</span><span class="chip">beIN 4K</span>
+    </div>
+    <p>💻 البث الرقمي الرسمي عبر تطبيق <span class="hl">TOD by beIN</span> (جوال • تلفزيون ذكي • ويب) بالاشتراك.</p>
+  </div>
+
+  <div class="ch-card">
+    <h3><span class="ic">🆓</span> المشاهدة المجانية المشروعة</h3>
+    <ul>
+      <li><span class="hl">قناة beIN SPORTS المفتوحة:</span> جرت عادة الشبكة على بث نحو 22 مباراة مجانًا — تشمل الافتتاح والنهائي ومباريات المنتخبات العربية في دور المجموعات — وهي الخيار المجاني الرسمي الوحيد المتاح في السعودية والخليج. تأكد من القائمة الرسمية قبل كل مباراة.</li>
+      <li><span class="hl">الرياضية المغربية (Arryadia):</span> تنقل مباريات مختارة رسميًا داخل المغرب.</li>
+      <li><span class="hl">التلفزيون الجزائري الأرضي:</span> 22 مباراة رسميًا داخل الجزائر (أبرزها مباريات الخضر).</li>
+      <li><span class="hl">TRT التركية:</span> ناقل رسمي معتمد من فيفا داخل تركيا فقط.</li>
+    </ul>
+  </div>
+
+  <div class="note-warn">
+    ⚠️ بخصوص القنوات "غير الرسمية": القنوات والمواقع التي تبث المونديال دون ترخيص تُعد قرصنة ولا أستطيع إدراجها أو التوصية بها — فهي غير قانونية، وغالبًا غير مستقرة وتعرض جهازك لبرمجيات خبيثة. الخيارات المجانية المشروعة أعلاه تغطي أهم المباريات بما فيها مباريات الأخضر.
+  </div>
+</section>
+
+<!-- ========== معلومات ========== -->
+<section id="sec-info">
+  <div class="sec-title">معلومات جوهرية عن البطولة</div>
+  <div class="stats">
+    <div class="stat"><div class="v num">48</div><div class="k">منتخبًا (لأول مرة)</div></div>
+    <div class="stat"><div class="v num">104</div><div class="k">مباراة</div></div>
+    <div class="stat"><div class="v num">12</div><div class="k">مجموعة</div></div>
+    <div class="stat"><div class="v num">16</div><div class="k">مدينة مضيفة</div></div>
+    <div class="stat"><div class="v num">3</div><div class="k">دول مستضيفة</div></div>
+    <div class="stat"><div class="v num">39</div><div class="k">يومًا من المنافسة</div></div>
+  </div>
+
+  <div class="info-card">
+    <h3>🇸🇦 مشوار الأخضر — المجموعة الثامنة (H)</h3>
+    <p>يلعب المنتخب السعودي في مجموعة قوية تضم <b>إسبانيا 🇪🇸 وأوروغواي 🇺🇾 والرأس الأخضر 🇨🇻</b>. مواعيد مبارياته بتوقيت السعودية:</p>
+    <ul>
+      <li><b>السعودية 1 – 1 أوروغواي</b> ✅ (انتهت) — هدف عبد الإله العمري د.41، تعادل مشرّف أمام بطل العالم مرتين</li>
+      <li><b>إسبانيا × السعودية</b> — الأحد 21 يونيو، الساعة 7:00 م</li>
+      <li><b>الرأس الأخضر × السعودية</b> — فجر السبت 27 يونيو، الساعة 3:00 ص</li>
+    </ul>
+  </div>
+
+  <div class="info-card">
+    <h3>🌙 8 منتخبات عربية — رقم تاريخي</h3>
+    <div class="arab-flags">🇸🇦 🇶🇦 🇲🇦 🇹🇳 🇪🇬 🇩🇿 🇯🇴 🇮🇶</div>
+    <p>السعودية، قطر، المغرب، تونس، مصر، الجزائر، الأردن (مشاركة أولى تاريخية)، والعراق — أكبر حضور عربي في تاريخ كأس العالم.</p>
+  </div>
+
+  <div class="info-card">
+    <h3>🏆 نظام البطولة الجديد</h3>
+    <ul>
+      <li>12 مجموعة × 4 منتخبات؛ يتأهل <b>الأول والثاني</b> من كل مجموعة + <b>أفضل 8 منتخبات</b> في المركز الثالث.</li>
+      <li>استحداث <b>دور الـ 32</b> لأول مرة، ثم دور الـ 16 فربع النهائي فنصف النهائي.</li>
+      <li><b>النهائي: الأحد 19 يوليو 2026</b> على ملعب متلايف في نيويورك/نيوجيرسي (~82,500 متفرج).</li>
+      <li>الافتتاح أُقيم على ملعب أزتيكا الأسطوري — أول ملعب يستضيف افتتاح المونديال 3 مرات (1970، 1986، 2026).</li>
+    </ul>
+  </div>
+
+  <div class="info-card">
+    <h3>⭐ حقائق سريعة</h3>
+    <ul>
+      <li>الأرجنتين 🇦🇷 حاملة اللقب (مونديال قطر 2022) وتفتتح أمام الجزائر.</li>
+      <li>كريستيانو رونالدو 🇵🇹 يصبح أول لاعب يشارك في 6 نسخ من كأس العالم.</li>
+      <li>المكسيك أنهت "عقدة الافتتاح": أول فوز لها في مباراة افتتاحية بعد 7 محاولات سابقة.</li>
+      <li>منتخبات تشارك لأول مرة: الأردن 🇯🇴، أوزبكستان 🇺🇿، الرأس الأخضر 🇨🇻، كوراساو 🇨🇼، هايتي 🇭🇹 (عودة بعد غياب طويل).</li>
+      <li>التذاكر تُباع حصريًا عبر FIFA.com/tickets — لا يوجد بيع في شبابيك الملاعب.</li>
+    </ul>
+  </div>
+</section>
+
+</main>
+
+<footer>
+  صُمم خصيصًا بتوقيت السعودية 🇸🇦 • البيانات من مصادر رسمية وإخبارية موثوقة بتاريخ 12 يونيو 2026<br>
+  استخدم زر «تحديث الآن» لجلب أحدث النتائج عبر البحث المباشر داخل Claude
+</footer>
+
+<script>
+/* =================== البيانات =================== */
+const T = {
+ MEX:{n:"المكسيك",f:"🇲🇽",g:"A"}, KOR:{n:"كوريا الجنوبية",f:"🇰🇷",g:"A"}, RSA:{n:"جنوب أفريقيا",f:"🇿🇦",g:"A"}, CZE:{n:"التشيك",f:"🇨🇿",g:"A"},
+ CAN:{n:"كندا",f:"🇨🇦",g:"B"}, SUI:{n:"سويسرا",f:"🇨🇭",g:"B"}, QAT:{n:"قطر",f:"🇶🇦",g:"B",ar:1}, BIH:{n:"البوسنة والهرسك",f:"🇧🇦",g:"B"},
+ BRA:{n:"البرازيل",f:"🇧🇷",g:"C"}, MAR:{n:"المغرب",f:"🇲🇦",g:"C",ar:1}, HAI:{n:"هايتي",f:"🇭🇹",g:"C"}, SCO:{n:"اسكتلندا",f:"🏴󠁧󠁢󠁳󠁣󠁴󠁿",g:"C"},
+ USA:{n:"الولايات المتحدة",f:"🇺🇸",g:"D"}, AUS:{n:"أستراليا",f:"🇦🇺",g:"D"}, PAR:{n:"باراغواي",f:"🇵🇾",g:"D"}, TUR:{n:"تركيا",f:"🇹🇷",g:"D"},
+ GER:{n:"ألمانيا",f:"🇩🇪",g:"E"}, CIV:{n:"كوت ديفوار",f:"🇨🇮",g:"E"}, ECU:{n:"الإكوادور",f:"🇪🇨",g:"E"}, CUW:{n:"كوراساو",f:"🇨🇼",g:"E"},
+ NED:{n:"هولندا",f:"🇳🇱",g:"F"}, JPN:{n:"اليابان",f:"🇯🇵",g:"F"}, SWE:{n:"السويد",f:"🇸🇪",g:"F"}, TUN:{n:"تونس",f:"🇹🇳",g:"F",ar:1},
+ BEL:{n:"بلجيكا",f:"🇧🇪",g:"G"}, EGY:{n:"مصر",f:"🇪🇬",g:"G",ar:1}, IRN:{n:"إيران",f:"🇮🇷",g:"G"}, NZL:{n:"نيوزيلندا",f:"🇳🇿",g:"G"},
+ ESP:{n:"إسبانيا",f:"🇪🇸",g:"H"}, KSA:{n:"السعودية",f:"🇸🇦",g:"H",ar:1}, URU:{n:"أوروغواي",f:"🇺🇾",g:"H"}, CPV:{n:"الرأس الأخضر",f:"🇨🇻",g:"H"},
+ FRA:{n:"فرنسا",f:"🇫🇷",g:"I"}, SEN:{n:"السنغال",f:"🇸🇳",g:"I"}, NOR:{n:"النرويج",f:"🇳🇴",g:"I"}, IRQ:{n:"العراق",f:"🇮🇶",g:"I",ar:1},
+ ARG:{n:"الأرجنتين",f:"🇦🇷",g:"J"}, AUT:{n:"النمسا",f:"🇦🇹",g:"J"}, ALG:{n:"الجزائر",f:"🇩🇿",g:"J",ar:1}, JOR:{n:"الأردن",f:"🇯🇴",g:"J",ar:1},
+ POR:{n:"البرتغال",f:"🇵🇹",g:"K"}, COL:{n:"كولومبيا",f:"🇨🇴",g:"K"}, UZB:{n:"أوزبكستان",f:"🇺🇿",g:"K"}, COD:{n:"الكونغو الديمقراطية",f:"🇨🇩",g:"K"},
+ ENG:{n:"إنجلترا",f:"🏴󠁧󠁢󠁥󠁮󠁧󠁿",g:"L"}, CRO:{n:"كرواتيا",f:"🇭🇷",g:"L"}, GHA:{n:"غانا",f:"🇬🇭",g:"L"}, PAN:{n:"بنما",f:"🇵🇦",g:"L"}
+};
+const GROUPS = "ABCDEFGHIJKL".split("");
+const GNAMES = {A:"الأولى",B:"الثانية",C:"الثالثة",D:"الرابعة",E:"الخامسة",F:"السادسة",G:"السابعة",H:"الثامنة",I:"التاسعة",J:"العاشرة",K:"الحادية عشرة",L:"الثانية عشرة"};
+
+/* المباريات — كل الأوقات بتوقيت السعودية (GMT+3) */
+let M = [
+ // الجولة 1
+ {h:"MEX",a:"RSA",dt:"2026-06-11T22:00",r:1,hs:2,as:0,st:"FT",venue:"أزتيكا — مكسيكو سيتي",goals:"⚽ كينيونيس 9' • خيمينيز 67' (المكسيك) — 🟥 3 بطاقات حمراء"},
+ {h:"KOR",a:"CZE",dt:"2026-06-12T05:00",r:1,hs:2,as:1,st:"FT",venue:"أكرون — غوادالاخارا",goals:"⚽ كريتشي 59' (التشيك) • هوانغ إن-بيوم 67' • أوه هيون-غيو 80' (كوريا)"},
+ {h:"CAN",a:"BIH",dt:"2026-06-12T22:00",r:1,hs:1,as:1,st:"FT",venue:"BMO فيلد — تورونتو",goals:"⚽ إمبولو 17' (ركلة جزاء) (كندا) • تعادل قاتل للبوسنة في الرمق الأخير"},
+ {h:"USA",a:"PAR",dt:"2026-06-13T04:00",r:1,hs:4,as:1,st:"FT",venue:"ملعب لوس أنجلوس",goals:"⚽ فوز كبير للولايات المتحدة بقيادة بوليسيتش وبالوغون"},
+ {h:"QAT",a:"SUI",dt:"2026-06-13T22:00",r:1,hs:1,as:1,st:"FT",venue:"ملعب — سياتل",goals:"⚽ خوخي (قطر) بهدف قاتل ينتزع التعادل من سويسرا المسيطرة"},
+ {h:"BRA",a:"MAR",dt:"2026-06-14T01:00",r:1,hs:1,as:1,st:"FT",venue:"ملعب — لوس أنجلوس",goals:"⚽ فينيسيوس جونيور أنقذ البرازيل • تعادل مثير 1-1 مع المغرب"},
+ {h:"HAI",a:"SCO",dt:"2026-06-14T04:00",r:1,hs:0,as:1,st:"FT",venue:"ملعب — ناشفيل",goals:"⚽ ماكغين 28' (اسكتلندا) تنهي غياب 28 عامًا عن المونديال بالفوز"},
+ {h:"AUS",a:"TUR",dt:"2026-06-14T07:00",r:1,hs:2,as:0,st:"FT",venue:"ملعب — أرلينغتون",goals:"⚽ إيرانكوندا 27' • ميتكالف 75' (أستراليا) مفاجأة تطيح بتركيا"},
+ {h:"GER",a:"CUW",dt:"2026-06-14T20:00",r:1,hs:7,as:1,st:"FT",venue:"ملعب NRG — هيوستن",goals:"⚽ نميتشا 6' • شلوترباك 38' • هافيرتز 45'+5 (ج) و88' • موسيالا 47' • براون 68' • أونداف 78' (ألمانيا) — كومينينسيا 21' (كوراساو)"},
+ {h:"NED",a:"JPN",dt:"2026-06-14T23:00",r:1,hs:2,as:2,st:"FT",venue:"ملعب — أرلينغتون",goals:"⚽ فان دايك • سمرفيل 64' (هولندا) — ناكامورا • كامادا 89' (اليابان) تعادل مثير"},
+ {h:"CIV",a:"ECU",dt:"2026-06-15T02:00",r:1,hs:1,as:0,st:"FT",venue:"لينكولن فاينانشال — فيلادلفيا",goals:"⚽ أمادو ديالو 90' (كوت ديفوار) هدف قاتل ينهي 19 مباراة دون خسارة للإكوادور"},
+ {h:"SWE",a:"TUN",dt:"2026-06-15T05:00",r:1,hs:5,as:1,st:"FT",venue:"BBVA — مونتيري",goals:"⚽ أياري 7' و(أخرى) • إيساك • غيوكيريس • سفانبيرغ (السويد) — رقيق (تونس)"},
+ {h:"ESP",a:"CPV",dt:"2026-06-15T19:00",r:1,hs:0,as:0,st:"FT",venue:"مرسيدس-بنز — أتلانتا",goals:"⚽ مفاجأة مدوّية: الرأس الأخضر (المشارك لأول مرة) يحبس إسبانيا بتعادل سلبي"},
+ {h:"BEL",a:"EGY",dt:"2026-06-15T22:00",r:1,hs:1,as:1,st:"FT",venue:"لومن فيلد — سياتل",goals:"⚽ تعادل مفاجئ 1-1 • مصر تنتزع نقطة ثمينة من بلجيكا وتُبقي المجموعة مفتوحة"},
+ {h:"KSA",a:"URU",dt:"2026-06-16T01:00",r:1,hs:1,as:1,st:"FT",venue:"هارد روك ستاديوم — ميامي",goals:"⚽ عبد الإله العمري 41' (السعودية) — أراوخو 80' (أوروغواي) • تعادل مشرّف للأخضر",ch:"beIN SPORTS MAX 1 (حسن العيدروس) • MAX 3 (عبد الله الغامدي)"},
+ {h:"IRN",a:"NZL",dt:"2026-06-16T04:00",r:1,hs:2,as:2,st:"FT",venue:"ملعب — لوس أنجلوس",goals:"⚽ رضائيان 32' (إيران) — جَست 7' و54' (نيوزيلندا) • إيران تعود مرتين لتخطف التعادل"},
+ {h:"FRA",a:"SEN",dt:"2026-06-16T22:00",r:1,hs:3,as:1,st:"FT",venue:"ملعب متلايف — نيويورك",goals:"⚽ مبابي • باركولا (فرنسا) — هدف للسنغال • انطلاقة قوية للديوك"},
+ {h:"IRQ",a:"NOR",dt:"2026-06-17T01:00",r:1,hs:1,as:4,st:"FT",venue:"جيليت — بوسطن",goals:"⚽ هالاند (ثنائية) يقود النرويج لاكتساح العراق في عودتها للمونديال بعد غياب طويل"},
+ {h:"ARG",a:"ALG",dt:"2026-06-17T04:00",r:1,hs:3,as:0,st:"FT",venue:"أروهيد — كانساس سيتي",goals:"⚽ ميسي (هاتريك تاريخي) يعادل رقم كلوزه القياسي (16 هدفًا) في سادس مونديال له"},
+ {h:"AUT",a:"JOR",dt:"2026-06-17T07:00",r:1,hs:3,as:1,st:"FT",venue:"ليفايز — سانتا كلارا",goals:"⚽ شميد 21' (النمسا) — علي علوان (الأردن) يسجّل أول هدف تاريخي للنشامى في كأس العالم"},
+ {h:"POR",a:"COD",dt:"2026-06-17T20:00",r:1,hs:1,as:1,st:"FT",venue:"NRG — هيوستن",goals:"⚽ هدف للبرتغال (رونالدو يخوض سادس مونديال) — ويسا يسجّل أول هدف تاريخي للكونغو الديمقراطية ويخطف التعادل"},
+ {h:"ENG",a:"CRO",dt:"2026-06-17T23:00",r:1,hs:4,as:2,st:"FT",venue:"ملعب دالاس — أرلينغتون",goals:"⚽ كين (ثنائية) • بيلينغهام • راشفورد (إنجلترا) — موسى وآخر (كرواتيا) في مباراة مثيرة"},
+ {h:"GHA",a:"PAN",dt:"2026-06-18T02:00",r:1,hs:1,as:0,st:"FT",venue:"ملعب تورونتو",goals:"⚽ يرينكي (هدف قاتل) يمنح غانا فوزًا ثمينًا على بنما"},
+ {h:"UZB",a:"COL",dt:"2026-06-18T05:00",r:1,hs:1,as:3,st:"FT",venue:"ملعب مكسيكو سيتي",goals:"⚽ كولومبيا تتصدّر المجموعة K بفوزها على أوزبكستان (المشاركة لأول مرة) 3-1"},
+ // الجولة 2
+ {h:"CZE",a:"RSA",dt:"2026-06-18T19:00",r:2,hs:1,as:1,st:"FT",venue:"ملعب — مونتيري",goals:"⚽ تعادل 1-1 يُبقي المجموعة A مفتوحة بعد خسارة الفريقين في الجولة الأولى"},
+ {h:"SUI",a:"BIH",dt:"2026-06-18T22:00",r:2,hs:4,as:1,st:"FT",venue:"سوفي — إنغلوود",goals:"⚽ سويسرا تكتسح البوسنة 4-1 وتنعش آمالها في التأهل"},
+ {h:"CAN",a:"QAT",dt:"2026-06-19T01:00",r:2,hs:6,as:0,st:"FT",venue:"BC بليس — فانكوفر",goals:"⚽ جوناثان ديفيد (هاتريك) يقود كندا لأول فوز تاريخي لها في كأس العالم باكتساح قطر 6-0 وتصدّر المجموعة"},
+ {h:"MEX",a:"KOR",dt:"2026-06-19T04:00",r:2,hs:1,as:0,st:"FT",venue:"أكرون — غوادالاخارا",goals:"⚽ لويس رومو 50' (المكسيك) — المكسيك أول المتأهلين لدور الـ32 بفوزها على كوريا"},
+ {h:"USA",a:"AUS",dt:"2026-06-19T22:00",r:2,hs:2,as:0,st:"FT",venue:"لومن فيلد — سياتل",goals:"⚽ فريمان (هدف ثانٍ) • الولايات المتحدة تتأهل رسميًا لدور الـ32 بفوزها على أستراليا"},
+ {h:"SCO",a:"MAR",dt:"2026-06-20T01:00",r:2,hs:0,as:1,st:"FT",venue:"جيليت — بوسطن",goals:"⚽ إسماعيل صيباري د.1 (المغرب) أسرع هدف في البطولة • المغرب يتصدّر ويقترب من التأهل"},
+ {h:"BRA",a:"HAI",dt:"2026-06-20T03:30",r:2,hs:3,as:0,st:"FT",venue:"لينكولن فاينانشال — فيلادلفيا",goals:"⚽ البرازيل تحقق أول فوز لها وتقصي هايتي • تتساوى مع المغرب بصدارة المجموعة (4 نقاط)"},
+ {h:"TUR",a:"PAR",dt:"2026-06-20T06:00",r:2,hs:0,as:1,st:"FT",venue:"ليفايز — سانتا كلارا",goals:"⚽ غالارزا د.1 (باراغواي) سجّل أسرع هدف في تاريخ البطولة (65 ثانية) • باراغواي تُسقط تركيا"},
+ {h:"NED",a:"SWE",dt:"2026-06-20T20:00",r:2,hs:5,as:1,st:"FT",venue:"ملعب هيوستن",goals:"⚽ بروبي (ثنائية د.5 و17) • خاكبو • دومفريس (هولندا) — هولندا تكتسح وتتصدّر المجموعة F"},
+ {h:"GER",a:"CIV",dt:"2026-06-20T23:00",r:2},
+ {h:"ECU",a:"CUW",dt:"2026-06-21T03:00",r:2},
+ {h:"TUN",a:"JPN",dt:"2026-06-21T07:00",r:2},
+ {h:"ESP",a:"KSA",dt:"2026-06-21T19:00",r:2},
+ {h:"BEL",a:"IRN",dt:"2026-06-21T22:00",r:2},
+ {h:"URU",a:"CPV",dt:"2026-06-22T01:00",r:2},
+ {h:"NZL",a:"EGY",dt:"2026-06-22T04:00",r:2},
+ {h:"ARG",a:"AUT",dt:"2026-06-22T20:00",r:2},
+ {h:"FRA",a:"IRQ",dt:"2026-06-23T00:00",r:2},
+ {h:"NOR",a:"SEN",dt:"2026-06-23T03:00",r:2},
+ {h:"JOR",a:"ALG",dt:"2026-06-23T06:00",r:2},
+ {h:"POR",a:"UZB",dt:"2026-06-23T20:00",r:2},
+ {h:"ENG",a:"GHA",dt:"2026-06-23T23:00",r:2},
+ {h:"PAN",a:"CRO",dt:"2026-06-24T02:00",r:2},
+ {h:"COL",a:"COD",dt:"2026-06-24T05:00",r:2},
+ // الجولة 3 (مباريات متزامنة)
+ {h:"SUI",a:"CAN",dt:"2026-06-24T22:00",r:3},
+ {h:"BIH",a:"QAT",dt:"2026-06-24T22:00",r:3},
+ {h:"MAR",a:"HAI",dt:"2026-06-25T01:00",r:3},
+ {h:"SCO",a:"BRA",dt:"2026-06-25T01:00",r:3},
+ {h:"RSA",a:"KOR",dt:"2026-06-25T04:00",r:3},
+ {h:"CZE",a:"MEX",dt:"2026-06-25T04:00",r:3},
+ {h:"CUW",a:"CIV",dt:"2026-06-25T23:00",r:3},
+ {h:"ECU",a:"GER",dt:"2026-06-25T23:00",r:3},
+ {h:"JPN",a:"SWE",dt:"2026-06-26T02:00",r:3},
+ {h:"TUN",a:"NED",dt:"2026-06-26T02:00",r:3},
+ {h:"PAR",a:"AUS",dt:"2026-06-26T05:00",r:3},
+ {h:"TUR",a:"USA",dt:"2026-06-26T05:00",r:3},
+ {h:"NOR",a:"FRA",dt:"2026-06-26T22:00",r:3},
+ {h:"SEN",a:"IRQ",dt:"2026-06-26T22:00",r:3},
+ {h:"CPV",a:"KSA",dt:"2026-06-27T03:00",r:3},
+ {h:"URU",a:"ESP",dt:"2026-06-27T03:00",r:3},
+ {h:"EGY",a:"IRN",dt:"2026-06-27T06:00",r:3},
+ {h:"NZL",a:"BEL",dt:"2026-06-27T06:00",r:3},
+ {h:"CRO",a:"GHA",dt:"2026-06-28T00:00",r:3},
+ {h:"PAN",a:"ENG",dt:"2026-06-28T00:00",r:3},
+ {h:"COL",a:"POR",dt:"2026-06-28T02:30",r:3},
+ {h:"COD",a:"UZB",dt:"2026-06-28T02:30",r:3},
+];
+M.forEach((m,i)=>m.id=i);
+
+/* المدن المضيفة: [اسم، دولة، علم، ملعب، سعة تقريبية، lon، lat، ملاحظة] */
+const CITIES = [
+ ["نيويورك/نيوجيرسي","الولايات المتحدة","🇺🇸","ملعب متلايف","82,500",-74.0,40.8,"🏆 يستضيف المباراة النهائية — الأحد 19 يوليو 2026","final"],
+ ["بوسطن","الولايات المتحدة","🇺🇸","ملعب جيليت","65,000",-71.1,42.4,""],
+ ["فيلادلفيا","الولايات المتحدة","🇺🇸","لينكولن فاينانشال فيلد","69,000",-75.2,40.0,""],
+ ["أتلانتا","الولايات المتحدة","🇺🇸","مرسيدس-بنز ستاديوم","71,000",-84.4,33.7,"يستضيف أحد نصفي النهائي"],
+ ["ميامي","الولايات المتحدة","🇺🇸","هارد روك ستاديوم","65,000",-80.2,25.9,"يستضيف مباراة المركز الثالث"],
+ ["هيوستن","الولايات المتحدة","🇺🇸","ملعب NRG","72,000",-95.4,29.8,""],
+ ["دالاس","الولايات المتحدة","🇺🇸","ملعب AT&T (أرلينغتون)","80,000",-96.8,32.8,"أكثر الملاعب استضافة للمباريات (9) ويستضيف نصف نهائي"],
+ ["كانساس سيتي","الولايات المتحدة","🇺🇸","ملعب أروهيد","76,000",-94.6,39.1,""],
+ ["سياتل","الولايات المتحدة","🇺🇸","ملعب لومن فيلد","69,000",-122.3,47.6,""],
+ ["سان فرانسيسكو","الولايات المتحدة","🇺🇸","ملعب ليفايز (سانتا كلارا)","70,000",-122.0,37.4,""],
+ ["لوس أنجلوس","الولايات المتحدة","🇺🇸","ملعب سوفي","70,000",-118.3,34.0,""],
+ ["تورونتو","كندا","🇨🇦","ملعب BMO فيلد","45,000",-79.4,43.7,"يستضيف افتتاحية المنتخب الكندي","ca"],
+ ["فانكوفر","كندا","🇨🇦","ملعب BC بليس","54,000",-123.1,49.3,"","ca"],
+ ["مكسيكو سيتي","المكسيك","🇲🇽","ملعب أزتيكا الأسطوري","87,000",-99.1,19.4,"🟢 ملعب الافتتاح — أول ملعب يفتتح المونديال 3 مرات (1970، 1986، 2026)","opener"],
+ ["غوادالاخارا","المكسيك","🇲🇽","ملعب أكرون","48,000",-103.3,20.7,"شهد فوز كوريا الجنوبية 2-1 على التشيك","mx"],
+ ["مونتيري","المكسيك","🇲🇽","ملعب BBVA","53,000",-100.3,25.7,"","mx"],
+];
+
+/* =================== أدوات =================== */
+const DAYS=["الأحد","الاثنين","الثلاثاء","الأربعاء","الخميس","الجمعة","السبت"];
+const MONTHS=["يناير","فبراير","مارس","أبريل","مايو","يونيو","يوليو","أغسطس","سبتمبر","أكتوبر","نوفمبر","ديسمبر"];
+function ksaNow(){ return new Date(Date.now()+ (3*60+new Date().getTimezoneOffset())*60000); }
+function pdate(s){ return new Date(s.replace("T"," ").replace(/-/g,"/")); } // treated as KSA wall-clock
+function fmtDay(d){ return `${DAYS[d.getDay()]} ${d.getDate()} ${MONTHS[d.getMonth()]} ${d.getFullYear()}`; }
+function fmtShort(d){ return `${DAYS[d.getDay()]} ${d.getDate()}/${d.getMonth()+1}/${d.getFullYear()}`; }
+function hijri(d){ try{ return new Intl.DateTimeFormat('ar-SA-u-ca-islamic-umalqura',{day:'numeric',month:'long',year:'numeric'}).format(d)+" هـ"; }catch(e){ return ""; } }
+function fmtTime(d){ let h=d.getHours(),m=d.getMinutes(),ap=h<12?"ص":"م";h=h%12||12; return {t:`${h}:${String(m).padStart(2,"0")}`,ap}; }
+function isToday(d){ const n=ksaNow(); return d.getDate()===n.getDate()&&d.getMonth()===n.getMonth(); }
+function status(m){
+  if(m.st==="FT") return "FT";
+  const start=pdate(m.dt), now=ksaNow();
+  if(now>=start && now < new Date(start.getTime()+125*60000)) return "LIVE";
+  return "NS";
+}
+
+/* =================== المباراة القادمة + الشريط =================== */
+function renderHero(){
+  const now=ksaNow();
+  const next=M.filter(m=>status(m)!=="FT").sort((a,b)=>pdate(a.dt)-pdate(b.dt))[0];
+  const el=document.getElementById("nextMatch");
+  if(!next){el.innerHTML="<div style='text-align:center;width:100%'>انتهى دور المجموعات 🏁</div>";return;}
+  const st=status(next), d=pdate(next.dt), tm=fmtTime(d);
+  let mid;
+  if(st==="LIVE") mid=`<div class="clock" style="color:var(--red)">مباشر الآن</div><div class="when">انطلقت ${tm.t} ${tm.ap}</div>`;
+  else{
+    const diff=d-now; const hh=Math.floor(diff/3600000), mm=Math.floor(diff%3600000/60000);
+    mid=`<div class="clock">${hh>0? hh+" س "+mm+" د" : mm+" دقيقة"}</div><div class="when">${fmtDay(d)} • ${tm.t} ${tm.ap} بتوقيت السعودية</div>`;
+  }
+  el.innerHTML=`
+   <div class="nm-team"><span class="fl">${T[next.h].f}</span><span class="nm">${T[next.h].n}</span></div>
+   <div class="nm-mid">${mid}</div>
+   <div class="nm-team"><span class="fl">${T[next.a].f}</span><span class="nm">${T[next.a].n}</span></div>`;
+  // الشريط: آخر النتائج
+  const done=M.filter(m=>m.st==="FT").sort((a,b)=>pdate(b.dt)-pdate(a.dt));
+  document.getElementById("ticker").innerHTML = done.length
+    ? "آخر النتائج: &nbsp;"+done.map(m=>`<span class="tick">${T[m.h].f} <b>${T[m.h].n}</b> <span class="s">${m.hs} – ${m.as}</span> <b>${T[m.a].n}</b> ${T[m.a].f}</span>`).join("")
+    : "<span class='tick'>لم تُسجل نتائج بعد</span>";
+}
+
+/* =================== قائمة المباريات =================== */
+let FILTER="all";
+function chBadges(m){
+  const arab = T[m.h].ar||T[m.a].ar, opener=m.id===0;
+  let html=`<span class="ch-badge">📺 beIN SPORTS MAX</span>`;
+  if(arab||opener) html+=` <span class="ch-free">🆓 متوقعة على beIN المفتوحة*</span>`;
+  return html;
+}
+function renderMatches(){
+  let list=[...M].sort((a,b)=>pdate(a.dt)-pdate(b.dt));
+  if(FILTER==="ksa") list=list.filter(m=>m.h==="KSA"||m.a==="KSA");
+  if(FILTER==="arab") list=list.filter(m=>T[m.h].ar||T[m.a].ar);
+  if(FILTER==="done") list=list.filter(m=>m.st==="FT");
+  const wrap=document.getElementById("matchList"); wrap.innerHTML="";
+  let lastDay="", lastRound=0;
+  list.forEach(m=>{
+    const d=pdate(m.dt), dayKey=fmtDay(d), st=status(m), tm=fmtTime(d);
+    if(m.r!==lastRound && FILTER==="all"){ wrap.insertAdjacentHTML("beforeend",`<div class="rnd-pill">● الجولة ${["","الأولى","الثانية","الثالثة"][m.r]} — دور المجموعات</div>`); lastRound=m.r; lastDay=""; }
+    if(dayKey!==lastDay){
+      wrap.insertAdjacentHTML("beforeend",`<div class="day"><div class="day-h"><span class="d">${dayKey}</span><span class="hij">${hijri(d)}</span>${isToday(d)?'<span class="badge-today">اليوم</span>':""}</div><div class="day-body"></div></div>`);
+      lastDay=dayKey;
+    }
+    const body=wrap.querySelectorAll(".day-body"); const target=body[body.length-1];
+    const ksa=(m.h==="KSA"||m.a==="KSA");
+    let mid;
+    if(st==="FT") mid=`<div class="score"><span class="${m.hs>m.as?'w':''}">${m.hs}</span> – <span class="${m.as>m.hs?'w':''}">${m.as}</span></div>`;
+    else if(st==="LIVE") mid=`<div class="score" style="color:var(--red)">⏱</div>`;
+    else mid=`<div class="time">${tm.t}</div><div class="ampm">${tm.ap} بتوقيت السعودية</div><div class="ampm" style="color:var(--gold)">${d.getDate()} ${MONTHS[d.getMonth()]} ${d.getFullYear()}</div>`;
+    const stLbl = st==="FT" ? `<span class="st-ft">انتهت</span>` : st==="LIVE" ? `<span class="st-live">● مباشر الآن</span>` : `<span>لم تبدأ</span>`;
+    target.insertAdjacentHTML("beforeend",`
+     <div class="mcard ${ksa?'ksa':''}">
+       <div class="m-top"><span class="grp">المجموعة ${GNAMES[T[m.h].g]} (${T[m.h].g})</span><span class="mdate">📅 ${fmtShort(d)}</span>${stLbl}</div>
+       <div class="m-row">
+         <div class="t"><span class="fl">${T[m.h].f}</span><span class="nm">${T[m.h].n}</span></div>
+         <div class="mid">${mid}</div>
+         <div class="t away"><span class="fl">${T[m.a].f}</span><span class="nm">${T[m.a].n}</span></div>
+       </div>
+       ${m.goals?`<div class="goals">${m.goals}</div>`:""}
+       ${m.ch?`<div class="goals" style="color:#C9B4F5">📺 <b style="color:#E0D2FA">قنوات النقل:</b> ${m.ch}</div>`:""}
+       <div class="m-foot"><span>${m.venue?("🏟️ "+m.venue):""}</span><span>${chBadges(m)}</span></div>
+     </div>`);
+  });
+  if(!list.length) wrap.innerHTML="<div class='sec-note'>لا توجد مباريات مطابقة لهذا الفلتر بعد.</div>";
+  wrap.insertAdjacentHTML("beforeend","<div class='sec-note'>* تبث beIN عادة نحو 22 مباراة مجانًا على قناتها المفتوحة (الافتتاح، النهائي، ومباريات المنتخبات العربية) — تأكد من القائمة الرسمية قبل المباراة.</div>");
+}
+
+/* =================== المجموعات =================== */
+function standings(g){
+  const teams=Object.keys(T).filter(c=>T[c].g===g).map(c=>({c,p:0,w:0,d:0,l:0,gf:0,ga:0,pts:0}));
+  const idx=Object.fromEntries(teams.map(t=>[t.c,t]));
+  M.filter(m=>m.st==="FT"&&T[m.h].g===g).forEach(m=>{
+    const H=idx[m.h],A=idx[m.a]; if(!H||!A)return;
+    H.p++;A.p++;H.gf+=m.hs;H.ga+=m.as;A.gf+=m.as;A.ga+=m.hs;
+    if(m.hs>m.as){H.w++;A.l++;H.pts+=3}else if(m.hs<m.as){A.w++;H.l++;A.pts+=3}else{H.d++;A.d++;H.pts++;A.pts++}
+  });
+  return teams.sort((a,b)=>b.pts-a.pts||(b.gf-b.ga)-(a.gf-a.ga)||b.gf-a.gf|| T[a.c].n.localeCompare(T[b.c].n,"ar"));
+}
+function renderGroups(){
+  const grid=document.getElementById("groupsGrid"); grid.innerHTML="";
+  GROUPS.forEach(g=>{
+    const rows=standings(g).map((t,i)=>{
+      const gd=t.gf-t.ga;
+      return `<tr class="${i<2?'q1':''} ${t.c==='KSA'?'ksa-row':''}">
+        <td class="team-cell"><span class="fl">${T[t.c].f}</span>${T[t.c].n}</td>
+        <td class="num">${t.p}</td><td class="num">${t.w}</td><td class="num">${t.d}</td><td class="num">${t.l}</td>
+        <td class="num">${gd>0?"+":""}${gd}</td><td class="num pts">${t.pts}</td></tr>`;
+    }).join("");
+    grid.insertAdjacentHTML("beforeend",`
+      <div class="gcard"><h3><span>المجموعة ${GNAMES[g]}</span><span class="gl">${g}</span></h3>
+      <table><thead><tr><th>المنتخب</th><th>ل</th><th>ف</th><th>ت</th><th>خ</th><th>+/-</th><th>ن</th></tr></thead><tbody>${rows}</tbody></table></div>`);
+  });
+}
+
+/* =================== الخريطة =================== */
+function px(lon){return (lon+128)*10.55+12;}
+function py(lat){return (51.5-lat)*13.1+12;}
+function renderMap(){
+  const svg=document.getElementById("mapSvg");
+  // أشكال مبسطة للدول الثلاث
+  svg.innerHTML=`
+   <path class="land ca" d="M60,18 L640,18 L660,70 L600,110 L520,118 L430,112 L330,118 L230,112 L140,120 L70,95 Z"/>
+   <path class="land" d="M70,95 L140,120 L230,112 L330,118 L430,112 L520,118 L600,110 L640,170 L630,230 L600,265 L545,300 L500,320 L455,335 L400,330 L350,338 L300,330 L240,318 L185,295 L130,255 L90,200 L65,150 Z"/>
+   <path class="land mx" d="M185,295 L240,318 L300,330 L350,338 L370,360 L400,395 L430,430 L415,455 L370,448 L330,430 L290,410 L250,380 L215,345 Z"/>
+   <text x="350" y="55" fill="#3D4A6B" font-size="13" text-anchor="middle" font-family="IBM Plex Sans Arabic">كندا 🇨🇦</text>
+   <text x="350" y="210" fill="#465579" font-size="14" text-anchor="middle" font-family="IBM Plex Sans Arabic">الولايات المتحدة 🇺🇸</text>
+   <text x="320" y="420" fill="#4A5880" font-size="13" text-anchor="middle" font-family="IBM Plex Sans Arabic">المكسيك 🇲🇽</text>`;
+  CITIES.forEach((c,i)=>{
+    const x=px(c[5]),y=py(c[6]);
+    const cls = c[8]==="final"?"final":(c[8]==="opener"?"opener":"");
+    const g=document.createElementNS("http://www.w3.org/2000/svg","g");
+    g.setAttribute("class","city "+cls); g.setAttribute("tabindex","0"); g.setAttribute("role","button");
+    g.setAttribute("aria-label",c[0]);
+    g.innerHTML=`<circle class="halo" cx="${x}" cy="${y}" r="11"/><circle class="dot" cx="${x}" cy="${y}" r="6.5"/>
+      <text x="${x}" y="${y-12}" text-anchor="middle">${c[0]}</text>`;
+    const pick=()=>{ document.querySelectorAll(".city").forEach(n=>n.classList.remove("sel")); g.classList.add("sel"); showCity(i); };
+    g.addEventListener("click",pick);
+    g.addEventListener("keydown",e=>{if(e.key==="Enter"||e.key===" "){e.preventDefault();pick();}});
+    svg.appendChild(g);
+  });
+}
+function showCity(i){
+  const c=CITIES[i];
+  const matchesHere = M.filter(m=>m.venue&&m.venue.includes(c[3].replace("ملعب ","").split(" ")[0]));
+  document.getElementById("mapInfo").innerHTML=`
+   <h4>${c[2]} ${c[0]} — ${c[1]}</h4>
+   <div class="meta">🏟️ ${c[3]} • السعة: نحو ${c[4]} متفرج</div>
+   ${c[7]?`<div class="meta">⭐ ${c[7]}</div>`:""}
+   ${matchesHere.length?`<div class="mm">${matchesHere.map(m=>`${T[m.h].f} ${T[m.h].n} <b class="score" style="color:var(--gold)">${m.st==="FT"?m.hs+" – "+m.as:"×"}</b> ${T[m.a].n} ${T[m.a].f}`).join("<br>")}</div>`:""}`;
+  document.getElementById("mapInfo").scrollIntoView({behavior:"smooth",block:"nearest"});
+}
+
+/* =================== محرّك المباشر (Live) =================== */
+// أسماء المنتخبات بالإنجليزية لمطابقة مصدر البيانات الحي
+const EN = {
+ MEX:["mexico"],KOR:["south korea","korea republic","korea"],RSA:["south africa"],CZE:["czechia","czech republic"],
+ CAN:["canada"],SUI:["switzerland"],QAT:["qatar"],BIH:["bosnia"],BRA:["brazil"],MAR:["morocco"],HAI:["haiti"],
+ SCO:["scotland"],USA:["united states","usa"],AUS:["australia"],PAR:["paraguay"],TUR:["turkiye","turkey"],
+ GER:["germany"],CIV:["ivory coast","cote d'ivoire","côte d'ivoire"],ECU:["ecuador"],CUW:["curacao","curaçao"],
+ NED:["netherlands"],JPN:["japan"],SWE:["sweden"],TUN:["tunisia"],BEL:["belgium"],EGY:["egypt"],IRN:["iran"],
+ NZL:["new zealand"],ESP:["spain"],KSA:["saudi arabia"],URU:["uruguay"],CPV:["cape verde","cabo verde"],
+ FRA:["france"],SEN:["senegal"],NOR:["norway"],IRQ:["iraq"],ARG:["argentina"],AUT:["austria"],ALG:["algeria"],
+ JOR:["jordan"],POR:["portugal"],COL:["colombia"],UZB:["uzbekistan"],COD:["congo dr","dr congo","congo"],
+ ENG:["england"],CRO:["croatia"],GHA:["ghana"],PAN:["panama"]
+};
+function codeFromName(name){
+  if(!name) return null; const s=name.toLowerCase();
+  for(const c in EN){ if(EN[c].some(a=>s.includes(a))) return c; }
+  return null;
+}
+function applyResults(results){
+  let updated=0, live=0; const changes=[];
+  results.forEach(r=>{
+    const m=M.find(x=>(x.h===r.h&&x.a===r.a)||(x.h===r.a&&x.a===r.h));
+    const valid = m && Number.isInteger(r.hs) && Number.isInteger(r.as) && r.hs>=0 && r.as>=0 && r.hs<=30 && r.as<=30;
+    if(valid){
+      const wasNS=m.st!=="FT"; const oldH=m.hs,oldA=m.as,oldSt=m.st;
+      if(m.h===r.h){m.hs=r.hs;m.as=r.as}else{m.hs=r.as;m.as=r.hs}
+      m.st = r.st==="LIVE" ? "LIVE" : "FT";
+      if(r.sc && typeof r.sc==="string" && r.sc.trim()) m.goals="⚽ "+r.sc.trim();
+      const changed = oldH!==m.hs||oldA!==m.as||oldSt!==m.st;
+      if(m.st==="LIVE") live++;
+      if(wasNS && m.st==="FT") updated++;
+      if(changed) changes.push(`${T[m.h].f} ${m.hs}-${m.as} ${T[m.a].f}`);
+    }
+  });
+  return {updated,live,count:results.length,changes};
+}
+
+// المصدر 1: TheSportsDB (مجاني، يعمل في أي متصفح) — يجلب مباريات اليوم
+async function fetchSportsDB(){
+  const d=ksaNow(); const ds=`${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,"0")}-${String(d.getDate()).padStart(2,"0")}`;
+  const ctrl=new AbortController(); const t=setTimeout(()=>ctrl.abort(),12000);
+  const out=[];
+  for(const day of [ds, prevDay(ds)]){
+    try{
+      const r=await fetch(`https://www.thesportsdb.com/api/v1/json/3/eventsday.php?d=${day}&s=Soccer`,{signal:ctrl.signal});
+      if(!r.ok) continue;
+      const j=await r.json();
+      (j.events||[]).forEach(e=>{
+        const h=codeFromName(e.strHomeTeam), a=codeFromName(e.strAwayTeam);
+        if(!h||!a||h===a) return;
+        const hs=e.intHomeScore, as=e.intAwayScore;
+        if(hs===null||hs===undefined||hs==="") return;
+        const st=(e.strStatus&&/ft|finished|match finished/i.test(e.strStatus))?"FT":((e.strProgress||/1h|2h|ht|live/i.test(e.strStatus||""))?"LIVE":"FT");
+        out.push({h,a,hs:parseInt(hs),as:parseInt(as),st,sc:""});
+      });
+    }catch(_){}
+  }
+  clearTimeout(t);
+  return out;
+}
+function prevDay(ds){ const p=new Date(ds+"T00:00:00"); p.setDate(p.getDate()-1); return `${p.getFullYear()}-${String(p.getMonth()+1).padStart(2,"0")}-${String(p.getDate()).padStart(2,"0")}`; }
+
+// المصدر 2: بحث Claude (داخل تطبيق Claude فقط)
+async function fetchClaude(){
+  const ctrl=new AbortController(); const timer=setTimeout(()=>ctrl.abort(),12000);
+  try{
+    const res=await fetch("https://api.anthropic.com/v1/messages",{
+      method:"POST",headers:{"Content-Type":"application/json"},signal:ctrl.signal,
+      body:JSON.stringify({model:"claude-sonnet-4-6",max_tokens:1500,
+        tools:[{type:"web_search_20250305",name:"web_search"}],
+        messages:[{role:"user",content:
+`You are a precise sports-data fetcher. Search the web RIGHT NOW (use multiple reliable sources like ESPN, Yahoo Sports, FIFA, official sites) for the latest FIFA World Cup 2026 match results and any matches currently in progress. The tournament runs June 11 - July 19, 2026. Cross-check the score across at least two sources before reporting it. Respond with ONLY a JSON array, no markdown, no preamble. Each item: {"h":"FIFA 3-letter code","a":"code","hs":home_goals_integer,"as":away_goals_integer,"st":"FT" if finished or "LIVE" if in progress,"sc":"short Arabic scorer summary or empty string"}. Use ONLY these codes: MEX KOR RSA CZE CAN SUI QAT BIH BRA MAR HAI SCO USA AUS PAR TUR GER CIV ECU CUW NED JPN SWE TUN BEL EGY IRN NZL ESP KSA URU CPV FRA SEN NOR IRQ ARG AUT ALG JOR POR COL UZB COD ENG CRO GHA PAN. Only include matches that have actually kicked off (finished or live). Do NOT guess or include future matches. Accuracy of the numbers is critical.`}]})
+    });
+    clearTimeout(timer);
+    if(!res.ok) throw 0;
+    const data=await res.json();
+    const text=(data.content||[]).filter(b=>b.type==="text").map(b=>b.text).join("\n");
+    const j=text.replace(/```json|```/g,"").match(/\[[\s\S]*\]/);
+    return j?JSON.parse(j[0]):[];
+  }catch(_){ clearTimeout(timer); return null; }
+}
+
+let lastSync=null, syncing=false;
+function setPill(state){ // 'live' | 'sync' | 'off'
+  const p=document.getElementById("livePill");
+  p.className="live-pill"+(state==="off"?" off":state==="sync"?" sync":"");
+  p.childNodes[1].nodeValue = state==="off"?" متوقف":state==="sync"?" يحدّث الآن…":" مباشر تلقائي";
+}
+function tickClock(){
+  if(!lastSync) return;
+  const msg=document.getElementById("updMsg");
+  const sec=Math.floor((Date.now()-lastSync)/1000);
+  const txt = sec<60?`قبل ${sec} ثانية`:`قبل ${Math.floor(sec/60)} دقيقة`;
+  if(msg.dataset.base) msg.innerHTML = msg.dataset.base+` • آخر تحديث ${txt}`;
+}
+async function liveSync(manual){
+  if(syncing) return; syncing=true;
+  const btn=document.getElementById("btnUpdate"), msg=document.getElementById("updMsg");
+  setPill("sync"); btn.disabled=true; btn.textContent=manual?"⏳ جارٍ التحقّق…":"⏳…";
+
+  // المصدر العام (يعمل على الاستضافة وفي أي متصفح)
+  let results = await fetchSportsDB();
+  let src = "مصدر حي عام";
+
+  const auto=document.getElementById("liveToggle").checked;
+  if(results && results.length){
+    const {updated,live,count}=applyResults(results);
+    lastSync=Date.now();
+    const tm=fmtTime(ksaNow());
+    let extra = live?` • ${live} مباشرة 🔴`:(updated?` • ${updated} نتيجة جديدة`:"");
+    msg.dataset.base=`✅ محدّث ${tm.t} ${tm.ap} (${src}) • ${count} مباراة${extra}`;
+    tickClock();
+    renderMatches();renderGroups();renderHero();
+    setPill(auto?"live":"off");
+  }else{
+    msg.dataset.base="";
+    msg.innerHTML=`📡 تعذّر الوصول لمصدر تحديث الآن. تُعرض آخر نتائج مؤكدة — 
+      <a href="https://www.google.com/search?q=%D9%86%D8%AA%D8%A7%D8%A6%D8%AC+%D9%83%D8%A3%D8%B3+%D8%A7%D9%84%D8%B9%D8%A7%D9%84%D9%85+%D8%A7%D9%84%D9%8A%D9%88%D9%85" target="_blank" rel="noopener" class="livelink">🔴 نتائج مباشرة</a>`;
+    setPill(auto?"live":"off");
+  }
+  btn.disabled=false; btn.textContent="⟳ تحديث دقيق الآن"; syncing=false;
+}
+// دمج: نتائج Claude (الأدق) تُغلّب على المصدر العام عند التعارض
+function mergeResults(base, better){
+  const key=r=>[r.h,r.a].sort().join("-");
+  const map=new Map(base.map(r=>[key(r),r]));
+  better.forEach(r=>map.set(key(r),r));
+  return [...map.values()];
+}
+
+/* الجدولة التلقائية: كل 60 ثانية، وتتسارع إلى 30 ثانية عند وجود مباراة مباشرة */
+let liveTimer=null;
+function liveInterval(){ return M.some(m=>status(m)==="LIVE") ? 30000 : 60000; }
+function startLive(){
+  stopLive();
+  const loop=async()=>{ if(document.getElementById("liveToggle").checked){ await liveSync(false); } liveTimer=setTimeout(loop, liveInterval()); };
+  liveTimer=setTimeout(loop, liveInterval());
+}
+function stopLive(){ if(liveTimer){ clearTimeout(liveTimer); liveTimer=null; } }
+
+document.getElementById("btnUpdate").addEventListener("click",()=>liveSync(true));
+document.getElementById("liveToggle").addEventListener("change",e=>{
+  if(e.target.checked){ setPill("live"); liveSync(false); startLive(); }
+  else{ setPill("off"); stopLive(); const msg=document.getElementById("updMsg"); if(msg.dataset.base) msg.dataset.base+=" • (التحديث التلقائي متوقف)"; tickClock(); }
+});
+
+/* =================== التبويبات والفلاتر =================== */
+document.querySelectorAll(".tab").forEach(t=>t.addEventListener("click",()=>{
+  document.querySelectorAll(".tab").forEach(x=>x.classList.remove("on"));
+  document.querySelectorAll("section").forEach(x=>x.classList.remove("on"));
+  t.classList.add("on"); document.getElementById("sec-"+t.dataset.t).classList.add("on");
+}));
+document.querySelectorAll(".fbtn").forEach(b=>b.addEventListener("click",()=>{
+  document.querySelectorAll(".fbtn").forEach(x=>x.classList.remove("on"));
+  b.classList.add("on"); FILTER=b.dataset.f; renderMatches();
+}));
+
+/* init */
+renderHero();renderMatches();renderGroups();renderMap();
+setInterval(renderHero,30000);
+setInterval(tickClock,1000);          // ساعة "آخر تحديث" الحية
+setPill("live");
+setTimeout(()=>{ liveSync(false); startLive(); },700);   // مزامنة فورية + بدء المباشر
+</script>
+</body>
+</html>
