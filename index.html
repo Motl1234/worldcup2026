@@ -76,6 +76,20 @@ section.on{display:block;animation:fade .35s ease}
 @keyframes fade{from{opacity:0;transform:translateY(6px)}to{opacity:1;transform:none}}
 .sec-title{font-family:'Changa';font-weight:700;font-size:1.25rem;margin:6px 0 4px}
 .sec-note{color:var(--muted);font-size:.8rem;margin-bottom:14px;line-height:1.7}
+.today-head{display:flex;align-items:center;justify-content:space-between;gap:10px;margin:6px 0 14px;flex-wrap:wrap}
+.today-date{background:var(--panel2);border:1px solid var(--line);border-radius:999px;padding:5px 14px;font-size:.8rem;color:var(--gold);font-weight:600;font-family:'Changa'}
+.today-empty{background:var(--panel);border:1px dashed var(--line);border-radius:14px;padding:30px 16px;text-align:center;color:var(--muted)}
+.today-empty .big{font-size:2rem;display:block;margin-bottom:8px}
+.today-empty .nx{color:var(--gold);font-weight:600;margin-top:8px;display:block}
+.cd-row{display:flex;gap:8px;justify-content:center;margin-top:6px}
+.cd-box{background:var(--panel2);border:1px solid var(--line);border-radius:8px;padding:6px 10px;min-width:48px;text-align:center}
+.cd-box .n{font-family:'Changa';font-weight:800;font-size:1.2rem;color:var(--gold)}
+.cd-box .l{font-size:.6rem;color:var(--muted)}
+.md-block{margin-bottom:22px}
+.md-head{display:flex;align-items:center;justify-content:space-between;gap:8px;margin-bottom:4px;flex-wrap:wrap}
+.md-tag{background:var(--panel2);border:1px solid var(--line);border-radius:999px;padding:4px 12px;font-size:.8rem;font-weight:700;color:var(--gold)}
+.md-range{font-family:'Changa';font-weight:700;font-size:.92rem;color:var(--text)}
+.md-sub{color:var(--muted);font-size:.74rem;margin-bottom:10px;line-height:1.6}
 
 /* ===== Update bar ===== */
 .update-bar{display:flex;align-items:center;gap:10px;justify-content:space-between;background:var(--panel2);border:1px solid var(--line);border-radius:12px;padding:10px 12px;margin-bottom:16px;flex-wrap:wrap}
@@ -248,7 +262,8 @@ footer{text-align:center;color:var(--muted);font-size:.7rem;padding:20px;line-he
 </div>
 
 <nav><div class="tabs" role="tablist">
-  <button class="tab on" data-t="matches" role="tab">⚽ المباريات</button>
+  <button class="tab on" data-t="today" role="tab">⚡ اليوم</button>
+  <button class="tab" data-t="matches" role="tab">⚽ المباريات</button>
   <button class="tab" data-t="groups" role="tab">📊 المجموعات</button>
   <button class="tab" data-t="knockout" role="tab">🏆 المتأهلون</button>
   <button class="tab" data-t="map" role="tab">🗺️ الخريطة</button>
@@ -258,8 +273,8 @@ footer{text-align:center;color:var(--muted);font-size:.7rem;padding:20px;line-he
 
 <main>
 
-<!-- ========== المباريات ========== -->
-<section id="sec-matches" class="on">
+<!-- ========== مباريات اليوم ========== -->
+<section id="sec-today" class="on">
   <div class="update-bar">
     <div class="live-status">
       <span class="live-pill" id="livePill"><span class="dot"></span> مباشر تلقائي</span>
@@ -270,7 +285,16 @@ footer{text-align:center;color:var(--muted);font-size:.7rem;padding:20px;line-he
       <label class="switch"><input type="checkbox" id="liveToggle" checked><span class="slider"></span></label>
     </div>
   </div>
-  <div class="share-note">📲 نسخة مستضافة: تحدّث النتائج تلقائيًا في أي متصفح عبر مصدر بيانات عام. لمتابعة لحظية مضمونة اضغط <a href="https://www.google.com/search?q=%D9%86%D8%AA%D8%A7%D8%A6%D8%AC+%D9%83%D8%A3%D8%B3+%D8%A7%D9%84%D8%B9%D8%A7%D9%84%D9%85+%D8%A7%D9%84%D9%8A%D9%88%D9%85" target="_blank" rel="noopener">🔴 نتائج مباشرة</a></div>
+  <div class="today-head">
+    <div class="sec-title" style="margin:0">⚡ مباريات اليوم</div>
+    <div class="today-date" id="todayDate"></div>
+  </div>
+  <div id="todayList"></div>
+</section>
+
+<!-- ========== المباريات ========== -->
+<section id="sec-matches">
+  <div class="share-note">📲 تتحدّث النتائج تلقائيًا من المصدر الرسمي (football-data.org) لكل زائر في أي متصفح. لمتابعة لحظية إضافية اضغط <a href="https://www.google.com/search?q=%D9%86%D8%AA%D8%A7%D8%A6%D8%AC+%D9%83%D8%A3%D8%B3+%D8%A7%D9%84%D8%B9%D8%A7%D9%84%D9%85+%D8%A7%D9%84%D9%8A%D9%88%D9%85" target="_blank" rel="noopener">🔴 نتائج مباشرة</a></div>
   <div class="filter-row" id="filters">
     <button class="fbtn on" data-f="all">الكل</button>
     <button class="fbtn" data-f="ksa">🇸🇦 السعودية</button>
@@ -632,6 +656,88 @@ function renderMatches(){
   wrap.insertAdjacentHTML("beforeend","<div class='sec-note'>* تبث beIN عادة نحو 22 مباراة مجانًا على قناتها المفتوحة (الافتتاح، النهائي، ومباريات المنتخبات العربية) — تأكد من القائمة الرسمية قبل المباراة.</div>");
 }
 
+/* بناء بطاقة مباراة (مُعاد استخدامها في تبويب اليوم) */
+function matchCard(m){
+  const d=pdate(m.dt), st=status(m), tm=fmtTime(d), ksa=(m.h==="KSA"||m.a==="KSA");
+  let mid;
+  if(st==="FT") mid=`<div class="score"><span class="${m.hs>m.as?'w':''}">${m.hs}</span> – <span class="${m.as>m.hs?'w':''}">${m.as}</span></div>`;
+  else if(st==="LIVE") mid=`<div class="score" style="color:var(--red)">⏱</div>`;
+  else mid=`<div class="time">${tm.t}</div><div class="ampm">${tm.ap} بتوقيت السعودية</div>`;
+  const stLbl = st==="FT" ? `<span class="st-ft">انتهت</span>` : st==="LIVE" ? `<span class="st-live">● مباشر الآن</span>` : `<span>لم تبدأ</span>`;
+  return `<div class="mcard ${ksa?'ksa':''}">
+     <div class="m-top"><span class="grp">المجموعة ${GNAMES[T[m.h].g]} (${T[m.h].g})</span><span class="mdate">📅 ${fmtShort(d)}</span>${stLbl}</div>
+     <div class="m-row">
+       <div class="t"><span class="fl">${T[m.h].f}</span><span class="nm">${T[m.h].n}</span></div>
+       <div class="mid">${mid}</div>
+       <div class="t away"><span class="fl">${T[m.a].f}</span><span class="nm">${T[m.a].n}</span></div>
+     </div>
+     ${m.goals?`<div class="goals">${m.goals}</div>`:""}
+     ${m.ch?`<div class="goals" style="color:#C9B4F5">📺 <b style="color:#E0D2FA">قنوات النقل:</b> ${m.ch}</div>`:""}
+     <div class="m-foot"><span>${m.venue?("🏟️ "+m.venue):""}</span><span>${chBadges(m)}</span></div>
+   </div>`;
+}
+
+/* =================== مباريات اليوم =================== */
+/* مفتاح "يوم المباريات الأمريكي": مباريات اليوم الأمريكي الواحد تمتد بتوقيت السعودية
+   من مساء يوم حتى فجر اليوم التالي. نعتبر الحدّ منتصف نهار السعودية: أي مباراة قبل
+   الظهر (00:00–11:59) تتبع يوم المباريات السابق، فتتجمّع ليلة المباريات كاملةً معًا. */
+function usDayKey(m){
+  const d=pdate(m.dt); const us=new Date(d.getTime()-12*3600000);
+  return `${us.getFullYear()}-${String(us.getMonth()+1).padStart(2,"0")}-${String(us.getDate()).padStart(2,"0")}`;
+}
+function ksaRangeLabel(matches){
+  const ds=matches.map(m=>pdate(m.dt)).sort((a,b)=>a-b);
+  const a=ds[0], b=ds[ds.length-1];
+  const sameDay = a.getDate()===b.getDate()&&a.getMonth()===b.getMonth();
+  if(sameDay) return `${fmtDay(a)}`;
+  return `${DAYS[a.getDay()]} ${a.getDate()} – ${DAYS[b.getDay()]} ${b.getDate()} ${MONTHS[b.getMonth()]} ${b.getFullYear()}`;
+}
+function renderToday(){
+  const now=ksaNow();
+  document.getElementById("todayDate").textContent = `${fmtDay(now)} • ${hijri(now)}`;
+  const wrap=document.getElementById("todayList");
+
+  // جمع المباريات حسب اليوم الأمريكي
+  const byDay={};
+  M.forEach(m=>{ const k=usDayKey(m); (byDay[k]=byDay[k]||[]).push(m); });
+  const keys=Object.keys(byDay).sort();
+  if(!keys.length){ wrap.innerHTML=`<div class="today-empty"><span class="big">🏁</span> لا توجد مباريات.</div>`; return; }
+
+  // اليوم النشط = أول يوم فيه مباراة لم تنته؛ وإلا آخر يوم
+  let activeIdx=keys.findIndex(k=>byDay[k].some(m=>status(m)!=="FT"));
+  if(activeIdx<0) activeIdx=keys.length-1;
+
+  // نعرض يوم المباريات الحالي + التالي (اليوم وغدًا — متصلان)
+  const show=[keys[activeIdx]]; if(keys[activeIdx+1]) show.push(keys[activeIdx+1]);
+
+  const order={LIVE:0,NS:1,FT:2};
+  let html="";
+  show.forEach((k,idx)=>{
+    const matches=byDay[k].slice().sort((a,b)=> (order[status(a)]-order[status(b)]) || (pdate(a.dt)-pdate(b.dt)));
+    const liveN=matches.filter(m=>status(m)==="LIVE").length;
+    const label = idx===0 ? "🟢 يوم المباريات الحالي" : "⏭️ يوم المباريات التالي";
+    html += `<div class="md-block">
+      <div class="md-head">
+        <span class="md-tag">${label}</span>
+        <span class="md-range">${ksaRangeLabel(matches)}</span>
+      </div>
+      <div class="md-sub">${matches.length} مباراة • يوم أمريكي واحد (يمتد على ليلتين بتوقيت السعودية)${liveN?` • <b style="color:var(--red)">${liveN} مباشرة الآن 🔴</b>`:""}</div>
+      ${matches.map(matchCard).join("")}
+    </div>`;
+  });
+  wrap.innerHTML=html;
+}
+function tickCountdown(target){
+  const row=document.getElementById("cdRow"); if(!row) return;
+  const diff=target-ksaNow();
+  if(diff<=0){ row.innerHTML=""; return; }
+  const dd=Math.floor(diff/86400000), hh=Math.floor(diff%86400000/3600000), mm=Math.floor(diff%3600000/60000);
+  row.innerHTML=`
+    <div class="cd-box"><div class="n">${dd}</div><div class="l">يوم</div></div>
+    <div class="cd-box"><div class="n">${hh}</div><div class="l">ساعة</div></div>
+    <div class="cd-box"><div class="n">${mm}</div><div class="l">دقيقة</div></div>`;
+}
+
 /* =================== المجموعات =================== */
 function standings(g){
   const teams=Object.keys(T).filter(c=>T[c].g===g).map(c=>({c,p:0,w:0,d:0,l:0,gf:0,ga:0,pts:0}));
@@ -800,31 +906,40 @@ function applyResults(results){
 }
 
 // المصدر 1: TheSportsDB (مجاني، يعمل في أي متصفح) — يجلب مباريات اليوم
-async function fetchSportsDB(){
-  const d=ksaNow(); const ds=`${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,"0")}-${String(d.getDate()).padStart(2,"0")}`;
+// المصدر الرسمي: football-data.org عبر Cloudflare Worker (نتائج حية دقيقة لكل زائر)
+const WORKER_URL = "https://ancient-hill-ff13.mohammed-almutlaq-1983-459.workers.dev/";
+// مطابقة رموز المصدر (TLA) مع رموز التطبيق عند اختلافها
+const TLA_MAP = { URY:"URU" };  // أوروغواي
+function mapTla(t){ return TLA_MAP[t] || t; }
+
+async function fetchWorker(){
   const ctrl=new AbortController(); const t=setTimeout(()=>ctrl.abort(),12000);
-  const out=[];
-  for(const day of [ds, prevDay(ds)]){
-    try{
-      const r=await fetch(`https://www.thesportsdb.com/api/v1/json/3/eventsday.php?d=${day}&s=Soccer`,{signal:ctrl.signal});
-      if(!r.ok) continue;
-      const j=await r.json();
-      (j.events||[]).forEach(e=>{
-        const h=codeFromName(e.strHomeTeam), a=codeFromName(e.strAwayTeam);
-        if(!h||!a||h===a) return;
-        const hs=e.intHomeScore, as=e.intAwayScore;
-        if(hs===null||hs===undefined||hs==="") return;
-        const st=(e.strStatus&&/ft|finished|match finished/i.test(e.strStatus))?"FT":((e.strProgress||/1h|2h|ht|live/i.test(e.strStatus||""))?"LIVE":"FT");
-        out.push({h,a,hs:parseInt(hs),as:parseInt(as),st,sc:""});
-      });
-    }catch(_){}
-  }
-  clearTimeout(t);
-  return out;
+  try{
+    const r=await fetch(WORKER_URL,{signal:ctrl.signal});
+    clearTimeout(t);
+    if(!r.ok) return null;
+    const j=await r.json();
+    if(!j || !Array.isArray(j.matches)) return null;
+    const out=[];
+    j.matches.forEach(m=>{
+      const h=mapTla(m.homeTeam&&m.homeTeam.tla), a=mapTla(m.awayTeam&&m.awayTeam.tla);
+      if(!h||!a) return;
+      const st=m.status; // SCHEDULED/TIMED/IN_PLAY/PAUSED/FINISHED/SUSPENDED/POSTPONED
+      const hs=m.score&&m.score.fullTime?m.score.fullTime.home:null;
+      const as=m.score&&m.score.fullTime?m.score.fullTime.away:null;
+      let state=null;
+      if(st==="FINISHED") state="FT";
+      else if(st==="IN_PLAY"||st==="PAUSED") state="LIVE";
+      else return; // لم تبدأ: نتجاهلها (نُبقي الموعد المخزّن)
+      if(!Number.isInteger(hs)||!Number.isInteger(as)) return;
+      out.push({h,a,hs,as,st:state,sc:""});
+    });
+    return out;
+  }catch(_){ clearTimeout(t); return null; }
 }
 function prevDay(ds){ const p=new Date(ds+"T00:00:00"); p.setDate(p.getDate()-1); return `${p.getFullYear()}-${String(p.getMonth()+1).padStart(2,"0")}-${String(p.getDate()).padStart(2,"0")}`; }
 
-// المصدر 2: بحث Claude (داخل تطبيق Claude فقط)
+// المصدر الاحتياطي: بحث Claude (داخل تطبيق Claude فقط)
 async function fetchClaude(){
   const ctrl=new AbortController(); const timer=setTimeout(()=>ctrl.abort(),12000);
   try{
@@ -833,7 +948,7 @@ async function fetchClaude(){
       body:JSON.stringify({model:"claude-sonnet-4-6",max_tokens:1500,
         tools:[{type:"web_search_20250305",name:"web_search"}],
         messages:[{role:"user",content:
-`You are a precise sports-data fetcher. Search the web RIGHT NOW (use multiple reliable sources like ESPN, Yahoo Sports, FIFA, official sites) for the latest FIFA World Cup 2026 match results and any matches currently in progress. The tournament runs June 11 - July 19, 2026. Cross-check the score across at least two sources before reporting it. Respond with ONLY a JSON array, no markdown, no preamble. Each item: {"h":"FIFA 3-letter code","a":"code","hs":home_goals_integer,"as":away_goals_integer,"st":"FT" if finished or "LIVE" if in progress,"sc":"short Arabic scorer summary or empty string"}. Use ONLY these codes: MEX KOR RSA CZE CAN SUI QAT BIH BRA MAR HAI SCO USA AUS PAR TUR GER CIV ECU CUW NED JPN SWE TUN BEL EGY IRN NZL ESP KSA URU CPV FRA SEN NOR IRQ ARG AUT ALG JOR POR COL UZB COD ENG CRO GHA PAN. Only include matches that have actually kicked off (finished or live). Do NOT guess or include future matches. Accuracy of the numbers is critical.`}]})
+`You are a precise sports-data fetcher. Search the web RIGHT NOW for the latest FIFA World Cup 2026 match results and any matches currently in progress. The tournament runs June 11 - July 19, 2026. Respond with ONLY a JSON array, no markdown. Each item: {"h":"FIFA 3-letter code","a":"code","hs":home_goals_integer,"as":away_goals_integer,"st":"FT" or "LIVE","sc":""}. Use ONLY these codes: MEX KOR RSA CZE CAN SUI QAT BIH BRA MAR HAI SCO USA AUS PAR TUR GER CIV ECU CUW NED JPN SWE TUN BEL EGY IRN NZL ESP KSA URU CPV FRA SEN NOR IRQ ARG AUT ALG JOR POR COL UZB COD ENG CRO GHA PAN. Only matches that kicked off. Accuracy is critical.`}]})
     });
     clearTimeout(timer);
     if(!res.ok) throw 0;
@@ -862,9 +977,14 @@ async function liveSync(manual){
   const btn=document.getElementById("btnUpdate"), msg=document.getElementById("updMsg");
   setPill("sync"); btn.disabled=true; btn.textContent=manual?"⏳ جارٍ التحقّق…":"⏳…";
 
-  // المصدر العام (يعمل على الاستضافة وفي أي متصفح)
-  let results = await fetchSportsDB();
-  let src = "مصدر حي عام";
+  // المصدر الرسمي الدقيق عبر Cloudflare Worker (يعمل لكل زائر)
+  let results = await fetchWorker();
+  let src = "البيانات الرسمية";
+  // احتياطي: بحث Claude داخل تطبيق Claude فقط
+  if(!results || !results.length){
+    const c = await fetchClaude();
+    if(c && c.length){ results=c; src="بحث Claude"; }
+  }
 
   const auto=document.getElementById("liveToggle").checked;
   if(results && results.length){
@@ -874,7 +994,7 @@ async function liveSync(manual){
     let extra = live?` • ${live} مباشرة 🔴`:(updated?` • ${updated} نتيجة جديدة`:"");
     msg.dataset.base=`✅ محدّث ${tm.t} ${tm.ap} (${src}) • ${count} مباراة${extra}`;
     tickClock();
-    renderMatches();renderGroups();renderKnockout();renderHero();
+    renderMatches();renderGroups();renderKnockout();renderToday();renderHero();
     setPill(auto?"live":"off");
   }else{
     msg.dataset.base="";
@@ -949,8 +1069,9 @@ async function loadVisitors(){
 }
 
 /* init */
-renderHero();renderMatches();renderGroups();renderKnockout();renderMap();
+renderHero();renderMatches();renderGroups();renderKnockout();renderToday();renderMap();
 setInterval(renderHero,30000);
+setInterval(renderToday,30000);       // تحديث تبويب اليوم (الحالة + العدّاد)
 setInterval(tickClock,1000);          // ساعة "آخر تحديث" الحية
 setPill("live");
 loadVisitors();                        // تحميل عدّاد الزوّار
