@@ -149,6 +149,29 @@ td .pts{font-family:'Changa';font-weight:700;color:var(--gold)}
 tr.q1 td:first-child{box-shadow:inset 3px 0 0 var(--green)}
 tr.ksa-row{background:rgba(31,174,106,.07)}
 .legend{font-size:.68rem;color:var(--muted);margin-top:10px;line-height:1.8}
+.ko-summary{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-bottom:18px}
+.ko-summary .box{background:var(--panel);border:1px solid var(--line);border-radius:12px;padding:12px 6px;text-align:center}
+.ko-summary .box .v{font-family:'Changa';font-weight:800;font-size:1.7rem}
+.ko-summary .box .k{font-size:.7rem;color:var(--muted);margin-top:2px}
+.ko-summary .box.q .v{color:var(--green)} .ko-summary .box.l .v{color:var(--gold)} .ko-summary .box.o .v{color:var(--red)}
+.ko-block{margin-bottom:20px}
+.ko-h{font-family:'Changa';font-weight:700;font-size:1rem;margin-bottom:4px}
+.qual-grid{display:flex;flex-wrap:wrap;gap:7px;margin-top:8px}
+.qchip{display:inline-flex;align-items:center;gap:6px;background:var(--panel);border:1px solid var(--line);border-radius:999px;padding:6px 12px;font-size:.84rem;font-weight:600}
+.qchip .fl{font-size:1.1rem}
+.qchip .grp{font-size:.66rem;color:var(--muted);background:var(--panel2);border-radius:6px;padding:1px 6px}
+.qchip.q{border-color:var(--green);background:rgba(31,174,106,.08)}
+.qchip.q1{border-color:var(--gold)}
+.qchip.out{opacity:.6;text-decoration:line-through;text-decoration-color:var(--red)}
+.qchip.ksa{box-shadow:0 0 0 1px var(--green) inset}
+.thirds-table{width:100%;border-collapse:collapse;font-size:.82rem;margin-top:8px;background:var(--panel);border:1px solid var(--line);border-radius:12px;overflow:hidden}
+.thirds-table th{color:var(--muted);font-size:.66rem;font-weight:500;padding:8px 4px}
+.thirds-table td{padding:8px 4px;text-align:center;border-top:1px solid #1B2336}
+.thirds-table td.tc{text-align:right;padding-right:12px;white-space:nowrap}
+.thirds-table tr.in td{background:rgba(31,174,106,.07)}
+.thirds-table tr.in td.tc{box-shadow:inset 3px 0 0 var(--green)}
+.thirds-table .rk{font-family:'Changa';font-weight:700;color:var(--muted)}
+.thirds-table .pts{font-family:'Changa';font-weight:700;color:var(--gold)}
 .legend .sq{display:inline-block;width:9px;height:9px;background:var(--green);border-radius:2px;margin-left:4px;vertical-align:middle}
 
 /* ===== Map ===== */
@@ -219,6 +242,7 @@ footer{text-align:center;color:var(--muted);font-size:.7rem;padding:20px;line-he
 <nav><div class="tabs" role="tablist">
   <button class="tab on" data-t="matches" role="tab">⚽ المباريات</button>
   <button class="tab" data-t="groups" role="tab">📊 المجموعات</button>
+  <button class="tab" data-t="knockout" role="tab">🏆 المتأهلون</button>
   <button class="tab" data-t="map" role="tab">🗺️ الخريطة</button>
   <button class="tab" data-t="channels" role="tab">📺 القنوات</button>
   <button class="tab" data-t="info" role="tab">ℹ️ معلومات</button>
@@ -254,6 +278,38 @@ footer{text-align:center;color:var(--muted);font-size:.7rem;padding:20px;line-he
   <div class="sec-note">الترتيب يُحتسب تلقائيًا من النتائج (يتحدث مع كل ضغطة على «تحديث النتائج»). يتأهل الأول والثاني من كل مجموعة + أفضل 8 منتخبات في المركز الثالث إلى دور الـ 32.</div>
   <div class="groups-grid" id="groupsGrid"></div>
   <div class="legend"><span class="sq"></span> مركز مؤهل مباشرة لدور الـ 32 &nbsp;|&nbsp; ل: لعب • ف: فاز • ت: تعادل • خ: خسر • +/-: فارق الأهداف • ن: النقاط</div>
+</section>
+
+<!-- ========== المتأهلون ========== -->
+<section id="sec-knockout">
+  <div class="sec-title">🏆 المتأهلون للأدوار الإقصائية</div>
+  <div class="sec-note">يُحتسب تلقائيًا من النتائج المؤكدة. يتأهل الأول والثاني من كل مجموعة (24 منتخبًا) + أفضل 8 منتخبات في المركز الثالث = 32 منتخبًا لدور الـ32.</div>
+
+  <div class="ko-summary" id="koSummary"></div>
+
+  <div class="ko-block">
+    <h3 class="ko-h">✅ المتأهلون رسميًا</h3>
+    <div class="sec-note" style="margin-top:0">منتخبات ضمنت التأهل حسابيًا (لا يمكن أن تخرج من أفضل المراكز الثلاثة).</div>
+    <div class="qual-grid" id="qualifiedGrid"></div>
+  </div>
+
+  <div class="ko-block">
+    <h3 class="ko-h">⏳ المتصدّرون حاليًا (غير مؤكد)</h3>
+    <div class="sec-note" style="margin-top:0">في المركز الأول أو الثاني بمجموعاتهم الآن، لكن لم يضمنوا بعد.</div>
+    <div class="qual-grid" id="leadingGrid"></div>
+  </div>
+
+  <div class="ko-block">
+    <h3 class="ko-h">❌ خارج المنافسة</h3>
+    <div class="sec-note" style="margin-top:0">منتخبات ودّعت البطولة حسابيًا.</div>
+    <div class="qual-grid" id="outGrid"></div>
+  </div>
+
+  <div class="ko-block">
+    <h3 class="ko-h">🥉 سباق أفضل 8 مراكز ثالثة</h3>
+    <div class="sec-note" style="margin-top:0">أفضل 8 منتخبات في المركز الثالث تتأهل أيضًا. الترتيب الحالي:</div>
+    <div id="thirdsTable"></div>
+  </div>
 </section>
 
 <!-- ========== الخريطة ========== -->
@@ -318,9 +374,9 @@ footer{text-align:center;color:var(--muted);font-size:.7rem;padding:20px;line-he
     <h3>🇸🇦 مشوار الأخضر — المجموعة الثامنة (H)</h3>
     <p>يلعب المنتخب السعودي في مجموعة قوية تضم <b>إسبانيا 🇪🇸 وأوروغواي 🇺🇾 والرأس الأخضر 🇨🇻</b>. مواعيد مبارياته بتوقيت السعودية:</p>
     <ul>
-      <li><b>السعودية 1 – 1 أوروغواي</b> ✅ (انتهت) — هدف عبد الإله العمري د.41، تعادل مشرّف أمام بطل العالم مرتين</li>
-      <li><b>إسبانيا × السعودية</b> — الأحد 21 يونيو، الساعة 7:00 م</li>
-      <li><b>الرأس الأخضر × السعودية</b> — فجر السبت 27 يونيو، الساعة 3:00 ص</li>
+      <li><b>السعودية 1 – 1 أوروغواي</b> ✅ — هدف عبد الإله العمري د.41، تعادل مشرّف أمام بطل العالم مرتين</li>
+      <li><b>إسبانيا 4 – 0 السعودية</b> ✅ — خسارة أمام بطل أوروبا (لامين يامال تألق)</li>
+      <li><b>الرأس الأخضر × السعودية</b> — فجر السبت 27 يونيو، الساعة 3:00 ص 🔑 مباراة مصيرية للتأهل</li>
     </ul>
   </div>
 
@@ -415,13 +471,13 @@ let M = [
  {h:"BRA",a:"HAI",dt:"2026-06-20T03:30",r:2,hs:3,as:0,st:"FT",venue:"لينكولن فاينانشال — فيلادلفيا",goals:"⚽ البرازيل تحقق أول فوز لها وتقصي هايتي • تتساوى مع المغرب بصدارة المجموعة (4 نقاط)"},
  {h:"TUR",a:"PAR",dt:"2026-06-20T06:00",r:2,hs:0,as:1,st:"FT",venue:"ليفايز — سانتا كلارا",goals:"⚽ غالارزا د.1 (باراغواي) سجّل أسرع هدف في تاريخ البطولة (65 ثانية) • باراغواي تُسقط تركيا"},
  {h:"NED",a:"SWE",dt:"2026-06-20T20:00",r:2,hs:5,as:1,st:"FT",venue:"ملعب هيوستن",goals:"⚽ بروبي (ثنائية د.5 و17) • خاكبو • دومفريس (هولندا) — هولندا تكتسح وتتصدّر المجموعة F"},
- {h:"GER",a:"CIV",dt:"2026-06-20T23:00",r:2},
- {h:"ECU",a:"CUW",dt:"2026-06-21T03:00",r:2},
- {h:"TUN",a:"JPN",dt:"2026-06-21T07:00",r:2},
- {h:"ESP",a:"KSA",dt:"2026-06-21T19:00",r:2},
- {h:"BEL",a:"IRN",dt:"2026-06-21T22:00",r:2},
- {h:"URU",a:"CPV",dt:"2026-06-22T01:00",r:2},
- {h:"NZL",a:"EGY",dt:"2026-06-22T04:00",r:2},
+ {h:"GER",a:"CIV",dt:"2026-06-20T23:00",r:2,hs:2,as:1,st:"FT",venue:"BMO فيلد — تورونتو",goals:"⚽ أونداف (بديل) د.68 و90+4 يقلب التأخر لفوز ألمانيا • كيسيه 30' (كوت ديفوار) — ألمانيا تتأهل لدور الـ32"},
+ {h:"ECU",a:"CUW",dt:"2026-06-21T03:00",r:2,hs:0,as:0,st:"FT",venue:"أروهيد — كانساس سيتي",goals:"⚽ الحارس إلروي روم يصنع التاريخ بـ15 تصديًا (الأكثر في مباراة مونديالية) • كوراساو تنال أول نقطة تاريخية لها"},
+ {h:"TUN",a:"JPN",dt:"2026-06-21T07:00",r:2,hs:0,as:4,st:"FT",venue:"إستاديو أكرون — غوادالاخارا",goals:"⚽ أويدا وكامادا وإيتو يقودون اليابان لأكبر فوز آسيوي في تاريخ المونديال (4-0) وإقصاء تونس"},
+ {h:"ESP",a:"KSA",dt:"2026-06-21T19:00",r:2,hs:4,as:0,st:"FT",venue:"مرسيدس-بنز — أتلانتا",goals:"⚽ لامين يامال (أول أهدافه في المونديال) يقود إسبانيا لفوز كبير • الأخضر يخسر بصعوبة أمام بطل أوروبا"},
+ {h:"BEL",a:"IRN",dt:"2026-06-21T22:00",r:2,hs:0,as:0,st:"FT",venue:"لينكولن فاينانشال — فيلادلفيا",goals:"⚽ بلجيكا تتعثّر مجددًا بتعادل سلبي • إيران تواصل تألقها الدفاعي"},
+ {h:"URU",a:"CPV",dt:"2026-06-22T01:00",r:2,hs:2,as:2,st:"FT",venue:"BMO فيلد — تورونتو",goals:"⚽ الرأس الأخضر (المشارك لأول مرة) يخطف تعادلًا مثيرًا 2-2 من أوروغواي ويقترب من إنجاز تاريخي"},
+ {h:"NZL",a:"EGY",dt:"2026-06-22T04:00",r:2,hs:1,as:3,st:"FT",venue:"لومن فيلد — سياتل",goals:"⚽ محمد صلاح (هدف وصناعة) يقود مصر لفوز ثمين 3-1 يعزّز فرصها في التأهل"},
  {h:"ARG",a:"AUT",dt:"2026-06-22T20:00",r:2},
  {h:"FRA",a:"IRQ",dt:"2026-06-23T00:00",r:2},
  {h:"NOR",a:"SEN",dt:"2026-06-23T03:00",r:2},
@@ -590,6 +646,71 @@ function renderGroups(){
   });
 }
 
+/* =================== المتأهلون (حساب تلقائي دقيق) =================== */
+function renderKnockout(){
+  const gt={}; GROUPS.forEach(g=>gt[g]=standings(g).map(t=>({...t,gd:t.gf-t.ga})));
+
+  const confirmed=[];   // ضمنوا أول مركزين حسابيًا (قاعدة متحفّظة آمنة)
+  const projected=[];   // في المركز 1 أو 2 حاليًا لكن غير مؤكد
+  const bubble=[];      // المركز الثالث (في سباق أفضل 8)
+  const eliminated=[];  // خرجوا حسابيًا (لا يمكنهم بلوغ أول مركزين، ومجموعتهم تقرّر)
+
+  GROUPS.forEach(g=>{
+    const tb=gt[g];
+    tb.forEach((t,i)=>{
+      const pos=i+1, remaining=3-t.p;
+      // كم منتخبًا يمكنه بلوغ نقاطي الحالية أو تجاوزها؟
+      const canReachMe = tb.filter((o,j)=>j!==i).filter(o=>(o.pts+(3-o.p)*3)>=t.pts).length;
+
+      if(remaining===0){
+        if(pos<=2) confirmed.push({...t,g,pos});
+        else if(pos===3) bubble.push({...t,g,pos,done:true});
+        else eliminated.push({...t,g,pos});            // المركز الرابع بعد انتهاء المجموعة = خارج مؤكد
+      }else{
+        if(canReachMe<=1) confirmed.push({...t,g,pos,early:true});   // ضمن أول مركزين رياضيًا
+        else if(pos<=2) projected.push({...t,g,pos});
+        else bubble.push({...t,g,pos});                 // مركز ثالث/رابع وما زالت الفرصة قائمة
+      }
+    });
+  });
+
+  // ترتيب المراكز الثالثة لأفضل 8
+  const thirds=GROUPS.map(g=>({...gt[g][2],gd:gt[g][2].gf-gt[g][2].ga,g}))
+    .sort((a,b)=>b.pts-a.pts||b.gd-a.gd||b.gf-a.gf);
+
+  document.getElementById("koSummary").innerHTML=`
+    <div class="box q"><div class="v">${confirmed.length}</div><div class="k">تأهل مؤكد</div></div>
+    <div class="box l"><div class="v">${projected.length+bubble.length}</div><div class="k">في سباق التأهل</div></div>
+    <div class="box o"><div class="v">${eliminated.length}</div><div class="k">خارج المنافسة</div></div>`;
+
+  const chip=(t,cls)=>`<span class="qchip ${cls} ${t.c==='KSA'?'ksa':''}"><span class="fl">${T[t.c].f}</span>${T[t.c].n}<span class="grp">${t.g}#${t.pos}</span></span>`;
+  const byG=(a,b)=>a.g.localeCompare(b.g);
+
+  document.getElementById("qualifiedGrid").innerHTML =
+    confirmed.length? confirmed.sort(byG).map(t=>chip(t,"q q1")).join("")
+    : `<div class="sec-note" style="margin:0">لم يضمن أي منتخب التأهل رسميًا بعد — دور المجموعات جارٍ.</div>`;
+
+  document.getElementById("leadingGrid").innerHTML =
+    (projected.length||bubble.length)? [...projected.map(t=>chip(t,"")),...bubble.map(t=>chip(t,""))].join("")
+    : `<div class="sec-note" style="margin:0">—</div>`;
+
+  document.getElementById("outGrid").innerHTML =
+    eliminated.length? eliminated.sort(byG).map(t=>chip(t,"out")).join("")
+    : `<div class="sec-note" style="margin:0">لم يخرج أي منتخب نهائيًا بعد.</div>`;
+
+  let rows=thirds.map((t,i)=>`
+    <tr class="${i<8?'in':''}">
+      <td class="rk">${i+1}</td>
+      <td class="tc"><span class="fl">${T[t.c].f}</span> ${T[t.c].n} <span class="grp" style="color:var(--muted);font-size:.66rem">(${t.g})</span></td>
+      <td>${t.p}</td><td>${t.gd>0?'+':''}${t.gd}</td><td class="pts">${t.pts}</td>
+    </tr>`).join("");
+  document.getElementById("thirdsTable").innerHTML=`
+    <table class="thirds-table">
+      <thead><tr><th>#</th><th>المنتخب</th><th>لعب</th><th>+/-</th><th>نقاط</th></tr></thead>
+      <tbody>${rows}</tbody></table>
+    <div class="sec-note" style="margin-top:8px">الصفوف الخضراء = أفضل 8 مراكز ثالثة (مؤهلة حاليًا). يتغيّر مع كل نتيجة.</div>`;
+}
+
 /* =================== الخريطة =================== */
 function px(lon){return (lon+128)*10.55+12;}
 function py(lat){return (51.5-lat)*13.1+12;}
@@ -740,7 +861,7 @@ async function liveSync(manual){
     let extra = live?` • ${live} مباشرة 🔴`:(updated?` • ${updated} نتيجة جديدة`:"");
     msg.dataset.base=`✅ محدّث ${tm.t} ${tm.ap} (${src}) • ${count} مباراة${extra}`;
     tickClock();
-    renderMatches();renderGroups();renderHero();
+    renderMatches();renderGroups();renderKnockout();renderHero();
     setPill(auto?"live":"off");
   }else{
     msg.dataset.base="";
@@ -786,7 +907,7 @@ document.querySelectorAll(".fbtn").forEach(b=>b.addEventListener("click",()=>{
 }));
 
 /* init */
-renderHero();renderMatches();renderGroups();renderMap();
+renderHero();renderMatches();renderGroups();renderKnockout();renderMap();
 setInterval(renderHero,30000);
 setInterval(tickClock,1000);          // ساعة "آخر تحديث" الحية
 setPill("live");
