@@ -3,6 +3,10 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
+<!-- منع تخزين نسخة قديمة في الكاش (يضمن أحدث محتوى دائمًا) -->
+<meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
+<meta http-equiv="Pragma" content="no-cache">
+<meta http-equiv="Expires" content="0">
 <title>مونديال 2026 — الدليل الشامل بتوقيت السعودية</title>
 <!-- معاينة المشاركة (واتساب / تويتر / تيليجرام) -->
 <meta property="og:type" content="website">
@@ -218,6 +222,10 @@ svg{width:100%;height:auto;display:block}
 .info-card ul{padding-right:18px}
 .arab-flags{font-size:1.4rem;letter-spacing:.18em;margin-top:6px}
 footer{text-align:center;color:var(--muted);font-size:.7rem;padding:20px;line-height:1.9;border-top:1px solid var(--line)}
+.visitors{display:inline-flex;align-items:center;gap:8px;background:var(--panel);border:1px solid var(--line);border-radius:999px;padding:7px 16px;margin-bottom:12px}
+.visitors .vic{font-size:1rem}
+.visitors .vlabel{color:var(--muted);font-size:.78rem;font-weight:600}
+.visitors .vcount{font-family:'Changa';font-weight:800;font-size:1rem;color:var(--gold);font-variant-numeric:tabular-nums}
 @media (prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important}}
 @media (max-width:480px){ .mid{min-width:74px} .t .nm{font-size:.8rem} .t .fl{font-size:1.2rem} }
 </style>
@@ -411,8 +419,13 @@ footer{text-align:center;color:var(--muted);font-size:.7rem;padding:20px;line-he
 </main>
 
 <footer>
-  صُمم خصيصًا بتوقيت السعودية 🇸🇦 • البيانات من مصادر رسمية وإخبارية موثوقة بتاريخ 12 يونيو 2026<br>
-  استخدم زر «تحديث الآن» لجلب أحدث النتائج عبر البحث المباشر داخل Claude
+  <div class="visitors" id="visitorBox">
+    <span class="vic">👁️</span>
+    <span class="vlabel">عدد الزوّار</span>
+    <span class="vcount" id="visitorCount">…</span>
+  </div>
+  صُمم خصيصًا بتوقيت السعودية 🇸🇦 • يتحدّث تلقائيًا من مصادر موثوقة<br>
+  استخدم زر «تحديث الآن» لجلب أحدث النتائج
 </footer>
 
 <script>
@@ -906,11 +919,41 @@ document.querySelectorAll(".fbtn").forEach(b=>b.addEventListener("click",()=>{
   b.classList.add("on"); FILTER=b.dataset.f; renderMatches();
 }));
 
+/* =================== عدّاد الزوّار (رقم حقيقي مشترك) =================== */
+function fmtVisitors(n){ return n.toLocaleString('en-US'); }
+async function loadVisitors(){
+  const el=document.getElementById("visitorCount");
+  // مفتاح خاص بموقعك على خدمة العدّاد المجانية
+  const NS="motl1234-worldcup2026", KEY="visits";
+  // نزيد العدّاد مرة واحدة لكل جلسة متصفح (حتى لا يتضخّم بالتحديثات المتكررة)
+  const isNew = !sessionStorage.getItem("counted");
+  try{
+    const url = isNew
+      ? `https://api.countapi.xyz/hit/${NS}/${KEY}`
+      : `https://api.countapi.xyz/get/${NS}/${KEY}`;
+    const ctrl=new AbortController(); const t=setTimeout(()=>ctrl.abort(),8000);
+    const r=await fetch(url,{signal:ctrl.signal}); clearTimeout(t);
+    const j=await r.json();
+    if(j && typeof j.value==="number"){
+      el.textContent=fmtVisitors(j.value);
+      if(isNew) sessionStorage.setItem("counted","1");
+      return;
+    }
+    throw new Error("bad");
+  }catch(e){
+    // احتياطي: عدّاد محلي إن تعذّر الاتصال بالخدمة
+    let local=parseInt(localStorage.getItem("localVisits")||"0");
+    if(isNew){ local++; localStorage.setItem("localVisits",String(local)); sessionStorage.setItem("counted","1"); }
+    el.textContent=fmtVisitors(local||1);
+  }
+}
+
 /* init */
 renderHero();renderMatches();renderGroups();renderKnockout();renderMap();
 setInterval(renderHero,30000);
 setInterval(tickClock,1000);          // ساعة "آخر تحديث" الحية
 setPill("live");
+loadVisitors();                        // تحميل عدّاد الزوّار
 setTimeout(()=>{ liveSync(false); startLive(); },700);   // مزامنة فورية + بدء المباشر
 </script>
 </body>
