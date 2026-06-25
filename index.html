@@ -73,6 +73,8 @@ nav{position:sticky;top:0;z-index:50;background:rgba(10,14,22,.86);backdrop-filt
 .tab-dot{position:absolute;top:2px;left:6px;width:8px;height:8px;background:var(--red);border-radius:50%;box-shadow:0 0 0 2px var(--bg);animation:livedot 1.3s infinite}
 .tab-flash{animation:tabflash 1.2s ease 2}
 @keyframes tabflash{0%,100%{background:none}50%{background:rgba(233,185,73,.25);border-color:var(--gold)}}
+.res-wrap{position:relative}
+.newest-badge{position:absolute;top:-8px;right:14px;z-index:2;background:var(--gold);color:#0A0E16;font-family:'Changa';font-weight:800;font-size:.7rem;padding:3px 10px;border-radius:999px;box-shadow:0 2px 8px rgba(0,0,0,.4)}
 
 main{max-width:760px;margin:0 auto;padding:18px 14px 80px}
 section{display:none}
@@ -268,6 +270,7 @@ footer{text-align:center;color:var(--muted);font-size:.7rem;padding:20px;line-he
 <nav><div class="tabs" role="tablist">
   <button class="tab on" data-t="today" role="tab">⚡ اليوم</button>
   <button class="tab" data-t="matches" role="tab">⚽ المباريات</button>
+  <button class="tab" data-t="results" role="tab">📋 آخر النتائج</button>
   <button class="tab" data-t="groups" role="tab">📊 المجموعات</button>
   <button class="tab" data-t="knockout" role="tab">🏆 المتأهلون</button>
   <button class="tab" data-t="map" role="tab">🗺️ الخريطة</button>
@@ -306,6 +309,13 @@ footer{text-align:center;color:var(--muted);font-size:.7rem;padding:20px;line-he
     <button class="fbtn" data-f="done">المنتهية</button>
   </div>
   <div id="matchList"></div>
+</section>
+
+<!-- ========== آخر النتائج ========== -->
+<section id="sec-results">
+  <div class="sec-title">📋 آخر النتائج</div>
+  <div class="sec-note">المباريات المنتهية مرتّبة من الأحدث إلى الأقدم — النتيجة الأجدد تتصدّر القائمة تلقائيًا. تتحدّث ذاتيًا مع كل مباراة جديدة.</div>
+  <div id="resultsList"></div>
 </section>
 
 <!-- ========== المجموعات ========== -->
@@ -520,8 +530,8 @@ let M = [
  {h:"URU",a:"CPV",dt:"2026-06-22T01:00",r:2,hs:2,as:2,st:"FT",venue:"BMO فيلد — تورونتو",goals:"⚽ الرأس الأخضر (المشارك لأول مرة) يخطف تعادلًا مثيرًا 2-2 من أوروغواي ويقترب من إنجاز تاريخي"},
  {h:"NZL",a:"EGY",dt:"2026-06-22T04:00",r:2,hs:1,as:3,st:"FT",venue:"لومن فيلد — سياتل",goals:"⚽ محمد صلاح (هدف وصناعة) يقود مصر لفوز ثمين 3-1 يعزّز فرصها في التأهل"},
  {h:"ARG",a:"AUT",dt:"2026-06-22T20:00",r:2,hs:2,as:0,st:"FT",venue:"ميت لايف — نيوجيرسي",goals:"⚽ الأرجنتين تحقق فوزها الثاني وتقترب من التأهل • أداء قوي بقيادة ميسي"},
- {h:"FRA",a:"IRQ",dt:"2026-06-23T00:00",r:2},
- {h:"NOR",a:"SEN",dt:"2026-06-23T03:00",r:2},
+ {h:"FRA",a:"IRQ",dt:"2026-06-23T00:00",r:2,hs:3,as:0,st:"FT",venue:"ملعب فيلادلفيا",goals:"⚽ مبابي (ثنائية) أصبح هدّاف فرنسا التاريخي (58 هدفًا) • ديمبيليه • فرنسا تتأهل رسميًا (المباراة تأجلت ساعتين بسبب الأمطار)"},
+ {h:"NOR",a:"SEN",dt:"2026-06-23T03:00",r:2,hs:3,as:2,st:"FT",venue:"ميت لايف — نيوجيرسي",goals:"⚽ هالاند (ثنائية) يقود النرويج للتأهل رسميًا • إيسماعيلا سار سجّل هدفين للسنغال في الوقت بدل الضائع"},
  {h:"JOR",a:"ALG",dt:"2026-06-23T06:00",r:2},
  {h:"POR",a:"UZB",dt:"2026-06-23T20:00",r:2},
  {h:"ENG",a:"GHA",dt:"2026-06-23T23:00",r:2},
@@ -740,6 +750,23 @@ function tickCountdown(target){
     <div class="cd-box"><div class="n">${dd}</div><div class="l">يوم</div></div>
     <div class="cd-box"><div class="n">${hh}</div><div class="l">ساعة</div></div>
     <div class="cd-box"><div class="n">${mm}</div><div class="l">دقيقة</div></div>`;
+}
+
+/* =================== آخر النتائج (الأحدث أولًا) =================== */
+function renderResults(){
+  const wrap=document.getElementById("resultsList");
+  const done=M.filter(m=>{const s=status(m);return s==="FT"||s==="LIVE";})
+              .sort((a,b)=> pdate(b.dt)-pdate(a.dt));   // تنازلي: الأحدث في الأعلى
+  if(!done.length){ wrap.innerHTML=`<div class="today-empty"><span class="big">⏳</span> لم تبدأ أي مباراة بعد.</div>`; return; }
+  const live=done.filter(m=>status(m)==="LIVE");
+  const ft=done.filter(m=>status(m)==="FT");
+  const ordered=[...live, ...ft];   // المباشرة أولًا، ثم المنتهية بترتيب الأحدث
+  let html=`<div class="sec-note">${ft.length} مباراة منتهية${live.length?` • ${live.length} مباشرة الآن 🔴`:""}</div>`;
+  ordered.forEach((m,i)=>{
+    const isNewest = status(m)==="FT" && i===live.length;  // أول منتهية = الأحدث
+    html += `<div class="res-wrap">${isNewest?'<span class="newest-badge">🆕 الأحدث</span>':''}${matchCard(m)}</div>`;
+  });
+  wrap.innerHTML=html;
 }
 
 /* =================== المجموعات =================== */
@@ -1018,7 +1045,7 @@ async function liveSync(manual){
     let extra = live?` • ${live} مباشرة 🔴`:(updated?` • ${updated} نتيجة جديدة`:"");
     msg.dataset.base=`✅ محدّث ${tm.t} ${tm.ap} (${src}) • ${count} مباراة${extra}`;
     tickClock();
-    renderMatches();renderGroups();renderKnockout();renderToday();renderHero();
+    renderMatches();renderResults();renderGroups();renderKnockout();renderToday();renderHero();
     // إن تغيّر المتأهلون، أبرز التبويب بوميض + شارة
     if(qualifiedSignature()!==beforeQ){ flashKnockoutTab(); }
     setPill(auto?"live":"off");
@@ -1096,7 +1123,7 @@ async function loadVisitors(){
 }
 
 /* init */
-renderHero();renderMatches();renderGroups();renderKnockout();renderToday();renderMap();
+renderHero();renderMatches();renderResults();renderGroups();renderKnockout();renderToday();renderMap();
 setInterval(renderHero,30000);
 setInterval(renderToday,30000);       // تحديث تبويب اليوم (الحالة + العدّاد)
 setInterval(tickClock,1000);          // ساعة "آخر تحديث" الحية
