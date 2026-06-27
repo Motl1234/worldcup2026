@@ -164,6 +164,7 @@ section.on{display:block;animation:fade .35s ease}
 .mid .score .w{color:var(--gold)}
 .mcard.live .mid .score{color:#FFD9DD}
 .mid .score.livescore{color:#fff;text-shadow:0 0 18px rgba(255,75,92,.7)}
+.mid .livemin{margin-top:3px;font-size:.66rem;font-weight:800;font-family:'Rubik';color:#FF8A95;letter-spacing:.3px;animation:livedot 1.6s ease-in-out infinite}
 .mid .time{font-family:'Rubik';font-size:1.2rem;font-weight:700;color:var(--blue)}
 .mid .ampm{font-size:.64rem;color:var(--muted);margin-top:2px}
 .m-foot{display:flex;justify-content:space-between;align-items:center;gap:8px;margin-top:9px;font-size:.7rem;color:var(--muted);flex-wrap:wrap}
@@ -627,7 +628,7 @@ function renderHero(){
   if(!next){el.innerHTML="<div style='text-align:center;width:100%'>انتهى دور المجموعات 🏁</div>";return;}
   const st=status(next), d=pdate(next.dt), tm=fmtTime(d);
   let mid;
-  if(st==="LIVE") mid=`<div class="clock" style="color:var(--red)">مباشر الآن</div><div class="when">انطلقت ${tm.t} ${tm.ap}</div>`;
+  if(st==="LIVE") mid=`<div class="clock" style="color:var(--red)">${liveLabel(m)}</div><div class="when">انطلقت ${tm.t} ${tm.ap}</div>`;
   else{
     const diff=d-now; const hh=Math.floor(diff/3600000), mm=Math.floor(diff%3600000/60000);
     mid=`<div class="clock">${hh>0? hh+" س "+mm+" د" : mm+" دقيقة"}</div><div class="when">${fmtDay(d)} • ${tm.t} ${tm.ap} بتوقيت السعودية</div>`;
@@ -669,9 +670,9 @@ function renderMatches(){
     const ksa=(m.h==="KSA"||m.a==="KSA");
     let mid;
     if(st==="FT") mid=`<div class="score"><span class="${m.hs>m.as?'w':''}">${m.hs}</span> – <span class="${m.as>m.hs?'w':''}">${m.as}</span></div>`;
-    else if(st==="LIVE") mid=`<div class="score livescore">${m.hs??0} – ${m.as??0}</div>`;
+    else if(st==="LIVE") mid=`<div class="score livescore">${m.hs??0} – ${m.as??0}</div><div class="livemin">${liveLabel(m)}</div>`;
     else mid=`<div class="time">${tm.t}</div><div class="ampm">${tm.ap} بتوقيت السعودية</div><div class="ampm" style="color:var(--gold)">${d.getDate()} ${MONTHS[d.getMonth()]} ${d.getFullYear()}</div>`;
-    const stLbl = st==="FT" ? `<span class="st-ft">انتهت</span>` : st==="LIVE" ? `<span class="st-live"><span class="ld"></span> مباشر</span>` : `<span>لم تبدأ</span>`;
+    const stLbl = st==="FT" ? `<span class="st-ft">انتهت</span>` : st==="LIVE" ? `<span class="st-live"><span class="ld"></span> ${Number.isInteger(m.min)?m.min+"′":"مباشر"}</span>` : `<span>لم تبدأ</span>`;
     target.insertAdjacentHTML("beforeend",`
      <div class="mcard ${ksa?'ksa':''} ${st==="LIVE"?'live':''}">
        <div class="m-top"><span class="grp">المجموعة ${GNAMES[T[m.h].g]} (${T[m.h].g})</span><span class="mdate">📅 ${fmtShort(d)}</span>${stLbl}</div>
@@ -694,9 +695,9 @@ function matchCard(m){
   const d=pdate(m.dt), st=status(m), tm=fmtTime(d), ksa=(m.h==="KSA"||m.a==="KSA");
   let mid;
   if(st==="FT") mid=`<div class="score"><span class="${m.hs>m.as?'w':''}">${m.hs}</span> – <span class="${m.as>m.hs?'w':''}">${m.as}</span></div>`;
-  else if(st==="LIVE") mid=`<div class="score livescore">${m.hs??0} – ${m.as??0}</div>`;
+  else if(st==="LIVE") mid=`<div class="score livescore">${m.hs??0} – ${m.as??0}</div><div class="livemin">${liveLabel(m)}</div>`;
   else mid=`<div class="time">${tm.t}</div><div class="ampm">${tm.ap} بتوقيت السعودية</div>`;
-  const stLbl = st==="FT" ? `<span class="st-ft">انتهت</span>` : st==="LIVE" ? `<span class="st-live"><span class="ld"></span> مباشر</span>` : `<span>لم تبدأ</span>`;
+  const stLbl = st==="FT" ? `<span class="st-ft">انتهت</span>` : st==="LIVE" ? `<span class="st-live"><span class="ld"></span> ${Number.isInteger(m.min)?m.min+"′":"مباشر"}</span>` : `<span>لم تبدأ</span>`;
   return `<div class="mcard ${ksa?'ksa':''} ${st==="LIVE"?'live':''}">
      <div class="m-top"><span class="grp">المجموعة ${GNAMES[T[m.h].g]} (${T[m.h].g})</span><span class="mdate">📅 ${fmtShort(d)}</span>${stLbl}</div>
      <div class="m-row">
@@ -950,6 +951,20 @@ const EN = {
  JOR:["jordan"],POR:["portugal"],COL:["colombia"],UZB:["uzbekistan"],COD:["congo dr","dr congo","congo"],
  ENG:["england"],CRO:["croatia"],GHA:["ghana"],PAN:["panama"]
 };
+// نص الحالة الحية: الدقيقة + الشوط (من API-Football)
+function liveLabel(m){
+  const h=m.half, e=m.min;
+  if(h==="HT") return "استراحة — الشوط الأول";
+  if(h==="BT") return "استراحة الوقت الإضافي";
+  if(h==="P")  return "ركلات الترجيح";
+  if(Number.isInteger(e)){
+    if(h==="1H") return `الشوط الأول · ${e}′`;
+    if(h==="2H") return `الشوط الثاني · ${e}′`;
+    if(h==="ET") return `الوقت الإضافي · ${e}′`;
+    return `${e}′`;
+  }
+  return "مباشر الآن";
+}
 function codeFromName(name){
   if(!name) return null; const s=name.toLowerCase();
   for(const c in EN){ if(EN[c].some(a=>s.includes(a))) return c; }
@@ -964,6 +979,9 @@ function applyResults(results){
       const wasNS=m.st!=="FT"; const oldH=m.hs,oldA=m.as,oldSt=m.st;
       if(m.h===r.h){m.hs=r.hs;m.as=r.as}else{m.hs=r.as;m.as=r.hs}
       m.st = r.st==="LIVE" ? "LIVE" : "FT";
+      // الدقيقة والشوط الحي (من API-Football)
+      if(m.st==="LIVE"){ m.min=Number.isInteger(r.min)?r.min:null; m.half=r.half||null; }
+      else { m.min=null; m.half=null; }
       if(r.sc && typeof r.sc==="string" && r.sc.trim()) m.goals="⚽ "+r.sc.trim();
       const changed = oldH!==m.hs||oldA!==m.as||oldSt!==m.st;
       if(m.st==="LIVE") live++;
@@ -989,6 +1007,18 @@ async function fetchWorker(){
     if(!r.ok) return null;
     const j=await r.json();
     if(!j || !Array.isArray(j.matches)) return null;
+
+    // بيانات API-Football الحية (الدقيقة + الشوط) — نفهرسها برمز كل فريق
+    // short: 1H أول، HT استراحة، 2H ثانٍ، ET إضافي، P ركلات
+    const liveMap = {};
+    if(Array.isArray(j.live)){
+      j.live.forEach(L=>{
+        const lh=codeFromName(L.home), la=codeFromName(L.away);
+        if(!lh||!la) return;
+        liveMap[[lh,la].sort().join("-")] = { elapsed:L.elapsed, short:L.short };
+      });
+    }
+
     const out=[];
     j.matches.forEach(m=>{
       const h=mapTla(m.homeTeam&&m.homeTeam.tla), a=mapTla(m.awayTeam&&m.awayTeam.tla);
@@ -1001,7 +1031,12 @@ async function fetchWorker(){
       else if(st==="IN_PLAY"||st==="PAUSED") state="LIVE";
       else return; // لم تبدأ: نتجاهلها (نُبقي الموعد المخزّن)
       if(!Number.isInteger(hs)||!Number.isInteger(as)) return;
-      out.push({h,a,hs,as,st:state,sc:""});
+      const row={h,a,hs,as,st:state,sc:""};
+      if(state==="LIVE"){
+        const lv = liveMap[[h,a].sort().join("-")];
+        if(lv){ row.min=lv.elapsed; row.half=lv.short; }
+      }
+      out.push(row);
     });
     return out;
   }catch(_){ clearTimeout(t); return null; }
