@@ -268,6 +268,38 @@ footer{text-align:center;color:var(--muted);font-size:.7rem;padding:20px;line-he
 .visitors .vcount{font-family:'Rubik';font-weight:800;font-size:1rem;color:var(--gold);font-variant-numeric:tabular-nums}
 @media (prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important}}
 @media (max-width:480px){ .mid{min-width:74px} .t .nm{font-size:.8rem} .t .fl{font-size:1.2rem} }
+
+/* =============== المشجرة (Bracket) =============== */
+.br-scroll{overflow-x:auto;overflow-y:hidden;-webkit-overflow-scrolling:touch;padding:6px 2px 16px;margin:0 -4px}
+.br-scroll::-webkit-scrollbar{height:8px}
+.br-scroll::-webkit-scrollbar-thumb{background:var(--line);border-radius:9px}
+.bracket{display:flex;gap:0;align-items:stretch;min-width:max-content;direction:rtl}
+.br-round{display:flex;flex-direction:column;justify-content:space-around;gap:14px;padding:0 9px;min-width:172px}
+.br-round.final-col{justify-content:center}
+.br-rtitle{position:sticky;top:0;text-align:center;font-family:'Rubik';font-weight:700;font-size:.72rem;color:var(--gold);background:rgba(243,196,78,.08);border:1px solid rgba(243,196,78,.22);padding:5px 4px;border-radius:8px;margin-bottom:6px;white-space:nowrap}
+.br-match{position:relative;background:linear-gradient(180deg,var(--panel),var(--panel2));border:1px solid var(--line);border-radius:10px;overflow:hidden;box-shadow:0 4px 14px -8px rgba(0,0,0,.5)}
+.br-match.live{border-color:var(--red);box-shadow:0 0 0 1px rgba(255,75,92,.45) inset,0 0 20px -8px rgba(255,75,92,.6);animation:liveglow 2.2s ease-in-out infinite}
+.br-row{display:flex;align-items:center;gap:6px;padding:6px 8px;font-size:.78rem;position:relative}
+.br-row+.br-row{border-top:1px solid var(--line)}
+.br-row .fl{font-size:1.02rem;line-height:1;filter:drop-shadow(0 1px 1px rgba(0,0,0,.4))}
+.br-row .nm{flex:1;font-weight:600;color:var(--text);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.br-row .sc{font-family:'Rubik';font-weight:800;min-width:16px;text-align:center;color:var(--muted)}
+.br-row.win .nm{color:var(--gold)}
+.br-row.win .sc{color:var(--gold)}
+.br-row.lose{opacity:.5}
+.br-row.win::after{content:"\2713";position:absolute;left:6px;color:var(--green);font-weight:800;font-size:.7rem}
+.br-row .nm.tbd{color:var(--muted);font-weight:500;font-style:italic}
+.br-row.ksa .nm{color:#fff}
+.br-match.ksa{border-color:rgba(47,210,124,.55);box-shadow:0 0 0 1px rgba(47,210,124,.3) inset}
+.br-pen{font-size:.58rem;color:var(--muted);padding:0 8px 4px;text-align:center;font-family:'Rubik'}
+.br-when{font-size:.58rem;color:var(--muted);text-align:center;padding:3px 6px;background:rgba(255,255,255,.02);border-top:1px solid var(--line);font-family:'Rubik'}
+.br-when.livew{color:#FF8A95;font-weight:800;animation:livedot 1.6s ease-in-out infinite}
+.br-champ{display:flex;flex-direction:column;align-items:center;justify-content:center;gap:8px;padding:0 14px}
+.br-champ .cup{font-size:2.6rem;filter:drop-shadow(0 4px 12px rgba(243,196,78,.4))}
+.br-champ .ctitle{font-family:'Rubik';font-weight:700;font-size:.7rem;color:var(--gold);text-align:center;letter-spacing:1px}
+.br-champ .cteam{display:flex;align-items:center;gap:7px;background:linear-gradient(180deg,rgba(243,196,78,.16),rgba(243,196,78,.05));border:1px solid rgba(243,196,78,.4);border-radius:10px;padding:8px 12px;font-weight:800;color:var(--gold);font-size:.92rem;white-space:nowrap}
+.br-champ .cteam.tbd{color:var(--muted);font-weight:600;border-color:var(--line);background:var(--panel)}
+@media(max-width:640px){.br-round{min-width:150px}.br-row{font-size:.72rem;padding:5px 6px}}
 </style>
 </head>
 <body>
@@ -293,6 +325,7 @@ footer{text-align:center;color:var(--muted);font-size:.7rem;padding:20px;line-he
   <button class="tab" data-t="results" role="tab">📋 آخر النتائج</button>
   <button class="tab" data-t="groups" role="tab">📊 المجموعات</button>
   <button class="tab" data-t="knockout" role="tab">🏆 المتأهلون</button>
+  <button class="tab" data-t="bracket" role="tab">🏟️ المشجرة</button>
   <button class="tab" data-t="map" role="tab">🗺️ الخريطة</button>
   <button class="tab" data-t="channels" role="tab">📺 القنوات</button>
   <button class="tab" data-t="info" role="tab">ℹ️ معلومات</button>
@@ -376,6 +409,13 @@ footer{text-align:center;color:var(--muted);font-size:.7rem;padding:20px;line-he
     <div class="sec-note" style="margin-top:0">أفضل 8 منتخبات في المركز الثالث تتأهل أيضًا. الترتيب الحالي:</div>
     <div id="thirdsTable"></div>
   </div>
+</section>
+
+<!-- ========== المشجرة (Bracket) ========== -->
+<section id="sec-bracket">
+  <div class="sec-title">🏟️ مشجرة الأدوار الإقصائية</div>
+  <div class="sec-note">تتحدّث تلقائيًا مع كل نتيجة: دور الـ 32 ← دور الـ 16 ← ربع النهائي ← نصف النهائي ← النهائي. الفائز ينتقل للدور التالي تلقائيًا.</div>
+  <div class="br-scroll"><div class="bracket" id="bracketWrap"></div></div>
 </section>
 
 <!-- ========== الخريطة ========== -->
@@ -900,6 +940,97 @@ function renderKnockout(){
     <div class="sec-note" style="margin-top:8px">الصفوف الخضراء = أفضل 8 مراكز ثالثة (مؤهلة حاليًا). يتغيّر مع كل نتيجة.</div>`;
 }
 
+
+/* =================== المشجرة (Bracket) =================== */
+const KO_STAGES = [
+  {key:"LAST_32",  ar:"دور الـ 32"},
+  {key:"LAST_16",  ar:"دور الـ 16"},
+  {key:"QUARTER_FINALS", ar:"ربع النهائي"},
+  {key:"SEMI_FINALS", ar:"نصف النهائي"},
+  {key:"FINAL", ar:"النهائي"}
+];
+// فائز المباراة (يشمل ركلات الترجيح)
+function brWinner(m){
+  if(!Number.isInteger(m.hs)||!Number.isInteger(m.as)) return null;
+  if(m.hs>m.as) return "h";
+  if(m.as>m.hs) return "a";
+  if(Number.isInteger(m.phs)&&Number.isInteger(m.pas)){
+    if(m.phs>m.pas) return "h";
+    if(m.pas>m.phs) return "a";
+  }
+  return null;
+}
+function brSideRow(code, score, isWin, isLose){
+  if(!code){
+    return '<div class="br-row"><span class="fl">—</span><span class="nm tbd">بانتظار التأهّل</span><span class="sc"></span></div>';
+  }
+  const cls=(isWin?"win ":"")+(isLose?"lose ":"")+(code==="KSA"?"ksa":"");
+  const fl=T[code]?T[code].f:"🏳️";
+  const nm=T[code]?T[code].n:code;
+  return '<div class="br-row '+cls+'"><span class="fl">'+fl+'</span><span class="nm">'+nm+'</span><span class="sc">'+(Number.isInteger(score)?score:"")+'</span></div>';
+}
+function fmtDateShort(d){ return d.getDate()+" "+MONTHS[d.getMonth()]; }
+function brMatchCard(m){
+  const w=brWinner(m);
+  const isLive=(m.status==="IN_PLAY"||m.status==="PAUSED");
+  const ksaHere=(m.h==="KSA"||m.a==="KSA");
+  const hWin=w==="h", aWin=w==="a";
+  const top=brSideRow(m.h,m.hs,hWin,w&&!hWin);
+  const bot=brSideRow(m.a,m.as,aWin,w&&!aWin);
+  let pen="";
+  if(Number.isInteger(m.phs)&&Number.isInteger(m.pas)){
+    pen='<div class="br-pen">ركلات الترجيح '+m.phs+'–'+m.pas+'</div>';
+  }
+  let when="";
+  if(isLive){
+    const lbl = Number.isInteger(m.min)? (m.min+"′") : "مباشر";
+    when='<div class="br-when livew">🔴 '+lbl+'</div>';
+  }else if(m.status==="FINISHED"){
+    when='<div class="br-when">انتهت</div>';
+  }else if(m.utc){
+    const d=new Date(new Date(m.utc).getTime()+ (3*60+new Date().getTimezoneOffset())*60000);
+    const t=fmtTime(d), ds=fmtDateShort(d);
+    when='<div class="br-when">'+ds+' · '+t.t+' '+t.ap+'</div>';
+  }
+  return '<div class="br-match '+(isLive?'live':'')+' '+(ksaHere?'ksa':'')+'">'+top+bot+pen+when+'</div>';
+}
+function renderBracket(){
+  const wrap=document.getElementById("bracketWrap");
+  if(!wrap) return;
+  const byStage={};
+  KO_STAGES.forEach(s=>byStage[s.key]=[]);
+  (KO_RAW||[]).forEach(m=>{ if(byStage[m.stage]) byStage[m.stage].push(m); });
+  Object.values(byStage).forEach(arr=>arr.sort((a,b)=>new Date(a.utc)-new Date(b.utc)));
+
+  const total=Object.values(byStage).reduce((n,a)=>n+a.length,0);
+  if(!total){
+    wrap.innerHTML='<div class="sec-note" style="margin:0;padding:20px;text-align:center">ستظهر المشجرة تلقائيًا عند بدء الأدوار الإقصائية (28 يونيو). جارٍ التحديث…</div>';
+    return;
+  }
+
+  let cols="";
+  KO_STAGES.forEach(s=>{
+    const arr=byStage[s.key];
+    const isFinal=s.key==="FINAL";
+    const cards = arr.length
+      ? arr.map(brMatchCard).join("")
+      : '<div class="br-match"><div class="br-row"><span class="fl">—</span><span class="nm tbd">لم تتحدد بعد</span></div></div>';
+    cols+='<div class="br-round '+(isFinal?'final-col':'')+'"><div class="br-rtitle">'+s.ar+'</div>'+cards+'</div>';
+  });
+
+  const finalM=(byStage["FINAL"]||[])[0];
+  let champCode=null;
+  if(finalM){ const w=brWinner(finalM); if(w) champCode=(w==="h"?finalM.h:finalM.a); }
+  const champTeam = champCode ? ('<span class="fl">'+T[champCode].f+'</span> '+T[champCode].n) : "؟";
+  const champ='<div class="br-round final-col"><div class="br-champ">'+
+     '<div class="cup">🏆</div>'+
+     '<div class="ctitle">بطل العالم</div>'+
+     '<div class="cteam '+(champCode?'':'tbd')+'">'+champTeam+'</div>'+
+   '</div></div>';
+
+  wrap.innerHTML=cols+champ;
+}
+
 /* =================== الخريطة =================== */
 function px(lon){return (lon+128)*10.55+12;}
 function py(lat){return (51.5-lat)*13.1+12;}
@@ -994,6 +1125,7 @@ function applyResults(results){
 
 // المصدر 1: TheSportsDB (مجاني، يعمل في أي متصفح) — يجلب مباريات اليوم
 // المصدر الرسمي: football-data.org عبر Cloudflare Worker (نتائج حية دقيقة لكل زائر)
+let KO_RAW = [];
 const WORKER_URL = "https://ancient-hill-ff13.mohammed-almutlaq-1983-459.workers.dev/";
 // مطابقة رموز المصدر (TLA) مع رموز التطبيق عند اختلافها
 const TLA_MAP = { URY:"URU" };  // أوروغواي
@@ -1018,6 +1150,24 @@ async function fetchWorker(){
         liveMap[[lh,la].sort().join("-")] = { elapsed:L.elapsed, short:L.short };
       });
     }
+
+    // خزّن مباريات الأدوار الإقصائية الخام للمشجرة (تتحدّث تلقائيًا)
+    KO_RAW = j.matches.filter(m=>m.stage && m.stage!=="GROUP_STAGE").map(m=>{
+      const lv = (m.status==="IN_PLAY"||m.status==="PAUSED") ? liveMap[[mapTla(m.homeTeam&&m.homeTeam.tla),mapTla(m.awayTeam&&m.awayTeam.tla)].sort().join("-")] : null;
+      return {
+        stage:m.stage,
+        utc:m.utcDate,
+        status:m.status,
+        h:mapTla(m.homeTeam&&m.homeTeam.tla),
+        a:mapTla(m.awayTeam&&m.awayTeam.tla),
+        hs:m.score&&m.score.fullTime?m.score.fullTime.home:null,
+        as:m.score&&m.score.fullTime?m.score.fullTime.away:null,
+        phs:m.score&&m.score.penalties?m.score.penalties.home:null,
+        pas:m.score&&m.score.penalties?m.score.penalties.away:null,
+        min:lv?lv.elapsed:null, half:lv?lv.short:null
+      };
+    });
+    if(typeof renderBracket==="function") renderBracket();
 
     const out=[];
     j.matches.forEach(m=>{
@@ -1177,7 +1327,7 @@ async function loadVisitors(){
 }
 
 /* init */
-renderHero();renderMatches();renderResults();renderGroups();renderKnockout();renderToday();renderMap();
+renderHero();renderMatches();renderResults();renderGroups();renderKnockout();renderToday();renderMap();renderBracket();
 setInterval(renderHero,30000);
 setInterval(renderToday,30000);       // تحديث تبويب اليوم (الحالة + العدّاد)
 setInterval(tickClock,1000);          // ساعة "آخر تحديث" الحية
