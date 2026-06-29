@@ -300,6 +300,21 @@ footer{text-align:center;color:var(--muted);font-size:.7rem;padding:20px;line-he
 .br-champ .cteam{display:flex;align-items:center;gap:7px;background:linear-gradient(180deg,rgba(243,196,78,.16),rgba(243,196,78,.05));border:1px solid rgba(243,196,78,.4);border-radius:10px;padding:8px 12px;font-weight:800;color:var(--gold);font-size:.92rem;white-space:nowrap}
 .br-champ .cteam.tbd{color:var(--muted);font-weight:600;border-color:var(--line);background:var(--panel)}
 @media(max-width:640px){.br-round{min-width:150px}.br-row{font-size:.72rem;padding:5px 6px}}
+/* ===== تحسينات المشجرة الاحترافية ===== */
+.br-scroll{padding-top:2px}
+.br-round{position:relative;min-width:184px}
+.br-round:not(:first-child)::before{content:"";position:absolute;top:42px;bottom:14px;right:0;width:1px;background:linear-gradient(180deg,transparent,var(--line) 12%,var(--line) 88%,transparent)}
+.br-rtitle{position:sticky;top:0;z-index:2;background:linear-gradient(180deg,rgba(243,196,78,.16),rgba(243,196,78,.05));border:1px solid rgba(243,196,78,.3);letter-spacing:.04em;box-shadow:0 4px 12px -8px rgba(243,196,78,.4)}
+.br-match{position:relative;transition:transform .15s,box-shadow .15s}
+.br-match:hover{transform:translateY(-1px);border-color:#2C5740}
+.br-mno{position:absolute;top:-7px;right:8px;z-index:1;font-family:'Rubik';font-weight:700;font-size:.54rem;color:var(--muted);background:var(--bg2);border:1px solid var(--line);border-radius:999px;padding:0 6px;line-height:1.5}
+.br-match.live .br-mno{color:#FF8A95;border-color:rgba(255,75,92,.5)}
+.br-row{padding:7px 9px}
+.br-row.win{background:linear-gradient(90deg,rgba(243,196,78,.12),transparent)}
+.br-round.final-col .br-champ{padding-top:10px}
+.br-champ .cup{animation:cupfloat 3s ease-in-out infinite}
+@keyframes cupfloat{0%,100%{transform:translateY(0)}50%{transform:translateY(-5px)}}
+@media(max-width:640px){.br-round{min-width:158px}.br-mno{font-size:.5rem}}
 </style>
 </head>
 <body>
@@ -320,12 +335,12 @@ footer{text-align:center;color:var(--muted);font-size:.7rem;padding:20px;line-he
 </div>
 
 <nav><div class="tabs" role="tablist">
-  <button class="tab on" data-t="today" role="tab">⚡ اليوم</button>
+  <button class="tab on" data-t="bracket" role="tab">🏟️ المشجرة</button>
+  <button class="tab" data-t="today" role="tab">⚡ اليوم</button>
   <button class="tab" data-t="matches" role="tab">⚽ المباريات</button>
   <button class="tab" data-t="results" role="tab">📋 آخر النتائج</button>
   <button class="tab" data-t="groups" role="tab">📊 المجموعات</button>
   <button class="tab" data-t="knockout" role="tab">🏆 المتأهلون</button>
-  <button class="tab" data-t="bracket" role="tab">🏟️ المشجرة</button>
   <button class="tab" data-t="map" role="tab">🗺️ الخريطة</button>
   <button class="tab" data-t="channels" role="tab">📺 القنوات</button>
   <button class="tab" data-t="info" role="tab">ℹ️ معلومات</button>
@@ -334,7 +349,7 @@ footer{text-align:center;color:var(--muted);font-size:.7rem;padding:20px;line-he
 <main>
 
 <!-- ========== مباريات اليوم ========== -->
-<section id="sec-today" class="on">
+<section id="sec-today">
   <div class="update-bar">
     <div class="live-status">
       <span class="live-pill" id="livePill"><span class="dot"></span> مباشر تلقائي</span>
@@ -412,9 +427,9 @@ footer{text-align:center;color:var(--muted);font-size:.7rem;padding:20px;line-he
 </section>
 
 <!-- ========== المشجرة (Bracket) ========== -->
-<section id="sec-bracket">
+<section id="sec-bracket" class="on">
   <div class="sec-title">🏟️ مشجرة الأدوار الإقصائية</div>
-  <div class="sec-note">تتحدّث تلقائيًا مع كل نتيجة: دور الـ 32 ← دور الـ 16 ← ربع النهائي ← نصف النهائي ← النهائي. الفائز ينتقل للدور التالي تلقائيًا.</div>
+  <div class="sec-note">الطريق إلى اللقب: دور الـ32 ← دور الـ16 ← ربع النهائي ← نصف النهائي ← النهائي. الفائز يتقدّم تلقائيًا مع كل نتيجة. <b style="color:var(--green)">السعودية</b> بإطار أخضر، والمباراة المباشرة بإطار أحمر نابض. <span style="color:var(--muted)">مرّر أفقيًا ←</span></div>
   <div class="br-scroll"><div class="bracket" id="bracketWrap"></div></div>
 </section>
 
@@ -621,7 +636,82 @@ let M = [
  {h:"COL",a:"POR",dt:"2026-06-28T02:30",r:3},
  {h:"COD",a:"UZB",dt:"2026-06-28T02:30",r:3},
 ];
+/* =================== الأدوار الإقصائية (المشجرة) ===================
+   مباريات دور الـ32 بفرقها الفعلية ومواعيدها (بتوقيت السعودية) وملاعبها.
+   الأدوار التالية تشير إلى "فائز المباراة رقم n" وتُحلّ تلقائيًا.
+   مصدر الجدول: المواعيد الرسمية للبطولة (محوّلة لتوقيت السعودية GMT+3). */
+const KO = [
+  // ---- دور الـ 32 (73–88) ----
+  {m:73,stage:"R32",h:"RSA",a:"CAN",dt:"2026-06-28T22:00",venue:"ملعب سوفي — لوس أنجلوس",hs:0,as:1,st:"FT"},
+  {m:76,stage:"R32",h:"BRA",a:"JPN",dt:"2026-06-29T20:00",venue:"ملعب NRG — هيوستن"},
+  {m:74,stage:"R32",h:"GER",a:"PAR",dt:"2026-06-29T23:30",venue:"ملعب جيليت — بوسطن"},
+  {m:75,stage:"R32",h:"NED",a:"MAR",dt:"2026-06-30T04:00",venue:"ملعب BBVA — مونتيري"},
+  {m:78,stage:"R32",h:"CIV",a:"NOR",dt:"2026-06-30T20:00",venue:"ملعب AT&T — أرلينغتون"},
+  {m:77,stage:"R32",h:"FRA",a:"SWE",dt:"2026-07-01T00:00",venue:"ملعب متلايف — نيويورك/نيوجيرسي"},
+  {m:79,stage:"R32",h:"MEX",a:"ECU",dt:"2026-07-01T04:00",venue:"ملعب أزتيكا — مكسيكو سيتي"},
+  {m:80,stage:"R32",h:"ENG",a:"COD",dt:"2026-07-01T19:00",venue:"مرسيدس-بنز — أتلانتا"},
+  {m:82,stage:"R32",h:"BEL",a:"SEN",dt:"2026-07-01T23:00",venue:"لومن فيلد — سياتل"},
+  {m:81,stage:"R32",h:"USA",a:"BIH",dt:"2026-07-02T03:00",venue:"ملعب ليفايز — سان فرانسيسكو"},
+  {m:84,stage:"R32",h:"ESP",a:"AUT",dt:"2026-07-02T22:00",venue:"ملعب سوفي — لوس أنجلوس"},
+  {m:83,stage:"R32",h:"POR",a:"CRO",dt:"2026-07-03T02:00",venue:"BMO فيلد — تورونتو"},
+  {m:85,stage:"R32",h:"SUI",a:"ALG",dt:"2026-07-03T06:00",venue:"BC بليس — فانكوفر"},
+  {m:88,stage:"R32",h:"AUS",a:"EGY",dt:"2026-07-03T21:00",venue:"ملعب AT&T — أرلينغتون"},
+  {m:86,stage:"R32",h:"ARG",a:"CPV",dt:"2026-07-04T01:00",venue:"هارد روك — ميامي"},
+  {m:87,stage:"R32",h:"COL",a:"GHA",dt:"2026-07-04T04:30",venue:"أروهيد — كانساس سيتي"},
+  // ---- دور الـ 16 (89–96) ----
+  {m:89,stage:"R16",h:{w:74},a:{w:77},dt:"2026-07-04T20:00",venue:"ملعب — فيلادلفيا"},
+  {m:90,stage:"R16",h:{w:73},a:{w:75},dt:"2026-07-05T00:00",venue:"ملعب — هيوستن"},
+  {m:91,stage:"R16",h:{w:76},a:{w:78},dt:"2026-07-05T04:00",venue:"ملعب — مونتيري"},
+  {m:92,stage:"R16",h:{w:79},a:{w:80},dt:"2026-07-05T20:00",venue:"ملعب — أتلانتا"},
+  {m:93,stage:"R16",h:{w:83},a:{w:84},dt:"2026-07-06T00:00",venue:"ملعب — دالاس"},
+  {m:94,stage:"R16",h:{w:81},a:{w:82},dt:"2026-07-06T04:00",venue:"ملعب — سياتل"},
+  {m:95,stage:"R16",h:{w:86},a:{w:88},dt:"2026-07-06T20:00",venue:"ملعب — لوس أنجلوس"},
+  {m:96,stage:"R16",h:{w:85},a:{w:87},dt:"2026-07-07T00:00",venue:"ملعب — فانكوفر"},
+  // ---- ربع النهائي (97–100) ----
+  {m:97,stage:"QF",h:{w:89},a:{w:90},dt:"2026-07-09T22:00",venue:"ملعب — بوسطن"},
+  {m:98,stage:"QF",h:{w:93},a:{w:94},dt:"2026-07-10T03:00",venue:"ملعب — لوس أنجلوس"},
+  {m:99,stage:"QF",h:{w:91},a:{w:92},dt:"2026-07-11T03:00",venue:"ملعب — كانساس سيتي"},
+  {m:100,stage:"QF",h:{w:95},a:{w:96},dt:"2026-07-11T22:00",venue:"ملعب — ميامي"},
+  // ---- نصف النهائي (101–102) ----
+  {m:101,stage:"SF",h:{w:97},a:{w:98},dt:"2026-07-14T22:00",venue:"ملعب — دالاس"},
+  {m:102,stage:"SF",h:{w:99},a:{w:100},dt:"2026-07-15T22:00",venue:"مرسيدس-بنز — أتلانتا"},
+  // ---- النهائي (104) ----
+  {m:104,stage:"F",h:{w:101},a:{w:102},dt:"2026-07-19T22:00",venue:"🏆 ملعب متلايف — نيويورك/نيوجيرسي"},
+];
+
+// ادمج مباريات دور الـ32 داخل قائمة المباريات (تظهر في "اليوم" و"المباريات") مع علم ko
+// ندفع نفس الكائن (بالمرجع) كي تتزامن النتائج الحية بين القائمة والمشجرة
+KO.filter(k=>k.stage==="R32").forEach(k=>{ k.ko=true; k.koLabel="دور الـ 32"; M.push(k); });
 M.forEach((m,i)=>m.id=i);
+
+/* حلّ أطراف كل مباراة إقصائية: رمز الفريق إن كان معروفًا، أو فائز مباراة سابقة */
+const KO_STAGE_AR = {R32:"دور الـ 32", R16:"دور الـ 16", QF:"ربع النهائي", SF:"نصف النهائي", F:"النهائي"};
+function koWinnerCode(k){
+  if(!k || !Number.isInteger(k.hs) || !Number.isInteger(k.as)) return null;
+  if(k.hs>k.as) return k._h;
+  if(k.as>k.hs) return k._a;
+  if(Number.isInteger(k.phs)&&Number.isInteger(k.pas)) return k.phs>k.pas?k._h:(k.pas>k.phs?k._a:null);
+  return null;
+}
+function resolveKO(){
+  const map={}; KO.forEach(k=>map[k.m]=k);
+  KO.forEach(k=>{
+    k._h = (typeof k.h==="string") ? k.h : koWinnerCode(map[k.h.w]);
+    k._a = (typeof k.a==="string") ? k.a : koWinnerCode(map[k.a.w]);
+  });
+}
+/* طبّق نتائج المصدر الحي على مباريات الأدوار التالية (دور 16 فما فوق) بمطابقة الرموز */
+function applyKOResults(results){
+  if(!Array.isArray(results)) return;
+  resolveKO();
+  results.forEach(r=>{
+    if(!Number.isInteger(r.hs)||!Number.isInteger(r.as)) return;
+    const k=KO.find(k=>k.stage!=="R32" && k._h && k._a && ((k._h===r.h&&k._a===r.a)||(k._h===r.a&&k._a===r.h)));
+    if(!k) return;
+    if(k._h===r.h){k.hs=r.hs;k.as=r.as;} else {k.hs=r.as;k.as=r.hs;}
+    k.st = r.st==="LIVE" ? "LIVE" : "FT";
+  });
+}
 
 /* المدن المضيفة: [اسم، دولة، علم، ملعب، سعة تقريبية، lon، lat، ملاحظة] */
 const CITIES = [
@@ -692,6 +782,8 @@ function chBadges(m){
   if(arab||opener) html+=` <span class="ch-free">🆓 متوقعة على beIN المفتوحة*</span>`;
   return html;
 }
+/* تسمية الدور في بطاقة المباراة: مجموعة أو دور إقصائي */
+function mLabel(m){ return m.ko ? (m.koLabel||KO_STAGE_AR[m.stage]||"دور إقصائي") : `المجموعة ${GNAMES[T[m.h].g]} (${T[m.h].g})`; }
 function renderMatches(){
   let list=[...M].sort((a,b)=>pdate(a.dt)-pdate(b.dt));
   if(FILTER==="ksa") list=list.filter(m=>m.h==="KSA"||m.a==="KSA");
@@ -701,7 +793,8 @@ function renderMatches(){
   let lastDay="", lastRound=0;
   list.forEach(m=>{
     const d=pdate(m.dt), dayKey=fmtDay(d), st=status(m), tm=fmtTime(d);
-    if(m.r!==lastRound && FILTER==="all"){ wrap.insertAdjacentHTML("beforeend",`<div class="rnd-pill">● الجولة ${["","الأولى","الثانية","الثالثة"][m.r]} — دور المجموعات</div>`); lastRound=m.r; lastDay=""; }
+    const roundKey=m.ko?"KO":m.r;
+    if(roundKey!==lastRound && FILTER==="all"){ const pill=m.ko?"● الأدوار الإقصائية":`● الجولة ${["","الأولى","الثانية","الثالثة"][m.r]} — دور المجموعات`; wrap.insertAdjacentHTML("beforeend",`<div class="rnd-pill">${pill}</div>`); lastRound=roundKey; lastDay=""; }
     if(dayKey!==lastDay){
       wrap.insertAdjacentHTML("beforeend",`<div class="day"><div class="day-h"><span class="d">${dayKey}</span><span class="hij">${hijri(d)}</span>${isToday(d)?'<span class="badge-today">اليوم</span>':""}</div><div class="day-body"></div></div>`);
       lastDay=dayKey;
@@ -715,7 +808,7 @@ function renderMatches(){
     const stLbl = st==="FT" ? `<span class="st-ft">انتهت</span>` : st==="LIVE" ? `<span class="st-live"><span class="ld"></span> ${Number.isInteger(m.min)?m.min+"′":"مباشر"}</span>` : `<span>لم تبدأ</span>`;
     target.insertAdjacentHTML("beforeend",`
      <div class="mcard ${ksa?'ksa':''} ${st==="LIVE"?'live':''}">
-       <div class="m-top"><span class="grp">المجموعة ${GNAMES[T[m.h].g]} (${T[m.h].g})</span><span class="mdate">📅 ${fmtShort(d)}</span>${stLbl}</div>
+       <div class="m-top"><span class="grp">${mLabel(m)}</span><span class="mdate">📅 ${fmtShort(d)}</span>${stLbl}</div>
        <div class="m-row">
          <div class="t"><span class="fl">${T[m.h].f}</span><span class="nm">${T[m.h].n}</span></div>
          <div class="mid">${mid}</div>
@@ -739,7 +832,7 @@ function matchCard(m){
   else mid=`<div class="time">${tm.t}</div><div class="ampm">${tm.ap} بتوقيت السعودية</div>`;
   const stLbl = st==="FT" ? `<span class="st-ft">انتهت</span>` : st==="LIVE" ? `<span class="st-live"><span class="ld"></span> ${Number.isInteger(m.min)?m.min+"′":"مباشر"}</span>` : `<span>لم تبدأ</span>`;
   return `<div class="mcard ${ksa?'ksa':''} ${st==="LIVE"?'live':''}">
-     <div class="m-top"><span class="grp">المجموعة ${GNAMES[T[m.h].g]} (${T[m.h].g})</span><span class="mdate">📅 ${fmtShort(d)}</span>${stLbl}</div>
+     <div class="m-top"><span class="grp">${mLabel(m)}</span><span class="mdate">📅 ${fmtShort(d)}</span>${stLbl}</div>
      <div class="m-row">
        <div class="t"><span class="fl">${T[m.h].f}</span><span class="nm">${T[m.h].n}</span></div>
        <div class="mid">${mid}</div>
@@ -833,7 +926,7 @@ function renderResults(){
 function standings(g){
   const teams=Object.keys(T).filter(c=>T[c].g===g).map(c=>({c,p:0,w:0,d:0,l:0,gf:0,ga:0,pts:0}));
   const idx=Object.fromEntries(teams.map(t=>[t.c,t]));
-  M.filter(m=>m.st==="FT"&&T[m.h].g===g).forEach(m=>{
+  M.filter(m=>m.st==="FT"&&!m.ko&&T[m.h].g===g).forEach(m=>{
     const H=idx[m.h],A=idx[m.a]; if(!H||!A)return;
     H.p++;A.p++;H.gf+=m.hs;H.ga+=m.as;A.gf+=m.as;A.ga+=m.hs;
     if(m.hs>m.as){H.w++;A.l++;H.pts+=3}else if(m.hs<m.as){A.w++;H.l++;A.pts+=3}else{H.d++;A.d++;H.pts++;A.pts++}
@@ -942,93 +1035,59 @@ function renderKnockout(){
 
 
 /* =================== المشجرة (Bracket) =================== */
-const KO_STAGES = [
-  {key:"LAST_32",  ar:"دور الـ 32"},
-  {key:"LAST_16",  ar:"دور الـ 16"},
-  {key:"QUARTER_FINALS", ar:"ربع النهائي"},
-  {key:"SEMI_FINALS", ar:"نصف النهائي"},
-  {key:"FINAL", ar:"النهائي"}
-];
-// فائز المباراة (يشمل ركلات الترجيح)
-function brWinner(m){
-  if(!Number.isInteger(m.hs)||!Number.isInteger(m.as)) return null;
-  if(m.hs>m.as) return "h";
-  if(m.as>m.hs) return "a";
-  if(Number.isInteger(m.phs)&&Number.isInteger(m.pas)){
-    if(m.phs>m.pas) return "h";
-    if(m.pas>m.phs) return "a";
-  }
-  return null;
+/* =================== المشجرة الاحترافية =================== */
+const KO_COLS=[["R32","دور الـ 32"],["R16","دور الـ 16"],["QF","ربع النهائي"],["SF","نصف النهائي"],["F","النهائي"]];
+// ترتيب رأسي يحاذي كل مباراة مع مغذّيَيها في الدور السابق
+const KO_ORDER={
+  R32:[74,77,73,75,76,78,79,80,83,84,81,82,86,88,85,87],
+  R16:[89,90,91,92,93,94,95,96],
+  QF:[97,99,98,100],
+  SF:[101,102],
+  F:[104]
+};
+function koStatus(k){
+  if(k.st==="FT") return "FT";
+  if(k.st==="LIVE") return "LIVE";
+  const start=pdate(k.dt), now=ksaNow();
+  if(now>=start && now<new Date(start.getTime()+170*60000)) return "LIVE"; // نافذة أطول للوقت الإضافي/الترجيح
+  return "NS";
 }
-function brSideRow(code, score, isWin, isLose){
-  if(!code){
-    return '<div class="br-row"><span class="fl">—</span><span class="nm tbd">بانتظار التأهّل</span><span class="sc"></span></div>';
-  }
-  const cls=(isWin?"win ":"")+(isLose?"lose ":"")+(code==="KSA"?"ksa":"");
-  const fl=T[code]?T[code].f:"🏳️";
-  const nm=T[code]?T[code].n:code;
-  return '<div class="br-row '+cls+'"><span class="fl">'+fl+'</span><span class="nm">'+nm+'</span><span class="sc">'+(Number.isInteger(score)?score:"")+'</span></div>';
+function koRefLabel(side){ return (side&&typeof side==="object")?("الفائز · م"+side.w):"بانتظار التأهّل"; }
+function brTeamRow(code,score,win,lose,refLabel){
+  if(!code) return '<div class="br-row"><span class="fl">—</span><span class="nm tbd">'+(refLabel||"بانتظار التأهّل")+'</span><span class="sc"></span></div>';
+  const cls=(win?"win ":"")+(lose?"lose ":"")+(code==="KSA"?"ksa":"");
+  const f=T[code]?T[code].f:"🏳️", n=T[code]?T[code].n:code;
+  return '<div class="br-row '+cls+'"><span class="fl">'+f+'</span><span class="nm">'+n+'</span><span class="sc">'+(Number.isInteger(score)?score:"")+'</span></div>';
 }
-function fmtDateShort(d){ return d.getDate()+" "+MONTHS[d.getMonth()]; }
-function brMatchCard(m){
-  const w=brWinner(m);
-  const isLive=(m.status==="IN_PLAY"||m.status==="PAUSED");
-  const ksaHere=(m.h==="KSA"||m.a==="KSA");
-  const hWin=w==="h", aWin=w==="a";
-  const top=brSideRow(m.h,m.hs,hWin,w&&!hWin);
-  const bot=brSideRow(m.a,m.as,aWin,w&&!aWin);
-  let pen="";
-  if(Number.isInteger(m.phs)&&Number.isInteger(m.pas)){
-    pen='<div class="br-pen">ركلات الترجيح '+m.phs+'–'+m.pas+'</div>';
-  }
+function brCard(k){
+  const w=koWinnerCode(k);
+  const hWin=!!w&&w===k._h, aWin=!!w&&w===k._a;
+  const live=(koStatus(k)==="LIVE")&&k.st!=="FT";
+  const ksaHere=(k._h==="KSA"||k._a==="KSA");
+  const top=brTeamRow(k._h,k.hs,hWin,!!w&&!hWin,koRefLabel(k.h));
+  const bot=brTeamRow(k._a,k.as,aWin,!!w&&!aWin,koRefLabel(k.a));
+  let pen=""; if(Number.isInteger(k.phs)&&Number.isInteger(k.pas)) pen='<div class="br-pen">ركلات الترجيح '+k.phs+'–'+k.pas+'</div>';
   let when="";
-  if(isLive){
-    const lbl = Number.isInteger(m.min)? (m.min+"′") : "مباشر";
-    when='<div class="br-when livew">🔴 '+lbl+'</div>';
-  }else if(m.status==="FINISHED"){
-    when='<div class="br-when">انتهت</div>';
-  }else if(m.utc){
-    const d=new Date(new Date(m.utc).getTime()+ (3*60+new Date().getTimezoneOffset())*60000);
-    const t=fmtTime(d), ds=fmtDateShort(d);
-    when='<div class="br-when">'+ds+' · '+t.t+' '+t.ap+'</div>';
-  }
-  return '<div class="br-match '+(isLive?'live':'')+' '+(ksaHere?'ksa':'')+'">'+top+bot+pen+when+'</div>';
+  if(live){ const lbl=Number.isInteger(k.min)?k.min+"′":"مباشر"; when='<div class="br-when livew">🔴 '+lbl+'</div>'; }
+  else if(k.st==="FT"){ when='<div class="br-when">انتهت</div>'; }
+  else { const d=pdate(k.dt),t=fmtTime(d); when='<div class="br-when">'+d.getDate()+" "+MONTHS[d.getMonth()]+" · "+t.t+" "+t.ap+'</div>'; }
+  return '<div class="br-match '+(live?"live ":"")+(ksaHere?"ksa":"")+'"><div class="br-mno">م'+k.m+'</div>'+top+bot+pen+when+'</div>';
 }
 function renderBracket(){
   const wrap=document.getElementById("bracketWrap");
   if(!wrap) return;
-  const byStage={};
-  KO_STAGES.forEach(s=>byStage[s.key]=[]);
-  (KO_RAW||[]).forEach(m=>{ if(byStage[m.stage]) byStage[m.stage].push(m); });
-  Object.values(byStage).forEach(arr=>arr.sort((a,b)=>new Date(a.utc)-new Date(b.utc)));
-
-  const total=Object.values(byStage).reduce((n,a)=>n+a.length,0);
-  if(!total){
-    wrap.innerHTML='<div class="sec-note" style="margin:0;padding:20px;text-align:center">ستظهر المشجرة تلقائيًا عند بدء الأدوار الإقصائية (28 يونيو). جارٍ التحديث…</div>';
-    return;
-  }
-
+  resolveKO();
+  const map={}; KO.forEach(k=>map[k.m]=k);
   let cols="";
-  KO_STAGES.forEach(s=>{
-    const arr=byStage[s.key];
-    const isFinal=s.key==="FINAL";
-    const cards = arr.length
-      ? arr.map(brMatchCard).join("")
-      : '<div class="br-match"><div class="br-row"><span class="fl">—</span><span class="nm tbd">لم تتحدد بعد</span></div></div>';
-    cols+='<div class="br-round '+(isFinal?'final-col':'')+'"><div class="br-rtitle">'+s.ar+'</div>'+cards+'</div>';
+  KO_COLS.forEach(function(col){
+    const key=col[0], ar=col[1];
+    const cards=KO_ORDER[key].map(function(n){ return brCard(map[n]); }).join("");
+    cols+='<div class="br-round '+(key==="F"?"final-col":"")+'"><div class="br-rtitle">'+ar+'</div>'+cards+'</div>';
   });
-
-  const finalM=(byStage["FINAL"]||[])[0];
-  let champCode=null;
-  if(finalM){ const w=brWinner(finalM); if(w) champCode=(w==="h"?finalM.h:finalM.a); }
-  const champTeam = champCode ? ('<span class="fl">'+T[champCode].f+'</span> '+T[champCode].n) : "؟";
-  const champ='<div class="br-round final-col"><div class="br-champ">'+
-     '<div class="cup">🏆</div>'+
-     '<div class="ctitle">بطل العالم</div>'+
-     '<div class="cteam '+(champCode?'':'tbd')+'">'+champTeam+'</div>'+
-   '</div></div>';
-
-  wrap.innerHTML=cols+champ;
+  const fin=map[104], champ=koWinnerCode(fin);
+  const champTeam=champ?('<span class="fl">'+T[champ].f+'</span> '+T[champ].n):"؟";
+  cols+='<div class="br-round final-col"><div class="br-champ"><div class="cup">🏆</div><div class="ctitle">بطل العالم</div><div class="cteam '+(champ?"":"tbd")+'">'+champTeam+'</div></div></div>';
+  wrap.innerHTML=cols;
 }
 
 /* =================== الخريطة =================== */
@@ -1226,12 +1285,13 @@ async function liveSync(manual){
   if(results && results.length){
     const beforeQ = qualifiedSignature();
     const {updated,live,count}=applyResults(results);
+    applyKOResults(results);
     lastSync=Date.now();
     const tm=fmtTime(ksaNow());
     let extra = live?` • ${live} مباشرة 🔴`:(updated?` • ${updated} نتيجة جديدة`:"");
     msg.dataset.base=`✅ محدّث ${tm.t} ${tm.ap} (${src}) • ${count} مباراة${extra}`;
     tickClock();
-    renderMatches();renderResults();renderGroups();renderKnockout();renderToday();renderHero();
+    renderMatches();renderResults();renderGroups();renderKnockout();renderToday();renderHero();renderBracket();
     // إن تغيّر المتأهلون، أبرز التبويب بوميض + شارة
     if(qualifiedSignature()!==beforeQ){ flashKnockoutTab(); }
     setPill(auto?"live":"off");
