@@ -248,6 +248,23 @@ tr.ksa-row{background:rgba(47,210,124,.07)}
 .qchip.q1{border-color:var(--gold)}
 .qchip.out{opacity:.6;text-decoration:line-through;text-decoration-color:var(--red)}
 .qchip.ksa{box-shadow:0 0 0 1px var(--green) inset}
+/* ===== قوائم النجوم (الهدّافون/الحرّاس) ===== */
+.stat-list{display:flex;flex-direction:column;gap:7px;margin-top:10px}
+.stat-row{display:flex;align-items:center;gap:11px;background:linear-gradient(180deg,var(--panel),var(--panel2));border:1px solid var(--line);border-radius:13px;padding:10px 13px;transition:.18s cubic-bezier(.22,.8,.3,1)}
+.stat-row:hover{border-color:#2C5740;transform:translateX(-3px)}
+.stat-row .rk{font-family:var(--nums);font-weight:800;font-size:1.05rem;color:var(--muted);min-width:24px;text-align:center}
+.stat-row.top1{border-color:rgba(243,196,78,.45);box-shadow:0 0 0 1px rgba(243,196,78,.18) inset}
+.stat-row.top1 .rk{color:var(--gold)} .stat-row.top2 .rk{color:#CFE3FF} .stat-row.top3 .rk{color:#E2A86B}
+.stat-row .fl{font-size:1.55rem;line-height:1;filter:drop-shadow(0 1px 2px rgba(0,0,0,.45))}
+.stat-row .who{flex:1;min-width:0}
+.stat-row .who .nm{font-weight:700;font-size:.96rem;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.stat-row .who .tm{font-size:.72rem;color:var(--muted);margin-top:1px}
+.stat-row .val{font-family:var(--nums);font-weight:800;font-size:1.25rem;color:var(--gold);white-space:nowrap}
+.stat-row .val .u{font-size:.64rem;color:var(--muted);font-weight:600;margin-right:3px}
+.stat-row .gk{display:flex;gap:6px;flex-shrink:0}
+.stat-badge{font-family:var(--nums);font-weight:700;font-size:.72rem;padding:3px 9px;border-radius:8px;background:var(--panel2);border:1px solid var(--line);color:var(--text);white-space:nowrap}
+.stat-badge.cs{color:var(--green);border-color:rgba(47,210,124,.4)}
+.stat-row.ksa{border-color:var(--green);box-shadow:0 0 0 1px var(--green) inset}
 .thirds-table{width:100%;border-collapse:collapse;font-size:.82rem;margin-top:8px;background:var(--panel);border:1px solid var(--line);border-radius:12px;overflow:hidden}
 .thirds-table th{color:var(--muted);font-size:.66rem;font-weight:500;padding:8px 4px}
 .thirds-table td{padding:8px 4px;text-align:center;border-top:1px solid #1B3326}
@@ -402,6 +419,7 @@ footer{text-align:center;color:var(--muted);font-size:.7rem;padding:20px;line-he
   <button class="tab" data-t="matches" role="tab">⚽ المباريات</button>
   <button class="tab" data-t="groups" role="tab">📊 المجموعات</button>
   <button class="tab" data-t="knockout" role="tab">🏆 المتأهلون</button>
+  <button class="tab" data-t="stars" role="tab">👟 النجوم</button>
   <button class="tab" data-t="map" role="tab">🗺️ الخريطة</button>
   <button class="tab" data-t="channels" role="tab">📺 القنوات</button>
   <button class="tab" data-t="info" role="tab">ℹ️ معلومات</button>
@@ -480,6 +498,23 @@ footer{text-align:center;color:var(--muted);font-size:.7rem;padding:20px;line-he
   <div class="sec-title">🏟️ مشجرة الأدوار الإقصائية</div>
   <div class="sec-note">الطريق إلى اللقب: دور الـ32 ← دور الـ16 ← ربع النهائي ← نصف النهائي ← النهائي. الفائز يتقدّم تلقائيًا مع كل نتيجة. <b style="color:var(--green)">السعودية</b> بإطار أخضر، والمباراة المباشرة بإطار أحمر نابض. <span style="color:var(--muted)">مرّر أفقيًا ←</span></div>
   <div class="br-scroll"><div class="bracket" id="bracketWrap"></div></div>
+</section>
+
+<!-- ========== النجوم: الهدّافون والحرّاس ========== -->
+<section id="sec-stars">
+  <div class="sec-title">👟 نجوم البطولة</div>
+  <div class="sec-note">سباق الحذاء الذهبي (الهدّافون) يتحدّث تلقائيًا مع كل مباراة، وأفضل الحرّاس حسب الشِّباك النظيفة.</div>
+
+  <div class="ko-block">
+    <h3 class="ko-h">🥇 الحذاء الذهبي — أفضل 10 هدّافين</h3>
+    <div id="scorersList" class="stat-list"></div>
+  </div>
+
+  <div class="ko-block">
+    <h3 class="ko-h">🧤 القفاز الذهبي — أفضل 7 حرّاس</h3>
+    <div class="sec-note" style="margin-top:0">الترتيب حسب الشِّباك النظيفة ثم الأهداف المستقبَلة.</div>
+    <div id="keepersList" class="stat-list"></div>
+  </div>
 </section>
 
 <!-- ========== الخريطة ========== -->
@@ -1049,6 +1084,54 @@ function renderKnockout(){
 }
 
 
+/* =================== الهدّافون والحرّاس =================== */
+// أفضل الهدّافين (قائمة احتياطية تظهر فورًا، وتُستبدل تلقائيًا ببيانات الـ Worker الحية)
+const SCORERS=[
+ {name:"ليونيل ميسي",code:"ARG",goals:6},
+ {name:"كيليان مبابي",code:"FRA",goals:4},
+ {name:"فينيسيوس جونيور",code:"BRA",goals:4},
+ {name:"عثمان ديمبيلي",code:"FRA",goals:4},
+ {name:"إرلينغ هالاند",code:"NOR",goals:4},
+ {name:"هاري كين",code:"ENG",goals:3},
+ {name:"إيلايجا جَست",code:"NZL",goals:3},
+ {name:"إسماعيلا سار",code:"SEN",goals:3},
+ {name:"إسماعيل صيباري",code:"MAR",goals:3},
+ {name:"جوناثان ديفيد",code:"CAN",goals:3},
+];
+// أفضل الحرّاس (سباق القفاز الذهبي) — حسب الشِّباك النظيفة ثم الأهداف المستقبَلة
+const KEEPERS=[
+ {name:"أوناي سيمون",code:"ESP",cs:3,ga:0},
+ {name:"راؤول رانخيل",code:"MEX",cs:2,ga:0},
+ {name:"أليسون بيكر",code:"BRA",cs:2,ga:1},
+ {name:"كاميلو فارغاس",code:"COL",cs:2,ga:1},
+ {name:"ديوغو كوستا",code:"POR",cs:2,ga:1},
+ {name:"إيميليانو مارتينيز",code:"ARG",cs:2,ga:1},
+ {name:"جوردان بيكفورد",code:"ENG",cs:2,ga:2},
+];
+let LIVE_SCORERS=null; // تُملأ من الـ Worker إن توفّرت
+function flagName(code){ const t=T[code]; return t?{f:t.f,n:t.n}:{f:"🏳️",n:code||"—"}; }
+function renderScorers(){
+  const el=document.getElementById("scorersList"); if(!el) return;
+  const data=(LIVE_SCORERS&&LIVE_SCORERS.length)?LIVE_SCORERS:SCORERS;
+  el.innerHTML=data.slice(0,10).map((s,i)=>{
+    const t=flagName(s.code);
+    return `<div class="stat-row top${i+1} ${s.code==='KSA'?'ksa':''}">
+      <span class="rk">${i+1}</span><span class="fl">${t.f}</span>
+      <span class="who"><div class="nm">${s.name}</div><div class="tm">${t.n}</div></span>
+      <span class="val">${s.goals}<span class="u">هدف</span></span></div>`;
+  }).join("");
+}
+function renderKeepers(){
+  const el=document.getElementById("keepersList"); if(!el) return;
+  el.innerHTML=KEEPERS.slice(0,7).map((k,i)=>{
+    const t=flagName(k.code);
+    return `<div class="stat-row top${i+1} ${k.code==='KSA'?'ksa':''}">
+      <span class="rk">${i+1}</span><span class="fl">${t.f}</span>
+      <span class="who"><div class="nm">${k.name}</div><div class="tm">${t.n}</div></span>
+      <span class="gk"><span class="stat-badge cs">${k.cs} نظيفة</span><span class="stat-badge">${k.ga} مستقبَل</span></span></div>`;
+  }).join("");
+}
+
 /* =================== المشجرة (Bracket) =================== */
 /* =================== المشجرة الاحترافية =================== */
 const KO_COLS=[["R32","دور الـ 32"],["R16","دور الـ 16"],["QF","ربع النهائي"],["SF","نصف النهائي"],["F","النهائي"]];
@@ -1216,6 +1299,14 @@ async function fetchWorker(fresh){
     const j=await r.json();
     if(!j || !Array.isArray(j.matches)) return null;
 
+    // هدّافو البطولة (يتحدّثون تلقائيًا) — نطابق اسم المنتخب برمزه للعلم
+    if(Array.isArray(j.scorers) && j.scorers.length){
+      LIVE_SCORERS = j.scorers
+        .map(x=>({name:x.n, code:codeFromName(x.t)||null, goals:x.g}))
+        .filter(x=>x.code && Number.isInteger(x.goals))
+        .sort((p,q)=>q.goals-p.goals);
+    }
+
     // بيانات API-Football الحية (الدقيقة + الشوط) — نفهرسها برمز كل فريق
     // short: 1H أول، HT استراحة، 2H ثانٍ، ET إضافي، P ركلات
     const liveMap = {};
@@ -1306,7 +1397,7 @@ async function liveSync(manual){
     let extra = live?` • ${live} مباشرة 🔴`:(updated?` • ${updated} نتيجة جديدة`:"");
     msg.dataset.base=`✅ محدّث ${tm.t} ${tm.ap} (${src}) • ${count} مباراة${extra}`;
     tickClock();
-    renderMatches();renderResults();renderGroups();renderKnockout();renderToday();renderHero();renderBracket();
+    renderMatches();renderResults();renderGroups();renderKnockout();renderToday();renderHero();renderBracket();renderScorers();
     // إن تغيّر المتأهلون، أبرز التبويب بوميض + شارة
     if(qualifiedSignature()!==beforeQ){ flashKnockoutTab(); }
     setPill(auto?"live":"off");
@@ -1407,7 +1498,7 @@ async function loadVisitors(){
 }
 
 /* init */
-renderHero();renderMatches();renderResults();renderGroups();renderKnockout();renderToday();renderMap();renderBracket();
+renderHero();renderMatches();renderResults();renderGroups();renderKnockout();renderToday();renderMap();renderBracket();renderScorers();renderKeepers();
 setInterval(renderHero,30000);
 setInterval(renderToday,30000);       // تحديث تبويب اليوم (الحالة + العدّاد)
 setInterval(tickClock,1000);          // ساعة "آخر تحديث" الحية
