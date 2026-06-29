@@ -20,40 +20,68 @@
 <meta name="twitter:description" content="جدول المباريات، المجموعات، النتائج الحية، والقنوات الناقلة بتوقيت السعودية 🇸🇦">
 <meta name="twitter:image" content="https://MOTL1234.github.io/worldcup2026/og-image.png">
 <link rel="preconnect" href="https://fonts.googleapis.com">
-<link href="https://fonts.googleapis.com/css2?family=Rubik:wght@400;500;600;700;800;900&family=Readex+Pro:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Rubik:wght@400;500;600;700;800;900&family=Readex+Pro:wght@300;400;500;600;700&family=Tajawal:wght@400;500;700;800;900&family=Changa:wght@500;600;700;800&family=IBM+Plex+Sans+Arabic:wght@400;500;600;700&display=swap" rel="stylesheet">
 <style>
 :root{
-  --bg:#07140E; --bg2:#0A1C13; --panel:#102619; --panel2:#0C1F14; --line:#1E3D2A;
+  --bg:#06120C; --bg2:#0A1C13; --panel:#102619; --panel2:#0C1F14; --line:#1E3D2A;
   --text:#ECF4ED; --muted:#84A292;
-  --gold:#F3C44E; --green:#2FD27C; --red:#FF4B5C; --blue:#54B8FF;
+  --gold:#F3C44E; --gold-deep:#B8860B; --gold-bright:#FFE08A; --green:#2FD27C; --red:#FF4B5C; --blue:#54B8FF;
   --ring:rgba(47,210,124,.55);
+  /* الزجاج المصقول (Glassmorphism 2.0) */
+  --glass:rgba(12,28,19,.55); --glass-strong:rgba(10,24,16,.72); --glass-bd:rgba(255,255,255,.10);
+  --disp:'Tajawal','Readex Pro',sans-serif;          /* عناوين عصرية فاخرة نظيفة */
+  --ui:'Readex Pro',system-ui,sans-serif;            /* واجهة */
+  --nums:'IBM Plex Sans Arabic','Rubik',sans-serif;  /* أرقام بمحاذاة جدولية */
 }
 *{margin:0;padding:0;box-sizing:border-box}
 html{scroll-behavior:smooth}
 body{
   background:var(--bg);color:var(--text);
-  font-family:'Readex Pro',system-ui,sans-serif;min-height:100vh;font-weight:400;
+  font-family:var(--ui);min-height:100vh;font-weight:400;position:relative;
   background-image:
-    radial-gradient(900px 420px at 50% -160px, rgba(47,210,124,.16) 0%, transparent 65%),
-    radial-gradient(700px 300px at 50% -120px, rgba(243,196,78,.10) 0%, transparent 60%),
-    repeating-linear-gradient(180deg, rgba(255,255,255,.014) 0px, rgba(255,255,255,.014) 46px, transparent 46px, transparent 92px),
-    linear-gradient(180deg,#08160F 0%,#06110B 100%);
+    radial-gradient(820px 360px at 18% -8%, rgba(243,196,78,.16) 0%, rgba(243,196,78,0) 62%),
+    radial-gradient(820px 360px at 82% -8%, rgba(47,210,124,.20) 0%, rgba(47,210,124,0) 62%),
+    radial-gradient(900px 520px at 50% -14%, rgba(47,210,124,.12) 0%, rgba(47,210,124,0) 60%),
+    radial-gradient(600px 600px at 50% 118%, rgba(0,159,63,.12) 0%, rgba(0,159,63,0) 55%),
+    repeating-linear-gradient(180deg, rgba(255,255,255,.012) 0px, rgba(255,255,255,.012) 46px, rgba(255,255,255,0) 46px, rgba(255,255,255,0) 92px),
+    linear-gradient(180deg,#08160F 0%,#050D08 100%);
   background-attachment:fixed;
 }
-.num,.score,.clock{font-family:'Rubik',sans-serif;font-variant-numeric:tabular-nums;font-feature-settings:"tnum"}
+/* وميض الكشّافات: انجراف بطيء يمنح إحساسًا حيًّا للخلفية */
+body::before{
+  content:"";position:fixed;inset:-20% -10% auto -10%;height:70%;z-index:-2;pointer-events:none;
+  background:
+    radial-gradient(600px 280px at 25% 0%, rgba(243,196,78,.10), rgba(243,196,78,0) 60%),
+    radial-gradient(600px 280px at 75% 0%, rgba(47,210,124,.12), rgba(47,210,124,0) 60%);
+  animation:floodDrift 16s ease-in-out infinite alternate;
+}
+@keyframes floodDrift{0%{transform:translateX(-2%) translateY(0) scale(1)}100%{transform:translateX(2%) translateY(1.5%) scale(1.05)}}
+/* حُبيبات فيلمية خفيفة تكسر تدرّج الألوان وتمنح ملمسًا سينمائيًا */
+body::after{
+  content:"";position:fixed;inset:0;z-index:-1;pointer-events:none;opacity:.045;mix-blend-mode:overlay;
+  background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='160' height='160'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='2' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+}
+.num,.score,.clock{font-family:var(--nums);font-variant-numeric:tabular-nums;font-feature-settings:"tnum"}
+/* احترام تفضيل تقليل الحركة (وصول) */
+@media (prefers-reduced-motion: reduce){
+  *{animation-duration:.01ms !important;animation-iteration-count:1 !important;transition-duration:.01ms !important;scroll-behavior:auto !important}
+  body::before{animation:none}
+}
 
 /* ===== Header ===== */
 header{padding:28px 16px 8px;text-align:center;position:relative}
 header:after{content:"";position:absolute;left:50%;bottom:0;transform:translateX(-50%);width:64px;height:3px;border-radius:3px;background:linear-gradient(90deg,transparent,var(--gold),transparent)}
-.eyebrow{color:var(--gold);font-family:'Rubik';font-weight:600;letter-spacing:.22em;font-size:.72rem;text-transform:uppercase}
-h1{font-family:'Rubik';font-weight:800;font-size:clamp(1.7rem,5.5vw,2.7rem);line-height:1.18;margin-top:6px;letter-spacing:-.01em}
-h1 .gold{color:var(--gold)}
+.eyebrow{color:var(--gold);font-family:'Rubik';font-weight:600;letter-spacing:.28em;font-size:.72rem;text-transform:uppercase}
+h1{font-family:var(--disp);font-weight:800;font-size:clamp(1.9rem,6vw,3rem);line-height:1.25;margin-top:8px;letter-spacing:0}
+h1 .gold{background:linear-gradient(110deg,var(--gold-deep),var(--gold),var(--gold-bright),var(--gold),var(--gold-deep));background-size:220% auto;-webkit-background-clip:text;background-clip:text;-webkit-text-fill-color:transparent;color:transparent;animation:goldShine 5s linear infinite}
+@keyframes goldShine{to{background-position:220% center}}
 .sub{color:var(--muted);font-size:.86rem;margin-top:7px;font-weight:300}
 .host-flags{font-size:1.25rem;letter-spacing:.25em;margin-top:10px}
 
 /* ===== Hero scoreboard ===== */
 .hero{max-width:760px;margin:18px auto 0;padding:0 14px}
-.board{background:linear-gradient(160deg,#123020,#0B1C13);border:1px solid var(--line);border-radius:20px;padding:18px 20px;
+.board{background:linear-gradient(160deg,rgba(18,48,32,.62),rgba(11,28,19,.62));backdrop-filter:blur(18px) saturate(150%);-webkit-backdrop-filter:blur(18px) saturate(150%);border:1px solid var(--glass-bd);border-radius:22px;padding:18px 20px;
   box-shadow:0 24px 60px -28px rgba(0,0,0,.85), 0 0 0 1px rgba(47,210,124,.06) inset}
 .board .label{display:flex;justify-content:space-between;align-items:center;color:var(--muted);font-size:.76rem}
 .board .label .live-dot{color:var(--green);font-weight:600}
@@ -72,13 +100,15 @@ h1 .gold{color:var(--gold)}
 
 /* ===== Tabs ===== */
 nav{margin-top:18px}
-nav{position:sticky;top:0;z-index:30;background:rgba(7,20,14,.82);backdrop-filter:blur(12px);border-bottom:1px solid var(--line)}
+nav{position:sticky;top:0;z-index:30;background:rgba(6,18,12,.72);backdrop-filter:blur(20px) saturate(150%);-webkit-backdrop-filter:blur(20px) saturate(150%);border-bottom:1px solid var(--glass-bd)}
 .tabs{display:flex;gap:5px;max-width:760px;margin:0 auto;padding:9px 10px;overflow-x:auto;scrollbar-width:none}
 .tabs::-webkit-scrollbar{display:none}
 .tab{flex:0 0 auto;background:rgba(255,255,255,.02);border:1px solid transparent;color:var(--muted);font-family:'Rubik';font-weight:600;
   font-size:.84rem;padding:9px 15px;border-radius:11px;cursor:pointer;transition:.18s;white-space:nowrap}
-.tab:hover{color:var(--text);background:rgba(255,255,255,.05)}
-.tab.on{background:linear-gradient(180deg,rgba(47,210,124,.18),rgba(47,210,124,.06));border-color:var(--green);color:#BFF5D8;box-shadow:0 4px 16px -8px rgba(47,210,124,.6)}
+.tab:hover{color:var(--text);background:rgba(255,255,255,.06);transform:translateY(-1px)}
+.tab{transition:.2s cubic-bezier(.22,.8,.3,1)}
+.tab.on{background:linear-gradient(180deg,rgba(47,210,124,.20),rgba(47,210,124,.05));border-color:var(--green);color:#CFF8E0;box-shadow:0 6px 20px -8px rgba(47,210,124,.7),0 0 0 1px rgba(47,210,124,.15) inset}
+.tab.on::after{content:"";position:absolute;bottom:-9px;left:50%;transform:translateX(-50%);width:26px;height:3px;border-radius:3px;background:linear-gradient(90deg,transparent,var(--gold),transparent);box-shadow:0 0 8px var(--gold)}
 .tab:focus-visible{outline:2px solid var(--green);outline-offset:2px}
 .tab{position:relative}
 .tab-dot{position:absolute;top:3px;left:7px;width:8px;height:8px;background:var(--red);border-radius:50%;box-shadow:0 0 0 2px var(--bg);animation:livedot 1.3s infinite}
@@ -89,9 +119,19 @@ nav{position:sticky;top:0;z-index:30;background:rgba(7,20,14,.82);backdrop-filte
 
 main{max-width:760px;margin:0 auto;padding:18px 14px 80px}
 section{display:none}
-section.on{display:block;animation:fade .35s ease}
-@keyframes fade{from{opacity:0;transform:translateY(6px)}to{opacity:1;transform:none}}
-.sec-title{font-family:'Rubik';font-weight:700;font-size:1.25rem;margin:6px 0 4px}
+section.on{display:block;animation:fade .42s cubic-bezier(.22,.8,.3,1)}
+@keyframes fade{from{opacity:0;transform:translateY(10px) scale(.995)}to{opacity:1;transform:none}}
+/* ظهور تدريجي متدرّج للبطاقات أثناء التمرير — مدعوم أصلاً في المتصفحات الحديثة، ويُتجاهل بأمان في غيرها */
+@supports (animation-timeline: view()){
+  @media (prefers-reduced-motion: no-preference){
+    .mcard,.gcard,.br-match,.qchip{animation:riseIn linear both;animation-timeline:view();animation-range:entry 0% entry 42%}
+  }
+}
+@keyframes riseIn{from{opacity:0;transform:translateY(22px)}to{opacity:1;transform:none}}
+/* نبضة خفيفة عند تحديث نتيجة مباشرة */
+@keyframes scorePop{0%{transform:scale(1)}35%{transform:scale(1.18)}100%{transform:scale(1)}}
+.livescore{animation:scorePop .5s ease}
+.sec-title{font-family:var(--disp);font-weight:700;font-size:1.4rem;margin:6px 0 4px;letter-spacing:0}
 .sec-note{color:var(--muted);font-size:.8rem;margin-bottom:14px;line-height:1.7}
 .today-head{display:flex;align-items:center;justify-content:space-between;gap:10px;margin:6px 0 14px;flex-wrap:wrap}
 .today-date{background:var(--panel2);border:1px solid var(--line);border-radius:999px;padding:5px 14px;font-size:.8rem;color:var(--gold);font-weight:600;font-family:'Rubik'}
@@ -109,7 +149,7 @@ section.on{display:block;animation:fade .35s ease}
 .md-sub{color:var(--muted);font-size:.74rem;margin-bottom:10px;line-height:1.6}
 
 /* ===== Update bar ===== */
-.update-bar{display:flex;align-items:center;gap:10px;justify-content:space-between;background:var(--panel2);border:1px solid var(--line);border-radius:12px;padding:10px 12px;margin-bottom:16px;flex-wrap:wrap}
+.update-bar{display:flex;align-items:center;gap:10px;justify-content:space-between;background:var(--glass);backdrop-filter:blur(14px) saturate(140%);-webkit-backdrop-filter:blur(14px) saturate(140%);border:1px solid var(--glass-bd);border-radius:14px;padding:10px 12px;margin-bottom:16px;flex-wrap:wrap}
 .update-bar .msg{color:var(--muted);font-size:.76rem;line-height:1.5}
 .live-status{display:flex;align-items:center;gap:10px;flex:1;min-width:200px}
 .live-pill{display:inline-flex;align-items:center;gap:6px;background:rgba(255,77,94,.12);border:1px solid rgba(255,77,94,.5);color:#FF8A95;font-size:.74rem;font-weight:700;padding:4px 10px;border-radius:999px;white-space:nowrap}
@@ -276,7 +316,7 @@ footer{text-align:center;color:var(--muted);font-size:.7rem;padding:20px;line-he
 .bracket{display:flex;gap:0;align-items:stretch;min-width:max-content;direction:rtl}
 .br-round{display:flex;flex-direction:column;justify-content:space-around;gap:14px;padding:0 9px;min-width:172px}
 .br-round.final-col{justify-content:center}
-.br-rtitle{position:sticky;top:0;text-align:center;font-family:'Rubik';font-weight:700;font-size:.72rem;color:var(--gold);background:rgba(243,196,78,.08);border:1px solid rgba(243,196,78,.22);padding:5px 4px;border-radius:8px;margin-bottom:6px;white-space:nowrap}
+.br-rtitle{position:sticky;top:0;text-align:center;font-family:var(--disp);font-weight:700;font-size:.82rem;color:var(--gold);background:rgba(243,196,78,.08);border:1px solid rgba(243,196,78,.22);padding:6px 4px;border-radius:8px;margin-bottom:6px;white-space:nowrap}
 .br-match{position:relative;background:linear-gradient(180deg,var(--panel),var(--panel2));border:1px solid var(--line);border-radius:10px;overflow:hidden;box-shadow:0 4px 14px -8px rgba(0,0,0,.5)}
 .br-match.live{border-color:var(--red);box-shadow:0 0 0 1px rgba(255,75,92,.45) inset,0 0 20px -8px rgba(255,75,92,.6);animation:liveglow 2.2s ease-in-out infinite}
 .br-row{display:flex;align-items:center;gap:6px;padding:6px 8px;font-size:.78rem;position:relative}
@@ -315,6 +355,27 @@ footer{text-align:center;color:var(--muted);font-size:.7rem;padding:20px;line-he
 .br-champ .cup{animation:cupfloat 3s ease-in-out infinite}
 @keyframes cupfloat{0%,100%{transform:translateY(0)}50%{transform:translateY(-5px)}}
 @media(max-width:640px){.br-round{min-width:158px}.br-mno{font-size:.5rem}}
+/* ===== حركة الانتقال بين الأقسام (View Transitions) ===== */
+@media (prefers-reduced-motion: no-preference){
+  ::view-transition-old(root){animation:vtOut .28s cubic-bezier(.4,0,1,1) both}
+  ::view-transition-new(root){animation:vtIn .34s cubic-bezier(.16,1,.3,1) both}
+}
+@keyframes vtOut{to{opacity:0;transform:translateY(-8px) scale(.99)}}
+@keyframes vtIn{from{opacity:0;transform:translateY(12px) scale(.99)}to{opacity:1;transform:none}}
+
+/* ===== توهّج كأس البطل ===== */
+.br-champ .cup{filter:drop-shadow(0 0 14px rgba(243,196,78,.55)) drop-shadow(0 4px 12px rgba(243,196,78,.35))}
+.br-champ .cteam:not(.tbd){box-shadow:0 0 0 1px rgba(243,196,78,.4),0 0 26px -6px rgba(243,196,78,.6);animation:champGlow 2.6s ease-in-out infinite}
+@keyframes champGlow{0%,100%{box-shadow:0 0 0 1px rgba(243,196,78,.4),0 0 22px -8px rgba(243,196,78,.45)}50%{box-shadow:0 0 0 1px rgba(243,196,78,.7),0 0 34px -4px rgba(243,196,78,.8)}}
+
+/* ===== إبراز مسار الفريق في المشجرة عند التمرير/اللمس ===== */
+.bracket.has-hl .br-match{transition:opacity .2s,filter .2s}
+.bracket.has-hl .br-match:not(.hl){opacity:.32;filter:saturate(.55)}
+.bracket .br-match.hl{border-color:rgba(243,196,78,.6);box-shadow:0 0 0 1px rgba(243,196,78,.35) inset,0 6px 22px -10px rgba(243,196,78,.5)}
+
+/* لمسة ضغط للأزرار والبطاقات (تفاعل دقيق) */
+.btn-gold:active{transform:translateY(1px) scale(.98)}
+.mcard:active{transform:scale(.995)}
 </style>
 </head>
 <body>
@@ -396,33 +457,21 @@ footer{text-align:center;color:var(--muted);font-size:.7rem;padding:20px;line-he
 
 <!-- ========== المتأهلون ========== -->
 <section id="sec-knockout">
-  <div class="sec-title">🏆 المتأهلون للأدوار الإقصائية</div>
-  <div class="sec-note">يُحتسب تلقائيًا من النتائج المؤكدة. يتأهل الأول والثاني من كل مجموعة (24 منتخبًا) + أفضل 8 منتخبات في المركز الثالث = 32 منتخبًا لدور الـ32.</div>
+  <div class="sec-title">🏆 المتأهلون لدور الـ32</div>
+  <div class="sec-note">انتهى دور المجموعات! تأهّل <b style="color:var(--green)">32 منتخبًا</b> (متصدّرو ووصفاء المجموعات الـ12 + أفضل 8 مراكز ثالثة)، وودّع البطولة <b style="color:var(--red)">16 منتخبًا</b>.</div>
 
   <div class="ko-summary" id="koSummary"></div>
 
   <div class="ko-block">
-    <h3 class="ko-h">✅ المتأهلون رسميًا</h3>
-    <div class="sec-note" style="margin-top:0">منتخبات ضمنت التأهل حسابيًا (لا يمكن أن تخرج من أفضل المراكز الثلاثة).</div>
+    <h3 class="ko-h">✅ المتأهلون لدور الـ32 (32 منتخبًا)</h3>
+    <div class="sec-note" style="margin-top:0">🥇 متصدّر المجموعة · 🥈 الوصيف · 🥉 أفضل مركز ثالث</div>
     <div class="qual-grid" id="qualifiedGrid"></div>
   </div>
 
   <div class="ko-block">
-    <h3 class="ko-h">⏳ المتصدّرون حاليًا (غير مؤكد)</h3>
-    <div class="sec-note" style="margin-top:0">في المركز الأول أو الثاني بمجموعاتهم الآن، لكن لم يضمنوا بعد.</div>
-    <div class="qual-grid" id="leadingGrid"></div>
-  </div>
-
-  <div class="ko-block">
-    <h3 class="ko-h">❌ خارج المنافسة</h3>
-    <div class="sec-note" style="margin-top:0">منتخبات ودّعت البطولة حسابيًا.</div>
+    <h3 class="ko-h">❌ ودّعوا البطولة (16 منتخبًا)</h3>
+    <div class="sec-note" style="margin-top:0">منتخبات خرجت من دور المجموعات.</div>
     <div class="qual-grid" id="outGrid"></div>
-  </div>
-
-  <div class="ko-block">
-    <h3 class="ko-h">🥉 سباق أفضل 8 مراكز ثالثة</h3>
-    <div class="sec-note" style="margin-top:0">أفضل 8 منتخبات في المركز الثالث تتأهل أيضًا. الترتيب الحالي:</div>
-    <div id="thirdsTable"></div>
   </div>
 </section>
 
@@ -969,68 +1018,34 @@ function flashKnockoutTab(){
   }
   setTimeout(()=>tab.classList.remove("tab-flash"),2500);
 }
+/* =================== المتأهلون (النتيجة الرسمية بعد انتهاء دور المجموعات) =================== */
+// تأهّل 32 منتخبًا: 12 متصدّرًا + 12 وصيفًا + أفضل 8 مراكز ثالثة.
+const Q_WIN=["MEX","SUI","BRA","USA","GER","NED","BEL","ESP","FRA","ARG","COL","ENG"]; // متصدّرو المجموعات A→L
+const Q_RU =["RSA","CAN","MAR","AUS","CIV","JPN","EGY","CPV","NOR","AUT","POR","CRO"]; // الوصفاء A→L
+const Q_3RD=["BIH","PAR","ECU","SWE","SEN","ALG","COD","GHA"];                          // أفضل 8 مراكز ثالثة
 function renderKnockout(){
-  const gt={}; GROUPS.forEach(g=>gt[g]=standings(g).map(t=>({...t,gd:t.gf-t.ga})));
+  const pos={}; Q_WIN.forEach(c=>pos[c]=1); Q_RU.forEach(c=>pos[c]=2); Q_3RD.forEach(c=>pos[c]=3);
+  const qualified=[...Q_WIN,...Q_RU,...Q_3RD];
+  const eliminated=Object.keys(T).filter(c=>!pos[c]);
+  const arabQ=qualified.filter(c=>T[c].ar);
+  const gOf=c=>T[c]?T[c].g:"";
 
-  const confirmed=[];   // ضمنوا أول مركزين حسابيًا (قاعدة متحفّظة آمنة)
-  const projected=[];   // في المركز 1 أو 2 حاليًا لكن غير مؤكد
-  const bubble=[];      // المركز الثالث (في سباق أفضل 8)
-  const eliminated=[];  // خرجوا حسابيًا (لا يمكنهم بلوغ أول مركزين، ومجموعتهم تقرّر)
+  const sum=document.getElementById("koSummary");
+  if(sum) sum.innerHTML=`
+    <div class="box q"><div class="v">32</div><div class="k">متأهل لدور الـ32</div></div>
+    <div class="box l"><div class="v">${arabQ.length}</div><div class="k">منتخب عربي متأهل</div></div>
+    <div class="box o"><div class="v">16</div><div class="k">ودّعوا البطولة</div></div>`;
 
-  GROUPS.forEach(g=>{
-    const tb=gt[g];
-    tb.forEach((t,i)=>{
-      const pos=i+1, remaining=3-t.p;
-      // كم منتخبًا يمكنه بلوغ نقاطي الحالية أو تجاوزها؟
-      const canReachMe = tb.filter((o,j)=>j!==i).filter(o=>(o.pts+(3-o.p)*3)>=t.pts).length;
+  const medal=p=>p===1?"🥇":p===2?"🥈":"🥉";
+  const chip=c=>`<span class="qchip q ${pos[c]===1?'q1':''} ${c==='KSA'?'ksa':''}"><span class="fl">${T[c].f}</span>${T[c].n} <span class="grp">${medal(pos[c])} ${gOf(c)}</span></span>`;
+  const qsorted=[...qualified].sort((a,b)=> gOf(a).localeCompare(gOf(b)) || pos[a]-pos[b]);
+  const qg=document.getElementById("qualifiedGrid");
+  if(qg) qg.innerHTML=qsorted.map(chip).join("");
 
-      if(remaining===0){
-        if(pos<=2) confirmed.push({...t,g,pos});
-        else if(pos===3) bubble.push({...t,g,pos,done:true});
-        else eliminated.push({...t,g,pos});            // المركز الرابع بعد انتهاء المجموعة = خارج مؤكد
-      }else{
-        if(canReachMe<=1) confirmed.push({...t,g,pos,early:true});   // ضمن أول مركزين رياضيًا
-        else if(pos<=2) projected.push({...t,g,pos});
-        else bubble.push({...t,g,pos});                 // مركز ثالث/رابع وما زالت الفرصة قائمة
-      }
-    });
-  });
-
-  // ترتيب المراكز الثالثة لأفضل 8
-  const thirds=GROUPS.map(g=>({...gt[g][2],gd:gt[g][2].gf-gt[g][2].ga,g}))
-    .sort((a,b)=>b.pts-a.pts||b.gd-a.gd||b.gf-a.gf);
-
-  document.getElementById("koSummary").innerHTML=`
-    <div class="box q"><div class="v">${confirmed.length}</div><div class="k">تأهل مؤكد</div></div>
-    <div class="box l"><div class="v">${projected.length+bubble.length}</div><div class="k">في سباق التأهل</div></div>
-    <div class="box o"><div class="v">${eliminated.length}</div><div class="k">خارج المنافسة</div></div>`;
-
-  const chip=(t,cls)=>`<span class="qchip ${cls} ${t.c==='KSA'?'ksa':''}"><span class="fl">${T[t.c].f}</span>${T[t.c].n}<span class="grp">${t.g}#${t.pos}</span></span>`;
-  const byG=(a,b)=>a.g.localeCompare(b.g);
-
-  document.getElementById("qualifiedGrid").innerHTML =
-    confirmed.length? confirmed.sort(byG).map(t=>chip(t,"q q1")).join("")
-    : `<div class="sec-note" style="margin:0">لم يضمن أي منتخب التأهل رسميًا بعد — دور المجموعات جارٍ.</div>`;
-
-  document.getElementById("leadingGrid").innerHTML =
-    (projected.length||bubble.length)? [...projected.map(t=>chip(t,"")),...bubble.map(t=>chip(t,""))].join("")
-    : `<div class="sec-note" style="margin:0">—</div>`;
-
-  document.getElementById("outGrid").innerHTML =
-    eliminated.length? eliminated.sort(byG).map(t=>chip(t,"out")).join("")
-    : `<div class="sec-note" style="margin:0">لم يخرج أي منتخب نهائيًا بعد.</div>`;
-
-  let rows=thirds.map((t,i)=>`
-    <tr class="${i<8?'in':''}">
-      <td class="rk">${i+1}</td>
-      <td class="tc"><span class="fl">${T[t.c].f}</span> ${T[t.c].n} <span class="grp" style="color:var(--muted);font-size:.66rem">(${t.g})</span></td>
-      <td>${t.p}</td><td>${t.gd>0?'+':''}${t.gd}</td><td class="pts">${t.pts}</td>
-    </tr>`).join("");
-  document.getElementById("thirdsTable").innerHTML=`
-    <table class="thirds-table">
-      <thead><tr><th>#</th><th>المنتخب</th><th>لعب</th><th>+/-</th><th>نقاط</th></tr></thead>
-      <tbody>${rows}</tbody></table>
-    <div class="sec-note" style="margin-top:8px">الصفوف الخضراء = أفضل 8 مراكز ثالثة (مؤهلة حاليًا). يتغيّر مع كل نتيجة.</div>`;
+  const outChip=c=>`<span class="qchip out"><span class="fl">${T[c].f}</span>${T[c].n} <span class="grp">${gOf(c)}</span></span>`;
+  const esorted=[...eliminated].sort((a,b)=> gOf(a).localeCompare(gOf(b)));
+  const og=document.getElementById("outGrid");
+  if(og) og.innerHTML=esorted.map(outChip).join("");
 }
 
 
@@ -1057,7 +1072,7 @@ function brTeamRow(code,score,win,lose,refLabel){
   if(!code) return '<div class="br-row"><span class="fl">—</span><span class="nm tbd">'+(refLabel||"بانتظار التأهّل")+'</span><span class="sc"></span></div>';
   const cls=(win?"win ":"")+(lose?"lose ":"")+(code==="KSA"?"ksa":"");
   const f=T[code]?T[code].f:"🏳️", n=T[code]?T[code].n:code;
-  return '<div class="br-row '+cls+'"><span class="fl">'+f+'</span><span class="nm">'+n+'</span><span class="sc">'+(Number.isInteger(score)?score:"")+'</span></div>';
+  return '<div class="br-row '+cls+'" data-team="'+code+'"><span class="fl">'+f+'</span><span class="nm">'+n+'</span><span class="sc">'+(Number.isInteger(score)?score:"")+'</span></div>';
 }
 function brCard(k){
   const w=koWinnerCode(k);
@@ -1329,11 +1344,34 @@ document.getElementById("liveToggle").addEventListener("change",e=>{
 
 /* =================== التبويبات والفلاتر =================== */
 document.querySelectorAll(".tab").forEach(t=>t.addEventListener("click",()=>{
-  document.querySelectorAll(".tab").forEach(x=>x.classList.remove("on"));
-  document.querySelectorAll("section").forEach(x=>x.classList.remove("on"));
-  t.classList.add("on"); document.getElementById("sec-"+t.dataset.t).classList.add("on");
-  const dot=t.querySelector(".tab-dot"); if(dot) dot.remove();   // أزل شارة "جديد" عند الفتح
+  const apply=()=>{
+    document.querySelectorAll(".tab").forEach(x=>x.classList.remove("on"));
+    document.querySelectorAll("section").forEach(x=>x.classList.remove("on"));
+    t.classList.add("on"); document.getElementById("sec-"+t.dataset.t).classList.add("on");
+    const dot=t.querySelector(".tab-dot"); if(dot) dot.remove();   // أزل شارة "جديد" عند الفتح
+    window.scrollTo({top:0,behavior:"instant"});
+  };
+  // انتقال سينمائي ناعم إن كان مدعومًا، وإلا تبديل فوري
+  if(document.startViewTransition){ document.startViewTransition(apply); } else { apply(); }
 }));
+/* إبراز مسار الفريق في المشجرة: عند المرور/اللمس على فريق، تبرز كل مبارياته */
+(function initBracketHighlight(){
+  const wrap=document.getElementById("bracketWrap");
+  if(!wrap) return;
+  function highlight(team){
+    wrap.classList.toggle("has-hl", !!team);
+    wrap.querySelectorAll(".br-match").forEach(mm=>{
+      const has = team && mm.querySelector('.br-row[data-team="'+team+'"]');
+      mm.classList.toggle("hl", !!has);
+    });
+  }
+  const teamOf=e=>{ const r=e.target.closest(".br-row[data-team]"); return r?r.getAttribute("data-team"):null; };
+  wrap.addEventListener("pointerover",e=>{ const t=teamOf(e); if(t) highlight(t); });
+  wrap.addEventListener("pointerout",e=>{ if(!e.relatedTarget||!wrap.contains(e.relatedTarget)) highlight(null); });
+  // دعم اللمس: نقرة على فريق تثبّت الإبراز، ونقرة على فراغ تلغيه
+  wrap.addEventListener("click",e=>{ const t=teamOf(e); highlight(t); });
+})();
+
 document.querySelectorAll(".fbtn").forEach(b=>b.addEventListener("click",()=>{
   document.querySelectorAll(".fbtn").forEach(x=>x.classList.remove("on"));
   b.classList.add("on"); FILTER=b.dataset.f; renderMatches();
