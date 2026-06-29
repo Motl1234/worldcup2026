@@ -1415,6 +1415,136 @@ setPill("live");
 loadVisitors();                        // تحميل عدّاد الزوّار
 setTimeout(()=>{ liveSync(false); startLive(); },700);   // مزامنة فورية + بدء المباشر
 </script>
+<!-- ========== كرة فيزيائية تفاعلية (وحدة مستقلة) ========== -->
+<style>
+#phys-layer{position:fixed;inset:0;z-index:9998;pointer-events:none;overflow:hidden}
+#phys-ball{position:absolute;top:0;left:0;width:46px;height:46px;pointer-events:auto;cursor:grab;
+  font-size:42px;line-height:46px;text-align:center;touch-action:none;-webkit-user-select:none;user-select:none;
+  filter:drop-shadow(0 7px 9px rgba(0,0,0,.55));will-change:transform}
+#phys-ball.grab{cursor:grabbing}
+#phys-toggle{position:fixed;bottom:16px;left:16px;z-index:9999;width:44px;height:44px;border-radius:50%;
+  border:1px solid var(--glass-bd);background:var(--glass-strong);backdrop-filter:blur(10px);-webkit-backdrop-filter:blur(10px);
+  color:var(--text);font-size:21px;cursor:pointer;display:flex;align-items:center;justify-content:center;
+  box-shadow:0 6px 18px -6px rgba(0,0,0,.6);transition:transform .15s,opacity .2s;line-height:1}
+#phys-toggle.off{opacity:.45;filter:grayscale(.6)}
+#phys-toggle:active{transform:scale(.9)}
+#phys-toggle:focus-visible{outline:2px solid var(--gold);outline-offset:2px}
+</style>
+<div id="phys-layer"><div id="phys-ball" role="img" aria-label="كرة قدم متحركة">⚽</div></div>
+<button id="phys-toggle" aria-label="تشغيل أو إيقاف الكرة المتحركة" aria-pressed="true" title="كرة فيزيائية — تشغيل/إيقاف">⚽</button>
+<script>
+(function(){
+  const el=document.getElementById('phys-ball'), wrap=document.getElementById('phys-layer'), btn=document.getElementById('phys-toggle');
+  if(!el||!wrap||!btn) return;
+  const R=23, REST=0.72, AIR=0.992, GROUNDF=0.84, BASEG=0.62, MAXV=24;
+  let g={x:0,y:BASEG};
+  let ball={x:Math.min(innerWidth-60,innerWidth/2), y:130, vx:2.2, vy:0, a:0};
+  const reduce = matchMedia('(prefers-reduced-motion: reduce)').matches;
+  let on = !reduce;
+  wrap.style.display = on?'block':'none';
+  btn.classList.toggle('off', !on);
+  btn.setAttribute('aria-pressed', on?'true':'false');
+
+  /* ===== رصد العقبات (العناصر البارزة المرئية) ===== */
+  const SEL='.mcard,.gcard,.br-match,.board,.qchip,.btn-gold,.tab,.sec-title,h1,.day-h,.md-tag,.today-date,.update-bar,.live-pill,.gcard table,.thirds-table,.br-champ,.channel-card,.info-card';
+  let obstacles=[], needRefresh=true;
+  function refreshObstacles(){
+    const vw=innerWidth, vh=innerHeight, out=[];
+    const nodes=document.querySelectorAll(SEL);
+    for(let i=0;i<nodes.length && out.length<70;i++){
+      const r=nodes[i].getBoundingClientRect();
+      if(r.width<8||r.height<8) continue;
+      if(r.bottom<-30||r.top>vh+30||r.right<-30||r.left>vw+30) continue;
+      out.push({l:r.left,t:r.top,rt:r.right,b:r.bottom});
+    }
+    obstacles=out;
+  }
+  addEventListener('scroll',()=>{needRefresh=true;},{passive:true});
+  addEventListener('resize',()=>{needRefresh=true;},{passive:true});
+  setInterval(()=>{ if(on&&!dragging) needRefresh=true; },300);
+
+  /* ===== اصطدام دائرة بمستطيل + ردّ فعل فيزيائي ===== */
+  function collide(o){
+    const cx=Math.max(o.l,Math.min(ball.x,o.rt)), cy=Math.max(o.t,Math.min(ball.y,o.b));
+    let dx=ball.x-cx, dy=ball.y-cy, d2=dx*dx+dy*dy;
+    if(d2>R*R) return;
+    let nx,ny,overlap;
+    if(d2>0.01){ const d=Math.sqrt(d2); nx=dx/d; ny=dy/d; overlap=R-d; }
+    else{ // المركز داخل المستطيل → ادفع لأقرب حافة
+      const tl=ball.x-o.l, tr=o.rt-ball.x, tt=ball.y-o.t, tb=o.b-ball.y, m=Math.min(tl,tr,tt,tb);
+      if(m===tl){nx=-1;ny=0;overlap=R+tl;} else if(m===tr){nx=1;ny=0;overlap=R+tr;}
+      else if(m===tt){nx=0;ny=-1;overlap=R+tt;} else {nx=0;ny=1;overlap=R+tb;}
+    }
+    ball.x+=nx*overlap; ball.y+=ny*overlap;
+    const vn=ball.vx*nx+ball.vy*ny;
+    if(vn<0){ ball.vx-=(1+REST)*vn*nx; ball.vy-=(1+REST)*vn*ny; ball.vx*=0.9; ball.vy*=0.9; }
+  }
+
+  /* ===== السحب والقذف بالإصبع/الفأرة ===== */
+  let dragging=false,lx=0,ly=0,lt=0,dvx=0,dvy=0;
+  el.addEventListener('pointerdown',e=>{
+    dragging=true; try{el.setPointerCapture(e.pointerId);}catch(_){}
+    lx=e.clientX; ly=e.clientY; lt=performance.now(); ball.vx=ball.vy=0;
+    el.classList.add('grab'); e.preventDefault();
+  });
+  el.addEventListener('pointermove',e=>{
+    if(!dragging) return;
+    const now=performance.now(), dt=Math.max(now-lt,8);
+    ball.x=e.clientX; ball.y=e.clientY;
+    dvx=(e.clientX-lx)/dt*16; dvy=(e.clientY-ly)/dt*16;
+    lx=e.clientX; ly=e.clientY; lt=now;
+  });
+  function release(){ if(!dragging) return; dragging=false; el.classList.remove('grab');
+    ball.vx=Math.max(-MAXV,Math.min(MAXV,dvx)); ball.vy=Math.max(-MAXV,Math.min(MAXV,dvy)); }
+  el.addEventListener('pointerup',release);
+  el.addEventListener('pointercancel',release);
+
+  /* ===== الإمالة (مستشعر الجوال) ===== */
+  function onTilt(e){
+    if(e.gamma==null||e.beta==null) return;
+    const gx=Math.max(-1,Math.min(1,e.gamma/45));
+    const gy=Math.max(-1,Math.min(1,(e.beta-35)/45));
+    g.x=gx*BASEG*1.7; g.y=Math.max(0.1,(0.55+gy*0.7))*BASEG*1.7;
+  }
+  let tiltAsked=false;
+  function askTilt(){
+    if(tiltAsked) return; tiltAsked=true;
+    try{
+      if(typeof DeviceOrientationEvent!=='undefined' && typeof DeviceOrientationEvent.requestPermission==='function'){
+        DeviceOrientationEvent.requestPermission().then(r=>{ if(r==='granted') addEventListener('deviceorientation',onTilt); }).catch(()=>{});
+      } else { addEventListener('deviceorientation',onTilt); }
+    }catch(_){}
+  }
+  addEventListener('pointerdown',askTilt,{once:true});
+
+  /* ===== الحلقة الفيزيائية ===== */
+  function step(){
+    requestAnimationFrame(step);
+    if(!on) return;
+    if(needRefresh && !dragging){ refreshObstacles(); needRefresh=false; }
+    if(!dragging){
+      ball.vx+=g.x; ball.vy+=g.y; ball.vx*=AIR; ball.vy*=AIR;
+      const sp=Math.hypot(ball.vx,ball.vy); if(sp>MAXV){ ball.vx*=MAXV/sp; ball.vy*=MAXV/sp; }
+      ball.x+=ball.vx; ball.y+=ball.vy;
+      if(ball.x<R){ball.x=R;ball.vx=-ball.vx*REST;}
+      if(ball.x>innerWidth-R){ball.x=innerWidth-R;ball.vx=-ball.vx*REST;}
+      if(ball.y<R){ball.y=R;ball.vy=-ball.vy*REST;}
+      if(ball.y>innerHeight-R){ball.y=innerHeight-R;ball.vy=-ball.vy*REST;ball.vx*=GROUNDF;}
+      for(let i=0;i<obstacles.length;i++) collide(obstacles[i]);
+      ball.a += ball.vx/R*(180/Math.PI)*0.5;   // دوران تدحرج واقعي
+    }
+    el.style.transform='translate('+(ball.x-R)+'px,'+(ball.y-R)+'px) rotate('+ball.a+'deg)';
+  }
+  requestAnimationFrame(step);
+
+  /* ===== زر التشغيل/الإيقاف ===== */
+  btn.addEventListener('click',()=>{
+    on=!on; wrap.style.display=on?'block':'none';
+    btn.classList.toggle('off',!on); btn.setAttribute('aria-pressed',on?'true':'false');
+    if(on){ needRefresh=true; askTilt(); }
+  });
+})();
+</script>
 </body>
 </html>
 
