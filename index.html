@@ -109,6 +109,13 @@ nav{position:sticky;top:0;z-index:30;background:rgba(6,18,12,.72);backdrop-filte
 .tab{transition:.2s cubic-bezier(.22,.8,.3,1)}
 .tab.on{background:linear-gradient(180deg,rgba(47,210,124,.20),rgba(47,210,124,.05));border-color:var(--green);color:#CFF8E0;box-shadow:0 6px 20px -8px rgba(47,210,124,.7),0 0 0 1px rgba(47,210,124,.15) inset}
 .tab.on::after{content:"";position:absolute;bottom:-9px;left:50%;transform:translateX(-50%);width:26px;height:3px;border-radius:3px;background:linear-gradient(90deg,transparent,var(--gold),transparent);box-shadow:0 0 8px var(--gold)}
+/* ===== لوحة المباراة القادمة / المباشرة ===== */
+.hero-badge{display:inline-block;font-size:.66rem;font-weight:700;color:var(--muted);letter-spacing:.04em;margin-bottom:7px;padding:2px 10px;border:1px solid var(--line);border-radius:999px}
+.hero-badge.live{color:#FF8A95;border-color:rgba(255,75,92,.5);background:rgba(255,75,92,.1)}
+.hero-score{font-family:var(--nums);font-weight:800;font-size:2.1rem;line-height:1;letter-spacing:.02em;color:var(--text)}
+.hero-score .sep{color:var(--muted);font-weight:600;margin:0 9px}
+.clock.live{color:#FF8A95;font-weight:700;margin-top:5px;font-size:.92rem}
+.hero-pen{margin-top:4px;font-family:var(--nums);font-weight:700;font-size:.82rem;color:var(--gold)}
 .tab:focus-visible{outline:2px solid var(--green);outline-offset:2px}
 .tab{position:relative}
 .tab-dot{position:absolute;top:3px;left:7px;width:8px;height:8px;background:var(--red);border-radius:50%;box-shadow:0 0 0 2px var(--bg);animation:livedot 1.3s infinite}
@@ -837,22 +844,38 @@ function status(m){
 /* =================== المباراة القادمة + الشريط =================== */
 function renderHero(){
   const now=ksaNow();
-  const next=M.filter(m=>status(m)!=="FT").sort((a,b)=>pdate(a.dt)-pdate(b.dt))[0];
+  // مجمّع شامل: مباريات المجموعات + الإقصائيات (دور 32 داخل M، والأدوار التالية من KO عند تحدّد أطرافها)
+  if(typeof resolveKO==="function") resolveKO();
+  const pool=[...M];
+  if(typeof KO!=="undefined"){
+    KO.forEach(k=>{ if(k.stage!=="R32" && k._h && k._a) pool.push({h:k._h,a:k._a,dt:k.dt,st:k.st,hs:k.hs,as:k.as,min:k.min,half:k.half,phs:k.phs,pas:k.pas}); });
+  }
+  // الأولوية لمباراة مباشرة الآن، وإلا أقرب مباراة قادمة (مستقبلية فقط — نتجاهل الماضية بلا نتيجة)
+  const liveOne = pool.find(m=>status(m)==="LIVE");
+  const next = liveOne || pool.filter(m=>status(m)!=="FT" && pdate(m.dt) > now).sort((a,b)=>pdate(a.dt)-pdate(b.dt))[0];
   const el=document.getElementById("nextMatch");
-  if(!next){el.innerHTML="<div style='text-align:center;width:100%'>انتهى دور المجموعات 🏁</div>";return;}
+  if(!next){ el.innerHTML="<div style='text-align:center;width:100%'>🏁 اكتملت مباريات البطولة</div>"; return; }
   const st=status(next), d=pdate(next.dt), tm=fmtTime(d);
-  let mid;
-  if(st==="LIVE") mid=`<div class="clock" style="color:var(--red)">${liveLabel(m)}</div><div class="when">انطلقت ${tm.t} ${tm.ap}</div>`;
-  else{
-    const diff=d-now; const hh=Math.floor(diff/3600000), mm=Math.floor(diff%3600000/60000);
-    mid=`<div class="clock">${hh>0? hh+" س "+mm+" د" : mm+" دقيقة"}</div><div class="when">${fmtDay(d)} • ${tm.t} ${tm.ap} بتوقيت السعودية</div>`;
+  const hasScore=Number.isInteger(next.hs)&&Number.isInteger(next.as);
+  let mid, label;
+  if(st==="LIVE"){
+    label='<span class="hero-badge live">🔴 مباشر</span>';
+    const pen=(Number.isInteger(next.phs)&&Number.isInteger(next.pas))
+      ? `<div class="hero-pen">🥅 ركلات الترجيح ${next.phs} - ${next.pas}</div>` : "";
+    mid=`<div class="hero-score">${hasScore?next.hs:0}<span class="sep">-</span>${hasScore?next.as:0}</div>
+         <div class="clock live">${liveLabel(next)}</div>${pen}`;
+  } else {
+    label='<span class="hero-badge">المباراة القادمة</span>';
+    const diff=d-now, hh=Math.floor(diff/3600000), mm=Math.floor(diff%3600000/60000);
+    const cd = diff>0 ? (hh>0? hh+" س "+mm+" د" : Math.max(mm,0)+" دقيقة") : "تبدأ قريبًا";
+    mid=`<div class="clock">${cd}</div><div class="when">${fmtDay(d)} • ${tm.t} ${tm.ap} بتوقيت السعودية</div>`;
   }
   el.innerHTML=`
    <div class="nm-team"><span class="fl">${T[next.h].f}</span><span class="nm">${T[next.h].n}</span></div>
-   <div class="nm-mid">${mid}</div>
+   <div class="nm-mid">${label}${mid}</div>
    <div class="nm-team"><span class="fl">${T[next.a].f}</span><span class="nm">${T[next.a].n}</span></div>`;
-  // الشريط: آخر النتائج
-  const done=M.filter(m=>m.st==="FT").sort((a,b)=>pdate(b.dt)-pdate(a.dt));
+  // الشريط: آخر النتائج (يشمل الإقصائيات)
+  const done=pool.filter(m=>m.st==="FT"&&Number.isInteger(m.hs)).sort((a,b)=>pdate(b.dt)-pdate(a.dt));
   document.getElementById("ticker").innerHTML = done.length
     ? "آخر النتائج: &nbsp;"+done.map(m=>`<span class="tick">${T[m.h].f} <b>${T[m.h].n}</b> <span class="s">${m.hs} – ${m.as}</span> <b>${T[m.a].n}</b> ${T[m.a].f}</span>`).join("")
     : "<span class='tick'>لم تُسجل نتائج بعد</span>";
@@ -911,8 +934,9 @@ function renderMatches(){
 function matchCard(m){
   const d=pdate(m.dt), st=status(m), tm=fmtTime(d), ksa=(m.h==="KSA"||m.a==="KSA");
   let mid;
-  if(st==="FT") mid=`<div class="score"><span class="${m.hs>m.as?'w':''}">${m.hs}</span> – <span class="${m.as>m.hs?'w':''}">${m.as}</span></div>`;
-  else if(st==="LIVE") mid=`<div class="score livescore">${m.hs??0} – ${m.as??0}</div><div class="livemin">${liveLabel(m)}</div>`;
+  const penLine=(Number.isInteger(m.phs)&&Number.isInteger(m.pas))?`<div class="livemin" style="color:var(--gold);font-weight:700">🥅 ركلات الترجيح ${m.phs} - ${m.pas}</div>`:"";
+  if(st==="FT") mid=`<div class="score"><span class="${m.hs>m.as?'w':''}">${m.hs}</span> – <span class="${m.as>m.hs?'w':''}">${m.as}</span></div>${penLine}`;
+  else if(st==="LIVE") mid=`<div class="score livescore">${m.hs??0} – ${m.as??0}</div><div class="livemin">${liveLabel(m)}</div>${penLine}`;
   else mid=`<div class="time">${tm.t}</div><div class="ampm">${tm.ap} بتوقيت السعودية</div>`;
   const stLbl = st==="FT" ? `<span class="st-ft">انتهت</span>` : st==="LIVE" ? `<span class="st-live"><span class="ld"></span> ${Number.isInteger(m.min)?m.min+"′":"مباشر"}</span>` : `<span>لم تبدأ</span>`;
   return `<div class="mcard ${ksa?'ksa':''} ${st==="LIVE"?'live':''}">
@@ -1270,6 +1294,7 @@ function applyResults(results){
       // الدقيقة والشوط الحي (من API-Football)
       if(m.st==="LIVE"){ m.min=Number.isInteger(r.min)?r.min:null; m.half=r.half||null; }
       else { m.min=null; m.half=null; }
+      if(Number.isInteger(r.phs)&&Number.isInteger(r.pas)){ if(m.h===r.h){m.phs=r.phs;m.pas=r.pas}else{m.phs=r.pas;m.pas=r.phs} }
       if(r.sc && typeof r.sc==="string" && r.sc.trim()) m.goals="⚽ "+r.sc.trim();
       const changed = oldH!==m.hs||oldA!==m.as||oldSt!==m.st;
       if(m.st==="LIVE") live++;
@@ -1348,7 +1373,9 @@ async function fetchWorker(fresh){
       else if(st==="IN_PLAY"||st==="PAUSED") state="LIVE";
       else return; // لم تبدأ: نتجاهلها (نُبقي الموعد المخزّن)
       if(!Number.isInteger(hs)||!Number.isInteger(as)) return;
-      const row={h,a,hs,as,st:state,sc:""};
+      const phs=m.score&&m.score.penalties?m.score.penalties.home:null;
+      const pas=m.score&&m.score.penalties?m.score.penalties.away:null;
+      const row={h,a,hs,as,st:state,sc:"",phs,pas};
       if(state==="LIVE"){
         const lv = liveMap[[h,a].sort().join("-")];
         if(lv){ row.min=lv.elapsed; row.half=lv.short; }
