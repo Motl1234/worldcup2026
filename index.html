@@ -1317,6 +1317,20 @@ const WORKER_URL = "https://ancient-hill-ff13.mohammed-almutlaq-1983-459.workers
 const TLA_MAP = { URY:"URU" };  // أوروغواي
 function mapTla(t){ return TLA_MAP[t] || t; }
 
+// يقرأ النتيجة الصحيحة: الأهداف من الوقت الأصلي+الإضافي، والترجيح منفصلاً (لا يُجمعان)
+// السبب: المصدر يضع في fullTime مجموعًا يشمل الترجيح (مثل 4-5)، والصحيح 1-1 (ترجيح 3-4)
+function goalScore(score){
+  if(!score) return {hs:null,as:null,phs:null,pas:null};
+  const pen = score.penalties && Number.isInteger(score.penalties.home) && Number.isInteger(score.penalties.away);
+  if(pen){
+    const rt=score.regularTime||{}, et=score.extraTime||{};
+    const hs=(Number.isInteger(rt.home)?rt.home:0)+(Number.isInteger(et.home)?et.home:0);
+    const as=(Number.isInteger(rt.away)?rt.away:0)+(Number.isInteger(et.away)?et.away:0);
+    return {hs,as,phs:score.penalties.home,pas:score.penalties.away};
+  }
+  const ft=score.fullTime||{};
+  return {hs:Number.isInteger(ft.home)?ft.home:null, as:Number.isInteger(ft.away)?ft.away:null, phs:null, pas:null};
+}
 async function fetchWorker(fresh){
   const ctrl=new AbortController(); const t=setTimeout(()=>ctrl.abort(),12000);
   try{
@@ -1350,16 +1364,14 @@ async function fetchWorker(fresh){
     // خزّن مباريات الأدوار الإقصائية الخام للمشجرة (تتحدّث تلقائيًا)
     KO_RAW = j.matches.filter(m=>m.stage && m.stage!=="GROUP_STAGE").map(m=>{
       const lv = (m.status==="IN_PLAY"||m.status==="PAUSED") ? liveMap[[mapTla(m.homeTeam&&m.homeTeam.tla),mapTla(m.awayTeam&&m.awayTeam.tla)].sort().join("-")] : null;
+      const gs = goalScore(m.score);
       return {
         stage:m.stage,
         utc:m.utcDate,
         status:m.status,
         h:mapTla(m.homeTeam&&m.homeTeam.tla),
         a:mapTla(m.awayTeam&&m.awayTeam.tla),
-        hs:m.score&&m.score.fullTime?m.score.fullTime.home:null,
-        as:m.score&&m.score.fullTime?m.score.fullTime.away:null,
-        phs:m.score&&m.score.penalties?m.score.penalties.home:null,
-        pas:m.score&&m.score.penalties?m.score.penalties.away:null,
+        hs:gs.hs, as:gs.as, phs:gs.phs, pas:gs.pas,
         min:lv?lv.elapsed:null, half:lv?lv.short:null
       };
     });
@@ -1370,16 +1382,13 @@ async function fetchWorker(fresh){
       const h=mapTla(m.homeTeam&&m.homeTeam.tla), a=mapTla(m.awayTeam&&m.awayTeam.tla);
       if(!h||!a) return;
       const st=m.status; // SCHEDULED/TIMED/IN_PLAY/PAUSED/FINISHED/SUSPENDED/POSTPONED
-      const hs=m.score&&m.score.fullTime?m.score.fullTime.home:null;
-      const as=m.score&&m.score.fullTime?m.score.fullTime.away:null;
+      const gs=goalScore(m.score); const hs=gs.hs, as=gs.as;
       let state=null;
       if(st==="FINISHED") state="FT";
       else if(st==="IN_PLAY"||st==="PAUSED") state="LIVE";
       else return; // لم تبدأ: نتجاهلها (نُبقي الموعد المخزّن)
       if(!Number.isInteger(hs)||!Number.isInteger(as)) return;
-      const phs=m.score&&m.score.penalties?m.score.penalties.home:null;
-      const pas=m.score&&m.score.penalties?m.score.penalties.away:null;
-      const row={h,a,hs,as,st:state,sc:"",phs,pas};
+      const row={h,a,hs,as,st:state,sc:"",phs:gs.phs,pas:gs.pas};
       if(state==="LIVE"){
         const lv = liveMap[[h,a].sort().join("-")];
         if(lv){ row.min=lv.elapsed; row.half=lv.short; }
