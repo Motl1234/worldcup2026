@@ -800,6 +800,10 @@ function applyKOResults(results){
     const k=KO.find(k=>k.stage!=="R32" && k._h && k._a && ((k._h===r.h&&k._a===r.a)||(k._h===r.a&&k._a===r.h)));
     if(!k) return;
     if(k._h===r.h){k.hs=r.hs;k.as=r.as;} else {k.hs=r.as;k.as=r.hs;}
+    // ركلات الترجيح تُخزَّن منفصلة عن الأهداف (لا تُجمع معها)
+    if(Number.isInteger(r.phs)&&Number.isInteger(r.pas)){
+      if(k._h===r.h){k.phs=r.phs;k.pas=r.pas;} else {k.phs=r.pas;k.pas=r.phs;}
+    }
     k.st = r.st==="LIVE" ? "LIVE" : "FT";
   });
 }
@@ -1188,7 +1192,7 @@ function brCard(k){
   const ksaHere=(k._h==="KSA"||k._a==="KSA");
   const top=brTeamRow(k._h,k.hs,hWin,!!w&&!hWin,koRefLabel(k.h));
   const bot=brTeamRow(k._a,k.as,aWin,!!w&&!aWin,koRefLabel(k.a));
-  let pen=""; if(Number.isInteger(k.phs)&&Number.isInteger(k.pas)) pen='<div class="br-pen">ركلات الترجيح '+k.phs+'–'+k.pas+'</div>';
+  let pen=""; if(Number.isInteger(k.phs)&&Number.isInteger(k.pas)) pen='<div class="br-pen">ركلات الترجيح '+k.phs+' - '+k.pas+'</div>';
   let when="";
   if(live){ const lbl=Number.isInteger(k.min)?k.min+"′":"مباشر"; when='<div class="br-when livew">🔴 '+lbl+'</div>'; }
   else if(k.st==="FT"){ when='<div class="br-when">انتهت</div>'; }
