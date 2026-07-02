@@ -1546,42 +1546,69 @@ setPill("live");
 loadVisitors();                        // تحميل عدّاد الزوّار
 setTimeout(()=>{ liveSync(false); startLive(); },700);   // مزامنة فورية + بدء المباشر
 </script>
-<!-- ========== كرة فيزيائية تفاعلية (وحدة مستقلة) ========== -->
+<!-- ========== كرات فيزيائية تفاعلية: الأرض / القمر / الفضاء ========== -->
 <style>
 #phys-layer{position:fixed;inset:0;z-index:9998;pointer-events:none;overflow:hidden}
-#phys-ball{position:absolute;top:0;left:0;width:46px;height:46px;pointer-events:auto;cursor:grab;
-  font-size:42px;line-height:46px;text-align:center;touch-action:none;-webkit-user-select:none;user-select:none;
+.phys-ball{position:absolute;top:0;left:0;width:46px;height:46px;pointer-events:auto;cursor:grab;
+  font-size:40px;line-height:46px;text-align:center;touch-action:none;-webkit-user-select:none;user-select:none;
   filter:drop-shadow(0 7px 9px rgba(0,0,0,.55));will-change:transform}
-#phys-ball.grab{cursor:grabbing}
-#phys-toggle{position:fixed;bottom:16px;left:16px;z-index:9999;width:44px;height:44px;border-radius:50%;
-  border:1px solid var(--glass-bd);background:var(--glass-strong);backdrop-filter:blur(10px);-webkit-backdrop-filter:blur(10px);
-  color:var(--text);font-size:21px;cursor:pointer;display:flex;align-items:center;justify-content:center;
-  box-shadow:0 6px 18px -6px rgba(0,0,0,.6);transition:transform .15s,opacity .2s;line-height:1}
-#phys-toggle.off{opacity:.45;filter:grayscale(.6)}
-#phys-toggle:active{transform:scale(.9)}
-#phys-toggle:focus-visible{outline:2px solid var(--gold);outline-offset:2px}
+.phys-ball.grab{cursor:grabbing}
+#phys-controls{position:fixed;bottom:16px;left:16px;z-index:9999;display:flex;flex-direction:column;gap:8px}
+.phys-btn{width:44px;height:44px;border-radius:50%;border:1px solid var(--glass-bd);background:var(--glass-strong);
+  backdrop-filter:blur(10px);-webkit-backdrop-filter:blur(10px);color:var(--text);font-size:20px;cursor:pointer;
+  display:flex;align-items:center;justify-content:center;box-shadow:0 6px 18px -6px rgba(0,0,0,.6);
+  transition:transform .15s,opacity .2s;line-height:1;position:relative}
+.phys-btn.off{opacity:.4;filter:grayscale(.7)}
+.phys-btn:active{transform:scale(.9)}
+.phys-btn:focus-visible{outline:2px solid var(--gold);outline-offset:2px}
+.phys-btn .lbl{position:absolute;right:52px;white-space:nowrap;font-family:var(--nums);font-size:.7rem;
+  background:var(--glass-strong);border:1px solid var(--glass-bd);border-radius:8px;padding:2px 8px;
+  opacity:0;pointer-events:none;transition:opacity .2s}
+.phys-btn:hover .lbl{opacity:1}
 </style>
-<div id="phys-layer"><div id="phys-ball" role="img" aria-label="كرة قدم متحركة">⚽</div></div>
-<button id="phys-toggle" aria-label="تشغيل أو إيقاف الكرة المتحركة" aria-pressed="true" title="كرة فيزيائية — تشغيل/إيقاف">⚽</button>
+<div id="phys-layer">
+  <div class="phys-ball" data-id="earth" role="img" aria-label="كرة الأرض">⚽</div>
+  <div class="phys-ball" data-id="moon"  role="img" aria-label="كرة القمر">🌕</div>
+  <div class="phys-ball" data-id="space" role="img" aria-label="كرة الفضاء">🪐</div>
+</div>
+<div id="phys-controls">
+  <button class="phys-btn" data-id="earth" aria-pressed="true" title="كرة الأرض — جاذبية كاملة">⚽<span class="lbl">الأرض · جاذبية كاملة</span></button>
+  <button class="phys-btn" data-id="moon"  aria-pressed="true" title="كرة القمر — جاذبية ضعيفة">🌕<span class="lbl">القمر · سُدس الجاذبية</span></button>
+  <button class="phys-btn" data-id="space" aria-pressed="true" title="كرة الفضاء — بلا جاذبية">🪐<span class="lbl">الفضاء · بلا جاذبية</span></button>
+</div>
 <script>
 (function(){
-  const el=document.getElementById('phys-ball'), wrap=document.getElementById('phys-layer'), btn=document.getElementById('phys-toggle');
-  if(!el||!wrap||!btn) return;
-  const R=23, REST=0.72, AIR=0.992, GROUNDF=0.84, BASEG=0.62, MAXV=24;
-  let g={x:0,y:BASEG};
-  let ball={x:Math.min(innerWidth-60,innerWidth/2), y:130, vx:2.2, vy:0, a:0};
+  const layer=document.getElementById('phys-layer');
+  if(!layer) return;
+  const R=23, MAXV=24, BASEG=0.62;
   const reduce = matchMedia('(prefers-reduced-motion: reduce)').matches;
-  let on = !reduce;
-  wrap.style.display = on?'block':'none';
-  btn.classList.toggle('off', !on);
-  btn.setAttribute('aria-pressed', on?'true':'false');
 
-  /* ===== رصد العقبات (العناصر البارزة المرئية) ===== */
-  const SEL='.mcard,.gcard,.br-match,.board,.qchip,.btn-gold,.tab,.sec-title,h1,.day-h,.md-tag,.today-date,.update-bar,.live-pill,.gcard table,.thirds-table,.br-champ,.channel-card,.info-card';
+  // تعريف الكرات الثلاث بفيزياء مختلفة
+  const DEFS={
+    earth:{emoji:'⚽', gMul:1.0,   rest:0.72, air:0.992, floor:0.84, tilt:1.0 },  // جاذبية الأرض الكاملة
+    moon: {emoji:'🌕', gMul:0.165, rest:0.90, air:0.996, floor:0.94, tilt:0.5 },  // ≈ سُدس جاذبية الأرض
+    space:{emoji:'🪐', gMul:0.0,   rest:1.0,  air:1.0,   floor:1.0,  tilt:0.14}   // بلا جاذبية — عطالة نقية
+  };
+  const ids=['earth','moon','space'];
+  const W=()=>innerWidth, H=()=>innerHeight;
+  const balls=ids.map((id,i)=>{
+    const el=layer.querySelector('.phys-ball[data-id="'+id+'"]');
+    return {
+      id, def:DEFS[id], el,
+      x:Math.min(W()-60, W()*(0.28+i*0.22)), y:120+i*26,
+      vx: id==='space'?3.0:2.0*(i%2?1:-1), vy: id==='space'?2.2:0, a:0,
+      on:!reduce, dragging:false, lx:0,ly:0,lt:0,dvx:0,dvy:0
+    };
+  });
+  const byId=Object.fromEntries(balls.map(b=>[b.id,b]));
+  function applyVisibility(b){ b.el.style.display=b.on?'block':'none'; }
+  balls.forEach(applyVisibility);
+
+  /* ===== رصد العقبات (مشترك بين الكرات) ===== */
+  const SEL='.mcard,.gcard,.br-match,.board,.qchip,.btn-gold,.tab,.sec-title,h1,.day-h,.md-tag,.today-date,.update-bar,.live-pill,.gcard table,.thirds-table,.br-champ,.channel-card,.info-card,.stat-row';
   let obstacles=[], needRefresh=true;
   function refreshObstacles(){
-    const vw=innerWidth, vh=innerHeight, out=[];
-    const nodes=document.querySelectorAll(SEL);
+    const vw=W(), vh=H(), out=[]; const nodes=document.querySelectorAll(SEL);
     for(let i=0;i<nodes.length && out.length<70;i++){
       const r=nodes[i].getBoundingClientRect();
       if(r.width<8||r.height<8) continue;
@@ -1590,52 +1617,65 @@ setTimeout(()=>{ liveSync(false); startLive(); },700);   // مزامنة فور�
     }
     obstacles=out;
   }
+  const anyDragging=()=>balls.some(b=>b.dragging);
   addEventListener('scroll',()=>{needRefresh=true;},{passive:true});
   addEventListener('resize',()=>{needRefresh=true;},{passive:true});
-  setInterval(()=>{ if(on&&!dragging) needRefresh=true; },300);
+  setInterval(()=>{ if(!anyDragging()) needRefresh=true; },300);
 
-  /* ===== اصطدام دائرة بمستطيل + ردّ فعل فيزيائي ===== */
-  function collide(o){
-    const cx=Math.max(o.l,Math.min(ball.x,o.rt)), cy=Math.max(o.t,Math.min(ball.y,o.b));
-    let dx=ball.x-cx, dy=ball.y-cy, d2=dx*dx+dy*dy;
+  /* ===== اصطدام كرة بمستطيل (يحترم معامل ارتداد كل كرة) ===== */
+  function collide(b,o){
+    const cx=Math.max(o.l,Math.min(b.x,o.rt)), cy=Math.max(o.t,Math.min(b.y,o.b));
+    let dx=b.x-cx, dy=b.y-cy, d2=dx*dx+dy*dy;
     if(d2>R*R) return;
     let nx,ny,overlap;
     if(d2>0.01){ const d=Math.sqrt(d2); nx=dx/d; ny=dy/d; overlap=R-d; }
-    else{ // المركز داخل المستطيل → ادفع لأقرب حافة
-      const tl=ball.x-o.l, tr=o.rt-ball.x, tt=ball.y-o.t, tb=o.b-ball.y, m=Math.min(tl,tr,tt,tb);
+    else{ const tl=b.x-o.l, tr=o.rt-b.x, tt=b.y-o.t, tb=o.b-b.y, m=Math.min(tl,tr,tt,tb);
       if(m===tl){nx=-1;ny=0;overlap=R+tl;} else if(m===tr){nx=1;ny=0;overlap=R+tr;}
-      else if(m===tt){nx=0;ny=-1;overlap=R+tt;} else {nx=0;ny=1;overlap=R+tb;}
-    }
-    ball.x+=nx*overlap; ball.y+=ny*overlap;
-    const vn=ball.vx*nx+ball.vy*ny;
-    if(vn<0){ ball.vx-=(1+REST)*vn*nx; ball.vy-=(1+REST)*vn*ny; ball.vx*=0.9; ball.vy*=0.9; }
+      else if(m===tt){nx=0;ny=-1;overlap=R+tt;} else {nx=0;ny=1;overlap=R+tb;} }
+    b.x+=nx*overlap; b.y+=ny*overlap;
+    const vn=b.vx*nx+b.vy*ny, rest=b.def.rest;
+    if(vn<0){ b.vx-=(1+rest)*vn*nx; b.vy-=(1+rest)*vn*ny;
+      const tf=b.def.gMul===0?1:0.92; b.vx*=tf; b.vy*=tf; }
   }
 
-  /* ===== السحب والقذف بالإصبع/الفأرة ===== */
-  let dragging=false,lx=0,ly=0,lt=0,dvx=0,dvy=0;
-  el.addEventListener('pointerdown',e=>{
-    dragging=true; try{el.setPointerCapture(e.pointerId);}catch(_){}
-    lx=e.clientX; ly=e.clientY; lt=performance.now(); ball.vx=ball.vy=0;
-    el.classList.add('grab'); e.preventDefault();
+  /* ===== السحب والقذف (لكل كرة على حدة) ===== */
+  balls.forEach(b=>{
+    b.el.addEventListener('pointerdown',e=>{
+      b.dragging=true; try{b.el.setPointerCapture(e.pointerId);}catch(_){}
+      b.lx=e.clientX; b.ly=e.clientY; b.lt=performance.now(); b.vx=b.vy=0;
+      b.el.classList.add('grab'); e.preventDefault(); askTilt();
+    });
+    b.el.addEventListener('pointermove',e=>{
+      if(!b.dragging) return;
+      const now=performance.now(), dt=Math.max(now-b.lt,8);
+      b.x=e.clientX; b.y=e.clientY;
+      b.dvx=(e.clientX-b.lx)/dt*16; b.dvy=(e.clientY-b.ly)/dt*16;
+      b.lx=e.clientX; b.ly=e.clientY; b.lt=now;
+    });
+    const rel=()=>{ if(!b.dragging) return; b.dragging=false; b.el.classList.remove('grab');
+      b.vx=Math.max(-MAXV,Math.min(MAXV,b.dvx)); b.vy=Math.max(-MAXV,Math.min(MAXV,b.dvy)); };
+    b.el.addEventListener('pointerup',rel);
+    b.el.addEventListener('pointercancel',rel);
   });
-  el.addEventListener('pointermove',e=>{
-    if(!dragging) return;
-    const now=performance.now(), dt=Math.max(now-lt,8);
-    ball.x=e.clientX; ball.y=e.clientY;
-    dvx=(e.clientX-lx)/dt*16; dvy=(e.clientY-ly)/dt*16;
-    lx=e.clientX; ly=e.clientY; lt=now;
-  });
-  function release(){ if(!dragging) return; dragging=false; el.classList.remove('grab');
-    ball.vx=Math.max(-MAXV,Math.min(MAXV,dvx)); ball.vy=Math.max(-MAXV,Math.min(MAXV,dvy)); }
-  el.addEventListener('pointerup',release);
-  el.addEventListener('pointercancel',release);
 
-  /* ===== الإمالة (مستشعر الجوال) ===== */
+  /* ===== إمالة الجوال (تؤثّر بحسب جاذبية كل كرة) ===== */
+  let tiltActive=false, tx=0, ty=0;
   function onTilt(e){
     if(e.gamma==null||e.beta==null) return;
-    const gx=Math.max(-1,Math.min(1,e.gamma/45));
-    const gy=Math.max(-1,Math.min(1,(e.beta-35)/45));
-    g.x=gx*BASEG*1.7; g.y=Math.max(0.1,(0.55+gy*0.7))*BASEG*1.7;
+    tiltActive=true;
+    tx=Math.max(-1,Math.min(1,e.gamma/45));
+    ty=Math.max(-1,Math.min(1,(e.beta-35)/45));
+  }
+  // متجه الجاذبية لكل كرة: عند الإمالة يتبع الميل، وإلا للأسفل. الفضاء لا يسقط (دفعة لطيفة فقط عند الإمالة)
+  function gravityFor(def){
+    if(def.gMul>0){
+      if(!tiltActive) return {x:0, y:BASEG*def.gMul};
+      const gx=tx*BASEG*1.7, gy=Math.max(0.1,(0.55+ty*0.7))*BASEG*1.7;
+      return {x:gx*def.gMul, y:gy*def.gMul};
+    } else { // الفضاء: بلا جاذبية؛ فقط دفعة خفيفة باتجاه الميل إن وُجد
+      if(!tiltActive) return {x:0,y:0};
+      return {x:tx*BASEG*def.tilt, y:ty*BASEG*def.tilt};
+    }
   }
   let tiltAsked=false;
   function askTilt(){
@@ -1648,31 +1688,43 @@ setTimeout(()=>{ liveSync(false); startLive(); },700);   // مزامنة فور�
   }
   addEventListener('pointerdown',askTilt,{once:true});
 
-  /* ===== الحلقة الفيزيائية ===== */
+  /* ===== الحلقة الفيزيائية (كل الكرات) ===== */
   function step(){
     requestAnimationFrame(step);
-    if(!on) return;
-    if(needRefresh && !dragging){ refreshObstacles(); needRefresh=false; }
-    if(!dragging){
-      ball.vx+=g.x; ball.vy+=g.y; ball.vx*=AIR; ball.vy*=AIR;
-      const sp=Math.hypot(ball.vx,ball.vy); if(sp>MAXV){ ball.vx*=MAXV/sp; ball.vy*=MAXV/sp; }
-      ball.x+=ball.vx; ball.y+=ball.vy;
-      if(ball.x<R){ball.x=R;ball.vx=-ball.vx*REST;}
-      if(ball.x>innerWidth-R){ball.x=innerWidth-R;ball.vx=-ball.vx*REST;}
-      if(ball.y<R){ball.y=R;ball.vy=-ball.vy*REST;}
-      if(ball.y>innerHeight-R){ball.y=innerHeight-R;ball.vy=-ball.vy*REST;ball.vx*=GROUNDF;}
-      for(let i=0;i<obstacles.length;i++) collide(obstacles[i]);
-      ball.a += ball.vx/R*(180/Math.PI)*0.5;   // دوران تدحرج واقعي
+    if(needRefresh && !anyDragging()){ refreshObstacles(); needRefresh=false; }
+    for(const b of balls){
+      if(!b.on) continue;
+      if(!b.dragging){
+        const g=gravityFor(b.def);
+        b.vx+=g.x; b.vy+=g.y; b.vx*=b.def.air; b.vy*=b.def.air;
+        const sp=Math.hypot(b.vx,b.vy); if(sp>MAXV){ b.vx*=MAXV/sp; b.vy*=MAXV/sp; }
+        b.x+=b.vx; b.y+=b.vy;
+        const rest=b.def.rest;
+        if(b.x<R){b.x=R;b.vx=-b.vx*rest;}
+        if(b.x>W()-R){b.x=W()-R;b.vx=-b.vx*rest;}
+        if(b.y<R){b.y=R;b.vy=-b.vy*rest;}
+        if(b.y>H()-R){b.y=H()-R;b.vy=-b.vy*rest;b.vx*=b.def.floor;}
+        for(let i=0;i<obstacles.length;i++) collide(b,obstacles[i]);
+        b.a += b.vx/R*(180/Math.PI)*0.5;
+      }
+      b.el.style.transform='translate('+(b.x-R)+'px,'+(b.y-R)+'px) rotate('+b.a+'deg)';
     }
-    el.style.transform='translate('+(ball.x-R)+'px,'+(ball.y-R)+'px) rotate('+ball.a+'deg)';
   }
   requestAnimationFrame(step);
 
-  /* ===== زر التشغيل/الإيقاف ===== */
-  btn.addEventListener('click',()=>{
-    on=!on; wrap.style.display=on?'block':'none';
-    btn.classList.toggle('off',!on); btn.setAttribute('aria-pressed',on?'true':'false');
-    if(on){ needRefresh=true; askTilt(); }
+  /* ===== أزرار التحكّم (تشغيل/تعطيل حركة كل كرة) ===== */
+  document.querySelectorAll('#phys-controls .phys-btn').forEach(btn=>{
+    const b=byId[btn.getAttribute('data-id')];
+    btn.classList.toggle('off', !b.on);
+    btn.setAttribute('aria-pressed', b.on?'true':'false');
+    btn.addEventListener('click',()=>{
+      b.on=!b.on; applyVisibility(b);
+      btn.classList.toggle('off',!b.on); btn.setAttribute('aria-pressed', b.on?'true':'false');
+      if(b.on){ needRefresh=true; askTilt();
+        // إعادة تموضع إن كانت خارج الشاشة
+        b.x=Math.min(Math.max(R,b.x),W()-R); b.y=Math.min(Math.max(R,b.y),H()-R);
+      }
+    });
   });
 })();
 </script>
