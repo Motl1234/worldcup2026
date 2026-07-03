@@ -16,6 +16,8 @@
   #altBox   { top:12px; left:12px;  text-align:center; }
   #topCenter{ top:10px; left:50%; transform:translateX(-50%); text-align:center; }
   #lvlName { font-size:12px; color:#ffe9a8; margin-top:2px; }
+  #homeLine { font-size:12px; color:#9fe0ff; margin-top:2px; }
+  #homeArr { display:inline-block; transition:transform .15s linear; }
   .bigNum { font-size:24px; font-variant-numeric:tabular-nums; line-height:1.1; }
   .lbl { font-size:11px; opacity:.85; }
   #msg { position:absolute; top:22%; left:50%; transform:translateX(-50%); font-size:24px; color:#fff; text-shadow:0 2px 12px rgba(0,0,0,.85); text-align:center; transition:opacity .5s; opacity:0; max-width:92vw; }
@@ -35,8 +37,8 @@
   #menu { position:fixed; inset:0; display:flex; flex-direction:column; align-items:center; justify-content:center; gap:13px;
     background:radial-gradient(1200px 700px at 50% 30%, #16324a 0%, #0a1826 55%, #050b12 100%); color:#eaf6ff; z-index:20; text-align:center; padding:20px; }
   #menu h1 { font-size:clamp(30px,7vw,54px); letter-spacing:1px; background:linear-gradient(180deg,#fff,#7fd0ff); -webkit-background-clip:text; background-clip:text; color:transparent; }
-  #menu .sub { color:#9fc4dd; font-size:14.5px; max-width:520px; line-height:1.9; }
-  #menu .keys { background:rgba(255,255,255,.06); border:1px solid rgba(255,255,255,.12); border-radius:14px; padding:10px 18px; font-size:13px; line-height:2; color:#cfe8f7; max-width:520px; }
+  #menu .sub { color:#9fc4dd; font-size:14.5px; max-width:540px; line-height:1.9; }
+  #menu .keys { background:rgba(255,255,255,.06); border:1px solid rgba(255,255,255,.12); border-radius:14px; padding:10px 18px; font-size:13px; line-height:2; color:#cfe8f7; max-width:540px; }
   .mBtn { pointer-events:auto; font-size:18px; font-weight:800; color:#04121c; background:linear-gradient(180deg,#9be7ff,#37b3ee); border:none; border-radius:14px; padding:13px 52px; cursor:pointer; box-shadow:0 6px 24px rgba(60,190,255,.45); }
   .mBtn:active { transform:scale(.97); }
   #restartBtn { background:linear-gradient(180deg,#ffd9a8,#f0a23c); font-size:14px; padding:9px 30px; display:none; }
@@ -111,7 +113,7 @@
     <span class="badge" id="b1">٢ غروب الصقر</span>
     <span class="badge" id="b2">٣ عاصفة الليل</span>
   </div>
-  <div class="sub">قُد مقاتلة F-35 الشبحية في ثلاث مراحل: تدريب نهاري، معركة عند الغروب، وعاصفة ليلية ممطرة.<br>دمّر كل الأهداف ثم اهبط بسلام لإكمال المرحلة.</div>
+  <div class="sub">قُد مقاتلة F-35 الشبحية في عالم لا نهائي: جبال ثلجية وغابات تمتد للأبد.<br>دمّر كل الأهداف ثم عُد للقاعدة واهبط — السهم 🏠 يدلك على الطريق دائماً.</div>
   <div class="keys">
     <b>الكمبيوتر:</b> W دفع أعلى • S دفع أقل • الأسهم للتحكم • مسافة: رشاش • F: صاروخ<br>
     <b>الجوال:</b> شريط الدفع وأزرار الأسلحة يساراً 🟠 • عصا القيادة يميناً 🔵<br>
@@ -129,6 +131,7 @@
   <div class="hudBox" id="topCenter">
     <span id="score">النقاط: 0</span> &nbsp;•&nbsp; <span id="targets">الأهداف: 0</span> &nbsp;•&nbsp; <span id="mis">🚀 6</span>
     <div id="lvlName"></div>
+    <div id="homeLine">🏠 القاعدة <span id="homeArr">⬆</span> <span id="homeDist">0.0</span> كم</div>
   </div>
   <svg id="cross" viewBox="0 0 46 46"><circle cx="23" cy="23" r="14" fill="none" stroke="#aef3c1" stroke-width="1.5" opacity=".9"/><line x1="23" y1="2" x2="23" y2="12" stroke="#aef3c1" stroke-width="1.5"/><line x1="23" y1="34" x2="23" y2="44" stroke="#aef3c1" stroke-width="1.5"/><line x1="2" y1="23" x2="12" y2="23" stroke="#aef3c1" stroke-width="1.5"/><line x1="34" y1="23" x2="44" y2="23" stroke="#aef3c1" stroke-width="1.5"/><circle cx="23" cy="23" r="1.6" fill="#aef3c1"/></svg>
   <div id="hLbl" class="barLbl">الصحة</div><div id="healthBar"><div id="healthFill"></div></div>
@@ -147,7 +150,7 @@
 <script>
 "use strict";
 /* ============================================================
-   نسر السماء v2 — أصوات + مراحل + ليل وطقس + أعداء مهاجمون
+   نسر السماء v3 — عالم لا نهائي + F-35 واقعية + ميلان 75°
    ============================================================ */
 const canvas = document.getElementById('c');
 const renderer = new THREE.WebGLRenderer({canvas, antialias:true});
@@ -157,13 +160,13 @@ renderer.shadowMap.enabled = true;
 renderer.shadowMap.type = THREE.PCFSoftShadowMap;
 
 const scene = new THREE.Scene();
-scene.fog = new THREE.Fog(0xcfe6f2, 900, 6500);
+scene.fog = new THREE.Fog(0xcfe6f2, 500, 3000);
 const camera = new THREE.PerspectiveCamera(62, innerWidth/innerHeight, .5, 14000);
 
 /* ================= نظام الصوت (Web Audio) ================= */
 const Snd = {
   ctx:null, master:null, engGain:null, engOsc1:null, engOsc2:null, engFilt:null,
-  rainGain:null, noiseBuf:null, ready:false,
+  rainGain:null, airGain:null, noiseBuf:null, ready:false,
   init(){
     if(this.ready) return;
     const AC = window.AudioContext || window.webkitAudioContext;
@@ -172,12 +175,10 @@ const Snd = {
     this.master = this.ctx.createGain();
     this.master.gain.value = .6;
     this.master.connect(this.ctx.destination);
-    // ضجيج أبيض جاهز
     const len = this.ctx.sampleRate * 2;
     this.noiseBuf = this.ctx.createBuffer(1, len, this.ctx.sampleRate);
     const d = this.noiseBuf.getChannelData(0);
     for(let i=0;i<len;i++) d[i] = Math.random()*2-1;
-    // صوت المحرك: موجتان + فلتر
     this.engFilt = this.ctx.createBiquadFilter();
     this.engFilt.type='lowpass'; this.engFilt.frequency.value=380;
     this.engGain = this.ctx.createGain(); this.engGain.gain.value=0;
@@ -188,18 +189,16 @@ const Snd = {
     this.engOsc2.connect(g2); g2.connect(this.engFilt);
     this.engFilt.connect(this.engGain); this.engGain.connect(this.master);
     this.engOsc1.start(); this.engOsc2.start();
-    // ضجيج هواء مستمر مع المحرك
     const air=this.ctx.createBufferSource(); air.buffer=this.noiseBuf; air.loop=true;
     const airF=this.ctx.createBiquadFilter(); airF.type='bandpass'; airF.frequency.value=900; airF.Q.value=.6;
     this.airGain=this.ctx.createGain(); this.airGain.gain.value=0;
     air.connect(airF); airF.connect(this.airGain); this.airGain.connect(this.master);
     air.start();
-    // صوت مطر (يُفعّل ليلاً)
-    const rain=this.ctx.createBufferSource(); rain.buffer=this.noiseBuf; rain.loop=true;
+    const rn=this.ctx.createBufferSource(); rn.buffer=this.noiseBuf; rn.loop=true;
     const rF=this.ctx.createBiquadFilter(); rF.type='highpass'; rF.frequency.value=1400;
     this.rainGain=this.ctx.createGain(); this.rainGain.gain.value=0;
-    rain.connect(rF); rF.connect(this.rainGain); this.rainGain.connect(this.master);
-    rain.start();
+    rn.connect(rF); rF.connect(this.rainGain); this.rainGain.connect(this.master);
+    rn.start();
     this.ready=true;
   },
   engine(throttle, speedRatio, onGround){
@@ -248,8 +247,8 @@ const Snd = {
   rain(on){ if(this.ready) this.rainGain.gain.setTargetAtTime(on? .1:0, this.ctx.currentTime, .8); }
 };
 
-/* ================= السماء والبيئة ================= */
-let skyMat;
+/* ================= السماء والأجرام ================= */
+let skyMat, skyMesh;
 (function makeSky(){
   const g = new THREE.SphereGeometry(10000, 24, 16);
   skyMat = new THREE.ShaderMaterial({
@@ -260,21 +259,19 @@ let skyMat;
       void main(){ float h = normalize(vP).y*.5+.5; h=pow(clamp(h,0.,1.),.7);
         gl_FragColor = vec4(mix(hor,top,h),1.);}`
   });
-  const sky = new THREE.Mesh(g,skyMat); sky.frustumCulled=false; scene.add(sky);
+  skyMesh = new THREE.Mesh(g,skyMat); skyMesh.frustumCulled=false; scene.add(skyMesh);
 })();
 
 const sun = new THREE.DirectionalLight(0xfff3d6, 1.35);
-sun.position.set(1200, 1800, -800);
 sun.castShadow = true;
 sun.shadow.mapSize.set(2048,2048);
 sun.shadow.camera.left=-400; sun.shadow.camera.right=400;
 sun.shadow.camera.top=400; sun.shadow.camera.bottom=-400;
-sun.shadow.camera.far=6000;
-scene.add(sun);
+sun.shadow.camera.far=8000;
+scene.add(sun); scene.add(sun.target);
 const hemi = new THREE.HemisphereLight(0xbfdcff, 0x6a7d4f, .75);
 scene.add(hemi);
 
-// قرص الشمس / القمر
 function glowSprite(color1,color2){
   const cnv=document.createElement('canvas'); cnv.width=cnv.height=128;
   const x=cnv.getContext('2d'); const gr=x.createRadialGradient(64,64,4,64,64,64);
@@ -283,11 +280,11 @@ function glowSprite(color1,color2){
   return new THREE.Sprite(new THREE.SpriteMaterial({map:new THREE.CanvasTexture(cnv), fog:false, depthWrite:false, transparent:true}));
 }
 const sunSprite = glowSprite('rgba(255,255,235,1)','rgba(255,240,190,.9)');
-sunSprite.scale.set(1400,1400,1); sunSprite.position.set(3800,5200,-2600); scene.add(sunSprite);
+sunSprite.scale.set(1400,1400,1); scene.add(sunSprite);
+const MOON_OFF = new THREE.Vector3(-3200,4600,2400);
 const moonSprite = glowSprite('rgba(230,240,255,1)','rgba(180,200,240,.7)');
-moonSprite.scale.set(700,700,1); moonSprite.position.set(-3200,4600,2400); moonSprite.visible=false; scene.add(moonSprite);
+moonSprite.scale.set(700,700,1); moonSprite.visible=false; scene.add(moonSprite);
 
-// نجوم
 const stars=(function(){
   const n=700, pos=[];
   for(let i=0;i<n;i++){
@@ -302,7 +299,6 @@ const stars=(function(){
   return p;
 })();
 
-// مطر
 const rain=(function(){
   const n=900, pos=[];
   for(let i=0;i<n;i++) pos.push((Math.random()-.5)*300, Math.random()*160, (Math.random()-.5)*300);
@@ -315,20 +311,21 @@ const rain=(function(){
 
 /* ---------- البيئات ---------- */
 const ENVS={
-  day:    {top:0x2f7bd6, hor:0xbfe3f5, fog:0xcfe6f2, fogN:900, fogF:6500, sunC:0xfff3d6, sunI:1.35, sunP:[1200,1800,-800], hemI:.75, night:false, rain:false},
-  sunset: {top:0x2b3f77, hor:0xffa066, fog:0xe8b58a, fogN:800, fogF:5500, sunC:0xff9a4d, sunI:1.0,  sunP:[2600,420,-600],  hemI:.5,  night:false, rain:false, sunPos:[3600,900,-900]},
-  night:  {top:0x070d1c, hor:0x14263a, fog:0x0c1826, fogN:400, fogF:3600, sunC:0x7d95c9, sunI:.18,  sunP:[-1500,1400,900], hemI:.22, night:true,  rain:true}
+  day:    {top:0x2f7bd6, hor:0xbfe3f5, fog:0xcfe6f2, fogN:500, fogF:3000, sunC:0xfff3d6, sunI:1.35, sunOff:[1200,1800,-800], sunSpr:[3800,5200,-2600], hemI:.75, night:false, rain:false},
+  sunset: {top:0x2b3f77, hor:0xffa066, fog:0xe8b58a, fogN:450, fogF:2700, sunC:0xff9a4d, sunI:1.0,  sunOff:[2600,420,-600],  sunSpr:[3600,900,-900],   hemI:.5,  night:false, rain:false},
+  night:  {top:0x070d1c, hor:0x14263a, fog:0x0c1826, fogN:260, fogF:2200, sunC:0x7d95c9, sunI:.18,  sunOff:[-1500,1400,900], sunSpr:[0,0,0],           hemI:.22, night:true,  rain:true}
 };
 let runwayLights=[];
+const curSun={off:new THREE.Vector3(1200,1800,-800), spr:new THREE.Vector3(3800,5200,-2600)};
 function setEnv(name){
   const e=ENVS[name];
   skyMat.uniforms.top.value.setHex(e.top);
   skyMat.uniforms.hor.value.setHex(e.hor);
   scene.fog.color.setHex(e.fog); scene.fog.near=e.fogN; scene.fog.far=e.fogF;
-  sun.color.setHex(e.sunC); sun.intensity=e.sunI; sun.position.set(...e.sunP);
+  sun.color.setHex(e.sunC); sun.intensity=e.sunI;
+  curSun.off.set(...e.sunOff); curSun.spr.set(...e.sunSpr);
   hemi.intensity=e.hemI;
   sunSprite.visible=!e.night;
-  if(e.sunPos) sunSprite.position.set(...e.sunPos); else sunSprite.position.set(3800,5200,-2600);
   moonSprite.visible=e.night;
   stars.visible=e.night;
   rain.visible=e.rain;
@@ -336,50 +333,170 @@ function setEnv(name){
   for(const l of runwayLights) l.scale.setScalar(e.night? 1.8:1);
 }
 
-/* ================= التضاريس ================= */
+/* ================= التضاريس اللانهائية ================= */
 function terrainH(x,z){
-  let h = Math.sin(x*.0016)*Math.cos(z*.0013)*46
-        + Math.sin(x*.0006+1.7)*Math.cos(z*.0007)*90
-        + Math.sin(x*.004)*Math.sin(z*.0045)*9;
+  // تلال أساسية
+  let h = Math.sin(x*.0016)*Math.cos(z*.0013)*40
+        + Math.sin(x*.0006+1.7)*Math.cos(z*.0007)*70;
+  // سلاسل جبال حقيقية (نتوءات حادة)
+  const r1 = 1-Math.abs(Math.sin(x*.00042 + Math.cos(z*.00035)*1.3));
+  const r2 = 1-Math.abs(Math.sin(z*.00051 + Math.cos(x*.00047)*1.1));
+  const ridge = Math.pow(Math.max(0,r1*r2), 1.5)*520;
+  const mask = (Math.sin(x*.00021)*Math.cos(z*.00019)+1)*.5;
+  h += ridge * THREE.MathUtils.smoothstep(mask,.35,.8);
+  // تفاصيل صغيرة
+  h += Math.sin(x*.004)*Math.sin(z*.0045)*7 + Math.sin(x*.011+z*.009)*3;
+  // تسطيح حول القاعدة والمدرج
   const d = Math.sqrt(x*x*0.35 + z*z*0.10);
   const flat = THREE.MathUtils.smoothstep(d, 250, 900);
   return h * flat;
 }
-(function makeTerrain(){
-  const size=9000, seg=150;
-  const g=new THREE.PlaneGeometry(size,size,seg,seg);
-  g.rotateX(-Math.PI/2);
-  const pos=g.attributes.position, colors=[];
-  const cLow=new THREE.Color(0x5a8f3c), cMid=new THREE.Color(0x7aa74e), cHigh=new THREE.Color(0x9b8f6a), cSnow=new THREE.Color(0xe8ecef);
-  for(let i=0;i<pos.count;i++){
-    const x=pos.getX(i), z=pos.getZ(i);
-    const y=terrainH(x,z); pos.setY(i,y);
-    let c;
-    if(y<25) c=cLow.clone().lerp(cMid,(y+40)/65);
-    else if(y<80) c=cMid.clone().lerp(cHigh,(y-25)/55);
-    else c=cHigh.clone().lerp(cSnow,Math.min(1,(y-80)/60));
-    const n=(Math.sin(x*.05)*Math.cos(z*.07))*.05;
-    c.offsetHSL(0,0,n);
-    colors.push(c.r,c.g,c.b);
-  }
-  g.setAttribute('color', new THREE.Float32BufferAttribute(colors,3));
-  g.computeVertexNormals();
-  const t=new THREE.Mesh(g,new THREE.MeshLambertMaterial({vertexColors:true}));
-  t.receiveShadow=true; scene.add(t);
-})();
-(function mountains(){
-  const mat=new THREE.MeshLambertMaterial({color:0x7d8fa3, flatShading:true});
-  for(let i=0;i<26;i++){
-    const a=i/26*Math.PI*2 + Math.random()*.2;
-    const r=3600+Math.random()*900, h=380+Math.random()*520;
-    const mm=new THREE.Mesh(new THREE.ConeGeometry(280+Math.random()*380, h, 5), mat);
-    mm.position.set(Math.cos(a)*r, h*.32, Math.sin(a)*r);
-    mm.rotation.y=Math.random()*Math.PI;
-    scene.add(mm);
-  }
-})();
 
-/* ================= المدرج ================= */
+const CHUNK=700, CSEG=20, VIEW_R=4;
+const chunks=new Map();
+const terrainMat=new THREE.MeshLambertMaterial({vertexColors:true});
+const treeMat=new THREE.MeshLambertMaterial({vertexColors:true});
+
+const _cA=new THREE.Color(), _cGrassLo=new THREE.Color(0x679a44), _cGrassHi=new THREE.Color(0x4e7d36),
+      _cForest=new THREE.Color(0x3a6330), _cRock=new THREE.Color(0x8a7f6b),
+      _cRock2=new THREE.Color(0x9aa0a8), _cSnow=new THREE.Color(0xf2f5f7);
+function terrainColor(y,x,z,out){
+  if(y<26) out.copy(_cGrassLo).lerp(_cGrassHi, Math.max(0,y)/26);
+  else if(y<110) out.copy(_cGrassHi).lerp(_cForest,(y-26)/84);
+  else if(y<260) out.copy(_cForest).lerp(_cRock,(y-110)/150);
+  else if(y<340) out.copy(_cRock).lerp(_cRock2,(y-260)/80);
+  else out.copy(_cRock2).lerp(_cSnow, Math.min(1,(y-340)/90));
+  out.offsetHSL(0,0,(Math.sin(x*.05)*Math.cos(z*.07))*.04);
+}
+
+// عشوائية ثابتة لكل قطعة أرض
+function chunkHash(i,j){ let h=i*374761393 + j*668265263; h=(h^(h>>>13))*1274126177; return (h^(h>>>16))>>>0; }
+function mulberry32(a){ return function(){ a|=0; a=a+0x6D2B79F5|0; let t=Math.imul(a^a>>>15,1|a); t=t+Math.imul(t^t>>>7,61|t)^t; return ((t^t>>>14)>>>0)/4294967296; }; }
+
+// قوالب الأشجار والصخور
+function nonIdx(g){ return g.index? g.toNonIndexed() : g; }
+const T_TRUNK=nonIdx(new THREE.CylinderGeometry(.35,.55,1,5));
+const T_CONE =nonIdx(new THREE.ConeGeometry(1,1,7));
+const T_BALL =nonIdx(new THREE.SphereGeometry(1,6,5));
+const T_ROCK =nonIdx(new THREE.DodecahedronGeometry(1,0));
+const _m4=new THREE.Matrix4(), _m3=new THREE.Matrix3(), _q0=new THREE.Quaternion(),
+      _vp=new THREE.Vector3(), _vn=new THREE.Vector3(), _vs=new THREE.Vector3(), _vt=new THREE.Vector3();
+function pushGeo(out, tmpl, px,py,pz, sx,sy,sz, r,g,b, rotY=0){
+  _q0.setFromAxisAngle(_vt.set(0,1,0), rotY);
+  _m4.compose(_vp.set(px,py,pz), _q0, _vs.set(sx,sy,sz));
+  _m3.getNormalMatrix(_m4);
+  const pos=tmpl.attributes.position, nor=tmpl.attributes.normal;
+  for(let i=0;i<pos.count;i++){
+    _vp.fromBufferAttribute(pos,i).applyMatrix4(_m4);
+    out.p.push(_vp.x,_vp.y,_vp.z);
+    _vn.fromBufferAttribute(nor,i).applyMatrix3(_m3).normalize();
+    out.n.push(_vn.x,_vn.y,_vn.z);
+    out.c.push(r,g,b);
+  }
+}
+function addPine(out,x,y,z,s,rand){
+  pushGeo(out,T_TRUNK, x,y+2.1*s,z, s*.9,4.2*s,s*.9, .42,.29,.17);
+  const gv=(rand()-.5)*.08;
+  pushGeo(out,T_CONE, x,y+5.4*s,z, 3.6*s,4.6*s,3.6*s, .12+gv,.37+gv,.15, rand()*3);
+  pushGeo(out,T_CONE, x,y+8.2*s,z, 2.7*s,3.9*s,2.7*s, .14+gv,.41+gv,.17, rand()*3);
+  pushGeo(out,T_CONE, x,y+10.7*s,z, 1.8*s,3.3*s,1.8*s, .16+gv,.45+gv,.19, rand()*3);
+}
+function addLeafTree(out,x,y,z,s,rand){
+  pushGeo(out,T_TRUNK, x,y+2.6*s,z, s*.8,5.2*s,s*.8, .38,.26,.15);
+  const gv=(rand()-.5)*.07;
+  pushGeo(out,T_BALL, x,y+6.4*s,z, 2.8*s,2.4*s,2.8*s, .2+gv,.47+gv,.18);
+  pushGeo(out,T_BALL, x+1.4*s,y+7.4*s,z+.9*s, 1.8*s,1.6*s,1.8*s, .24+gv,.52+gv,.2);
+}
+function addRock(out,x,y,z,s,rand){
+  const gv=.5+(rand()-.5)*.12;
+  pushGeo(out,T_ROCK, x,y+s*.35,z, s,s*.7,s*1.15, gv,gv,gv*1.04, rand()*6);
+}
+
+function buildChunk(ci,cj){
+  const cx=ci*CHUNK, cz=cj*CHUNK;
+  const grp=new THREE.Group();
+  // أرضية القطعة
+  const geo=new THREE.PlaneGeometry(CHUNK,CHUNK,CSEG,CSEG);
+  geo.rotateX(-Math.PI/2);
+  const pos=geo.attributes.position;
+  const cols=new Float32Array(pos.count*3);
+  const nors=new Float32Array(pos.count*3);
+  const e=3;
+  for(let i=0;i<pos.count;i++){
+    const x=pos.getX(i)+cx, z=pos.getZ(i)+cz;
+    const y=terrainH(x,z);
+    pos.setY(i,y);
+    // منحدر مستمر عبر حدود القطع (لا خطوط إضاءة)
+    const nx=terrainH(x-e,z)-terrainH(x+e,z);
+    const nz=terrainH(x,z-e)-terrainH(x,z+e);
+    _vn.set(nx,2*e,nz).normalize();
+    nors[i*3]=_vn.x; nors[i*3+1]=_vn.y; nors[i*3+2]=_vn.z;
+    terrainColor(y,x,z,_cA);
+    cols[i*3]=_cA.r; cols[i*3+1]=_cA.g; cols[i*3+2]=_cA.b;
+  }
+  geo.setAttribute('color', new THREE.BufferAttribute(cols,3));
+  geo.setAttribute('normal', new THREE.BufferAttribute(nors,3));
+  const mesh=new THREE.Mesh(geo, terrainMat);
+  mesh.position.set(cx,0,cz);
+  mesh.receiveShadow=true;
+  grp.add(mesh);
+
+  // أشجار وصخور مدموجة في شبكة واحدة (أداء عالٍ)
+  const rand=mulberry32(chunkHash(ci,cj));
+  const out={p:[],n:[],c:[]};
+  const nTry=9+Math.floor(rand()*4);
+  for(let k=0;k<nTry;k++){
+    const x=cx+(rand()-.5)*CHUNK, z=cz+(rand()-.5)*CHUNK;
+    if(Math.abs(x)<140 && Math.abs(z)<RUNWAY.l/2+160) continue;   // ساحة القاعدة
+    const y=terrainH(x,z);
+    if(y<0.5 || y>115) continue;                                   // الأشجار تحت خط الصخور
+    const s=.8+rand()*1.4;
+    if(rand()<.7) addPine(out,x,y-0.3,z,s,rand);
+    else addLeafTree(out,x,y-0.3,z,s,rand);
+  }
+  for(let k=0;k<3;k++){
+    const x=cx+(rand()-.5)*CHUNK, z=cz+(rand()-.5)*CHUNK;
+    if(Math.abs(x)<140 && Math.abs(z)<RUNWAY.l/2+160) continue;
+    const y=terrainH(x,z);
+    if(y<0.5 || y>330 || rand()<.4) continue;
+    addRock(out,x,y,z,1.6+rand()*3.4,rand);
+  }
+  if(out.p.length){
+    const tg=new THREE.BufferGeometry();
+    tg.setAttribute('position', new THREE.Float32BufferAttribute(out.p,3));
+    tg.setAttribute('normal',   new THREE.Float32BufferAttribute(out.n,3));
+    tg.setAttribute('color',    new THREE.Float32BufferAttribute(out.c,3));
+    const tm=new THREE.Mesh(tg, treeMat);
+    tm.castShadow=true;
+    grp.add(tm);
+  }
+  scene.add(grp);
+  return grp;
+}
+function updateChunks(px,pz,budget=2){
+  const ci=Math.round(px/CHUNK), cj=Math.round(pz/CHUNK);
+  for(const [k,g] of chunks){
+    const c=k.split(','); const i=+c[0], j=+c[1];
+    if(Math.max(Math.abs(i-ci),Math.abs(j-cj))>VIEW_R+1){
+      g.traverse(o=>{ if(o.geometry) o.geometry.dispose(); });
+      scene.remove(g);
+      chunks.delete(k);
+    }
+  }
+  const missing=[];
+  for(let i=ci-VIEW_R;i<=ci+VIEW_R;i++)
+    for(let j=cj-VIEW_R;j<=cj+VIEW_R;j++){
+      const k=i+','+j;
+      if(!chunks.has(k)) missing.push([i,j,(i-ci)*(i-ci)+(j-cj)*(j-cj)]);
+    }
+  missing.sort((a,b)=>a[2]-b[2]);
+  const n=Math.min(budget,missing.length);
+  for(let k=0;k<n;k++){
+    chunks.set(missing[k][0]+','+missing[k][1], buildChunk(missing[k][0],missing[k][1]));
+  }
+}
+
+/* ================= المدرج والقاعدة ================= */
 const RUNWAY = {w:52, l:1300};
 (function makeRunway(){
   const grp=new THREE.Group();
@@ -395,7 +512,6 @@ const RUNWAY = {w:52, l:1300};
       const th=new THREE.Mesh(new THREE.BoxGeometry(2.4,.05,14), lineM);
       th.position.set(i*4.6,.65,zz); grp.add(th);
     }
-  // أضواء حافة المدرج (تلمع ليلاً)
   const lg=new THREE.SphereGeometry(.9,6,6);
   const lm=new THREE.MeshBasicMaterial({color:0xffe9a8});
   const gm=new THREE.MeshBasicMaterial({color:0x59ff8a});
@@ -409,7 +525,6 @@ const RUNWAY = {w:52, l:1300};
     const g1=new THREE.Mesh(lg,gm); g1.position.set(i*5, 1,  RUNWAY.l/2+6); grp.add(g1); runwayLights.push(g1);
     const r1=new THREE.Mesh(lg,rm); r1.position.set(i*5, 1, -RUNWAY.l/2-6); grp.add(r1); runwayLights.push(r1);
   }
-  // برج مراقبة
   const tw=new THREE.Group();
   const base=new THREE.Mesh(new THREE.CylinderGeometry(4,5,34,10), new THREE.MeshLambertMaterial({color:0xd9d4c8}));
   base.position.y=17; base.castShadow=true;
@@ -426,23 +541,8 @@ const RUNWAY = {w:52, l:1300};
   scene.add(grp);
 })();
 
-/* ================= أشجار وسحب ================= */
-(function trees(){
-  const trunkM=new THREE.MeshLambertMaterial({color:0x6b4a2b});
-  const leafM =new THREE.MeshLambertMaterial({color:0x2f6b2f});
-  const leafM2=new THREE.MeshLambertMaterial({color:0x3f7d33});
-  for(let i=0;i<220;i++){
-    const x=(Math.random()-.5)*5200, z=(Math.random()-.5)*5200;
-    if(Math.abs(x)<120 && Math.abs(z)<RUNWAY.l/2+140) continue;
-    const y=terrainH(x,z); if(y>70) continue;
-    const s=.8+Math.random()*1.6;
-    const tr=new THREE.Mesh(new THREE.CylinderGeometry(.7*s,.9*s,6*s,5), trunkM);
-    tr.position.set(x,y+3*s,z);
-    const lv=new THREE.Mesh(new THREE.ConeGeometry(4.4*s,11*s,6), Math.random()<.5?leafM:leafM2);
-    lv.position.set(x,y+10*s,z); lv.castShadow=true;
-    scene.add(tr,lv);
-  }
-})();
+/* ================= السحب ================= */
+const cloudSprites=[];
 (function clouds(){
   const cnv=document.createElement('canvas'); cnv.width=256; cnv.height=128;
   const x=cnv.getContext('2d');
@@ -453,54 +553,70 @@ const RUNWAY = {w:52, l:1300};
     x.fillStyle=gr; x.fillRect(0,0,256,128);
   }
   const tex=new THREE.CanvasTexture(cnv);
-  for(let i=0;i<34;i++){
+  for(let i=0;i<30;i++){
     const sp=new THREE.Sprite(new THREE.SpriteMaterial({map:tex, transparent:true, opacity:.85, depthWrite:false}));
     const s=300+Math.random()*520;
     sp.scale.set(s, s*.45, 1);
-    sp.position.set((Math.random()-.5)*7500, 450+Math.random()*650, (Math.random()-.5)*7500);
-    scene.add(sp);
+    sp.position.set((Math.random()-.5)*6800, 550+Math.random()*650, (Math.random()-.5)*6800);
+    scene.add(sp); cloudSprites.push(sp);
   }
 })();
 
-/* ================= بناء الطائرة (F-35 الشبحية) ================= */
+/* ================= بناء الطائرة (F-35 واقعية) ================= */
 function buildJet(color=0x4d565f, isEnemy=false){
   const grp=new THREE.Group();
   const mainColor = isEnemy? 0x77362c : color;
   const bodyM=new THREE.MeshPhongMaterial({color:mainColor, shininess:30, flatShading:true});
   const darkM=new THREE.MeshPhongMaterial({color:0x2b3138, shininess:25});
-  // قمرة F-35 بلمعة ذهبية مميزة
   const glassM=new THREE.MeshPhongMaterial({color:0x8a6d2f, shininess:160, transparent:true, opacity:.88});
+  const sensorM=new THREE.MeshPhongMaterial({color:0x1a2430, shininess:180});
 
   // جسم زاوي شبحي (مقطع سداسي مفلطح)
   const fg=new THREE.CylinderGeometry(1.35,1.7,10.8,6);
   fg.rotateY(Math.PI/6); fg.rotateX(Math.PI/2); fg.scale(1.15,.8,1);
   const fus=new THREE.Mesh(fg, bodyM);
   fus.castShadow=true; grp.add(fus);
-  // مقدمة مدببة زاوية
+  // مقدمة مدببة
   const ng=new THREE.ConeGeometry(1.35,3.4,6);
   ng.rotateY(Math.PI/6); ng.rotateX(-Math.PI/2); ng.scale(1.15,.8,1);
   const nose=new THREE.Mesh(ng, bodyM);
   nose.position.z=-7.1; grp.add(nose);
-  // قمرة فقاعية للأمام
+  // مستشعر EOTS تحت المقدمة (علامة F-35)
+  const eots=new THREE.Mesh(new THREE.ConeGeometry(.42,.7,4), sensorM);
+  eots.rotation.x=Math.PI; eots.position.set(0,-.72,-5.7); grp.add(eots);
+  // قمرة ذهبية اللمعة
   const cp=new THREE.Mesh(new THREE.SphereGeometry(1.0,12,10), glassM);
   cp.scale.set(.82,.78,2.25); cp.position.set(0,.92,-3.3); grp.add(cp);
-  // حدبة الظهر خلف القمرة
+  // إطار القمرة
+  const bow=new THREE.Mesh(new THREE.BoxGeometry(1.5,.06,.14), darkM);
+  bow.position.set(0,1.32,-2.5); grp.add(bow);
+  // حدبة الظهر وخط الظهر الداكن
   const hump=new THREE.Mesh(new THREE.BoxGeometry(1.5,.55,3.4), bodyM);
   hump.position.set(0,.85,.4); grp.add(hump);
-  // مدخلا هواء جانبيان زاويان (DSI)
+  const spine=new THREE.Mesh(new THREE.BoxGeometry(.55,.1,5.4), darkM);
+  spine.position.set(0,1.14,1.4); grp.add(spine);
+  // مدخلا هواء جانبيان (DSI)
   for(const side of [1,-1]){
     const intake=new THREE.Mesh(new THREE.BoxGeometry(1.0,1.15,3.2), darkM);
     intake.position.set(side*1.55,-.25,-1.6);
     intake.rotation.y=side*.07;
     grp.add(intake);
   }
-  // أجنحة شبه منحرفة (سحب خلفي)
+  // أجنحة شبه منحرفة
   const wingShape=new THREE.Shape();
   wingShape.moveTo(0,-1.5); wingShape.lineTo(5.6,1.2); wingShape.lineTo(5.6,2.4); wingShape.lineTo(0,3.2); wingShape.lineTo(0,-1.5);
   const wgeo=new THREE.ExtrudeGeometry(wingShape,{depth:.24, bevelEnabled:false});
   const wR=new THREE.Mesh(wgeo, bodyM); wR.rotation.x=Math.PI/2; wR.position.set(1.2,.05,-1.0); wR.castShadow=true;
   const wL=wR.clone(); wL.scale.x=-1; wL.position.x=-1.2;
   grp.add(wR,wL);
+  // أضواء ملاحة: أحمر يسار • أخضر يمين • أبيض ذيل (تلمع ليلاً)
+  const lampGeo=new THREE.SphereGeometry(.16,6,6);
+  const lampL=new THREE.Mesh(lampGeo, new THREE.MeshBasicMaterial({color:0xff3b30}));
+  lampL.position.set(-6.6,.2,1.3); grp.add(lampL);
+  const lampR2=new THREE.Mesh(lampGeo, new THREE.MeshBasicMaterial({color:0x2eff62}));
+  lampR2.position.set(6.6,.2,1.3); grp.add(lampR2);
+  const lampT=new THREE.Mesh(lampGeo, new THREE.MeshBasicMaterial({color:0xffffff}));
+  lampT.position.set(0,.5,6.7); grp.add(lampT);
   // ذيل أفقي
   const tShape=new THREE.Shape();
   tShape.moveTo(0,0); tShape.lineTo(2.9,1.2); tShape.lineTo(2.9,2.0); tShape.lineTo(0,2.2); tShape.lineTo(0,0);
@@ -508,7 +624,7 @@ function buildJet(color=0x4d565f, isEnemy=false){
   const tR=new THREE.Mesh(tgeo, bodyM); tR.rotation.x=Math.PI/2; tR.position.set(1.1,0,3.8);
   const tL=tR.clone(); tL.scale.x=-1; tL.position.x=-1.1;
   grp.add(tR,tL);
-  // ذيل عمودي مزدوج مائل للخارج — علامة F-35 المميزة
+  // ذيل عمودي مزدوج مائل للخارج
   const vShape=new THREE.Shape();
   vShape.moveTo(0,0); vShape.lineTo(2.6,1.1); vShape.lineTo(2.6,2.9); vShape.lineTo(.5,2.1); vShape.lineTo(0,0);
   const vgeo=new THREE.ExtrudeGeometry(vShape,{depth:.16, bevelEnabled:false});
@@ -519,16 +635,20 @@ function buildJet(color=0x4d565f, isEnemy=false){
     fin.rotation.z=Math.PI/2; fin.rotation.y=Math.PI/2; fin.position.set(.08,0,0);
     const piv=new THREE.Group(); piv.add(fin);
     piv.position.set(side*1.45,.55,3.1);
-    piv.rotation.z=-side*.38;   // ميلان الذيل للخارج
+    piv.rotation.z=-side*.38;
     grp.add(piv);
   }
-  // فوهة المحرك
+  // فوهة المحرك + توهج داخلي
   const noz=new THREE.Mesh(new THREE.CylinderGeometry(1.0,.85,1.6,8), darkM);
   noz.rotation.x=Math.PI/2; noz.position.z=6.0; grp.add(noz);
+  const nozIn=new THREE.Mesh(new THREE.CylinderGeometry(.72,.55,.4,8),
+    new THREE.MeshBasicMaterial({color:0x6a2a08}));
+  nozIn.rotation.x=Math.PI/2; nozIn.position.z=6.7; grp.add(nozIn);
   const flame=new THREE.Mesh(new THREE.ConeGeometry(.65,3.4,8),
     new THREE.MeshBasicMaterial({color:0xff8c2e, transparent:true, opacity:.9}));
   flame.rotation.x=-Math.PI/2; flame.position.z=8.2; grp.add(flame);
   grp.userData.flame=flame;
+  // عجلات
   const gear=new THREE.Group();
   const wM=new THREE.MeshLambertMaterial({color:0x1a1a1a});
   const legM=new THREE.MeshLambertMaterial({color:0xb7b7b7});
@@ -574,6 +694,7 @@ function loadProgress(){ try{ return Math.min(2, parseInt(localStorage.getItem('
 function saveProgress(v){ try{ localStorage.setItem('nasr_level', String(v)); }catch(e){} }
 
 const enemies=[], groundTargets=[];
+const bullets=[], eBullets=[], missilesArr=[], shells=[], booms=[];
 function clearTargets(){
   for(const e of enemies) scene.remove(e);
   for(const g of groundTargets) scene.remove(g);
@@ -586,7 +707,9 @@ function clearTargets(){
 function spawnAir(n, aggro){
   for(let i=0;i<n;i++){
     const a=Math.random()*Math.PI*2, r=900+Math.random()*1100;
-    const x=Math.cos(a)*r, z=Math.sin(a)*r, y=300+Math.random()*260;
+    const x=Math.cos(a)*r, z=Math.sin(a)*r;
+    let y=300+Math.random()*260;
+    y=Math.max(y, terrainH(x,z)+130);
     const e=buildJet(0xb0532f,true);
     e.position.set(x,y,z);
     e.userData.center=new THREE.Vector3(x,y,z);
@@ -605,7 +728,7 @@ function spawnGround(tanks, radars, gfire){
   function place(){
     let x,z;
     do{ x=(Math.random()-.5)*3400; z=(Math.random()-.5)*3400; }
-    while(Math.abs(x)<220 && Math.abs(z)<RUNWAY.l/2+260);
+    while((Math.abs(x)<220 && Math.abs(z)<RUNWAY.l/2+260) || terrainH(x,z)>110);
     return [x,z];
   }
   for(let i=0;i<tanks;i++){
@@ -650,7 +773,6 @@ function loadLevel(i){
 }
 
 /* ================= الذخيرة ================= */
-const bullets=[], eBullets=[], missilesArr=[], shells=[], booms=[];
 const bulletGeo=new THREE.SphereGeometry(.35,6,6);
 const bulletMat=new THREE.MeshBasicMaterial({color:0xffe27a});
 const eBulletMat=new THREE.MeshBasicMaterial({color:0xff4a4a});
@@ -719,7 +841,7 @@ function killTarget(e){
   S.destroyed++;
   updHud();
   if(enemies.length===0 && groundTargets.length===0)
-    showMsg('🎯 دمّرت كل الأهداف! عُد إلى المدرج واهبط', 5);
+    showMsg('🎯 دمّرت كل الأهداف! اتبع سهم 🏠 وعُد للمدرج واهبط', 5);
 }
 function damagePlayer(amount){
   if(S.over || S.onGround) return;
@@ -750,7 +872,7 @@ stickEl.addEventListener('touchstart',e=>{stick.on=true;stickMove(e.touches[0]);
 stickEl.addEventListener('touchmove',e=>{stickMove(e.touches[0]);e.preventDefault();},{passive:false});
 stickEl.addEventListener('touchend',()=>{stick.on=false;stick.x=stick.y=0;knob.style.transform='translate(-50%,-50%)';});
 
-const tState={fire:false,thrU:false,thrD:false};
+const tState={fire:false};
 function bindBtn(id,down,up){
   const el=document.getElementById(id);
   el.addEventListener('touchstart',e=>{down();el.classList.add('on');e.preventDefault();},{passive:false});
@@ -837,11 +959,15 @@ function crash(){
 const clock=new THREE.Clock();
 const camPos=new THREE.Vector3(), camLook=new THREE.Vector3();
 const _v1=new THREE.Vector3(), _v2=new THREE.Vector3();
+const MAX_BANK=THREE.MathUtils.degToRad(75);   // حد الميلان الأقصى 75°
 
 function animate(){
   requestAnimationFrame(animate);
   const dt=Math.min(clock.getDelta(), .05);
   const t=clock.elapsedTime;
+
+  // توليد الأرض حول الطائرة باستمرار (عالم لا نهائي)
+  updateChunks(jet.position.x, jet.position.z, 2);
 
   if(S.playing){
     /* --- مدخلات --- */
@@ -870,9 +996,15 @@ function animate(){
     const agility=THREE.MathUtils.clamp(S.speed/120,.15,1);
     if(!S.onGround){
       jet.rotateX(pitchIn*1.15*agility*dt);
-      jet.rotateZ(rollIn*1.8*agility*dt);
-      const up=_v1.set(0,1,0).applyQuaternion(jet.quaternion);
-      const bank=Math.atan2(up.x,up.y);
+      // ميلان محدود بـ 75 درجة كحد أقصى — تحكم أسهل
+      let up=_v1.set(0,1,0).applyQuaternion(jet.quaternion);
+      let bank=Math.atan2(up.x,up.y);
+      const rollDelta=rollIn*1.8*agility*dt;
+      const targetBank=THREE.MathUtils.clamp(bank-rollDelta, -MAX_BANK, MAX_BANK);
+      jet.rotateZ(bank-targetBank);
+      // انعطاف منسّق حسب الميلان
+      up=_v1.set(0,1,0).applyQuaternion(jet.quaternion);
+      bank=Math.atan2(up.x,up.y);
       jet.rotateOnWorldAxis(_v2.set(0,1,0), -bank*.9*agility*dt);
       if(Math.abs(rollIn)<.1) jet.rotateZ(-bank*.25*dt);
     }else{
@@ -917,6 +1049,17 @@ function animate(){
 
     $('warn').style.display = (!S.onGround && groundClear<45 && fwd.y<-.05)? 'block':'none';
 
+    /* --- سهم القاعدة والمسافة --- */
+    {
+      const dx=-jet.position.x, dz=-jet.position.z;
+      const distKm=Math.hypot(dx,dz)/1000;
+      const toHome=Math.atan2(dx,dz);
+      const hf=Math.atan2(fwd.x,fwd.z);
+      let rel=toHome-hf;
+      $('homeArr').style.transform='rotate('+(-rel)+'rad)';
+      $('homeDist').textContent=distKm.toFixed(1);
+    }
+
     /* --- لهب المحرك ودخان الضرر --- */
     const fl=jet.userData.flame;
     fl.visible=S.throttle>.08;
@@ -935,22 +1078,18 @@ function animate(){
       const distP=e.position.distanceTo(jet.position);
       const hunting = e.userData.aggro && !S.onGround && distP<1600;
       if(hunting){
-        // مطاردة اللاعب
         _v1.copy(jet.position).sub(e.position).normalize();
         e.userData.dir.lerp(_v1, dt*.8).normalize();
         e.position.addScaledVector(e.userData.dir, 82*dt);
-        // لا يهبط تحت الأرض
         const minY=terrainH(e.position.x,e.position.z)+70;
         if(e.position.y<minY){ e.position.y+=(minY-e.position.y)*dt*2; e.userData.dir.y=Math.max(e.userData.dir.y,.1); }
         _v2.copy(e.position).add(e.userData.dir);
         e.lookAt(_v2); e.rotateY(Math.PI);
-        // إطلاق النار على اللاعب
         e.userData.fireCd-=dt;
         if(e.userData.fireCd<=0 && distP<820 && e.userData.dir.dot(_v1.copy(jet.position).sub(e.position).normalize())>.93){
           e.userData.fireCd=1.2+Math.random()*1.3;
           const b=new THREE.Mesh(bulletGeo,eBulletMat);
           b.position.copy(e.position).addScaledVector(e.userData.dir,9);
-          // تصويب مع تقدير حركة اللاعب
           const lead=jet.position.clone().addScaledVector(fwd, S.speed*(distP/380)*.6);
           b.userData.v=lead.sub(b.position).normalize().multiplyScalar(380);
           b.userData.t=2.6;
@@ -958,11 +1097,11 @@ function animate(){
           if(distP<600) Snd.burst('highpass',1000,.08,.12);
         }
       }else{
-        // دوران اعتيادي
         e.userData.a += e.userData.w*dt;
         const c=e.userData.center, r=e.userData.r;
         const nx=c.x+Math.cos(e.userData.a)*r, nz=c.z+Math.sin(e.userData.a)*r;
-        const ny=c.y+Math.sin(t*.4+e.userData.a)*24;
+        let ny=c.y+Math.sin(t*.4+e.userData.a)*24;
+        ny=Math.max(ny, terrainH(nx,nz)+90);
         _v1.set(nx-e.position.x, ny-e.position.y, nz-e.position.z);
         e.position.set(nx,ny,nz);
         if(_v1.lengthSq()>1e-6){
@@ -1018,7 +1157,8 @@ function animate(){
     }
 
     /* --- رصاص الأعداء وقذائف الدبابات --- */
-    for(const [arr,dmg,rad] of [[eBullets,7,6],[shells,14,9]]){
+    for(const conf of [[eBullets,7,6],[shells,14,9]]){
+      const arr=conf[0], dmg=conf[1], rad=conf[2];
       for(let i=arr.length-1;i>=0;i--){
         const b=arr[i];
         b.position.addScaledVector(b.userData.v,dt);
@@ -1081,6 +1221,20 @@ function animate(){
     }
   }
 
+  /* --- الأجرام والسحب تتبع اللاعب (عالم لا نهائي) --- */
+  skyMesh.position.copy(camera.position);
+  stars.position.set(camera.position.x, 0, camera.position.z);
+  sunSprite.position.copy(camera.position).add(curSun.spr);
+  moonSprite.position.copy(camera.position).add(MOON_OFF);
+  sun.position.copy(jet.position).add(curSun.off);
+  sun.target.position.copy(jet.position);
+  for(const sp of cloudSprites){
+    if(sp.position.x-camera.position.x> 3600) sp.position.x-=7200;
+    if(sp.position.x-camera.position.x<-3600) sp.position.x+=7200;
+    if(sp.position.z-camera.position.z> 3600) sp.position.z-=7200;
+    if(sp.position.z-camera.position.z<-3600) sp.position.z+=7200;
+  }
+
   /* --- المطر يتبع الكاميرا --- */
   if(rain.visible){
     const pos=rain.geometry.attributes.position;
@@ -1118,6 +1272,7 @@ function animate(){
   renderer.render(scene,camera);
 }
 resetPlane();
+updateChunks(0, START.z, 99);   // بناء الأرض الأولية حول القاعدة فوراً
 camPos.copy(jet.position).add(new THREE.Vector3(0,8,30));
 animate();
 
