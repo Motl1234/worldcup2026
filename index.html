@@ -347,7 +347,8 @@ footer{text-align:center;color:var(--muted);font-size:.7rem;padding:20px;line-he
 .br-row+.br-row{border-top:1px solid var(--line)}
 .br-row .fl{font-size:1.02rem;line-height:1;filter:drop-shadow(0 1px 1px rgba(0,0,0,.4))}
 .br-row .nm{flex:1;font-weight:600;color:var(--text);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
-.br-row .sc{font-family:'Rubik';font-weight:800;min-width:16px;text-align:center;color:var(--muted)}
+.br-row .sc{font-family:'Rubik';font-weight:800;min-width:16px;text-align:center;color:var(--muted);direction:ltr;unicode-bidi:isolate}
+.br-psc{font-style:normal;font-size:.66em;color:var(--gold);opacity:.9;margin-inline-start:2px}
 .br-row.win .nm{color:var(--gold)}
 .br-row.win .sc{color:var(--gold)}
 .br-row.lose{opacity:.5}
@@ -777,6 +778,13 @@ const KO = [
 KO.filter(k=>k.stage==="R32").forEach(k=>{ k.ko=true; k.koLabel="دور الـ 32"; M.push(k); });
 M.forEach((m,i)=>m.id=i);
 
+/* نص ركلات الترجيح بأسماء الفريقين — يمنع انعكاس ترتيب الأرقام في النص العربي RTL */
+function penText(h,a,phs,pas){
+  if(!(Number.isInteger(phs)&&Number.isInteger(pas))) return "";
+  const hN=T[h]?T[h].n:(h||"؟"), aN=T[a]?T[a].n:(a||"؟");
+  return phs>=pas ? `${hN} ${phs} — ${aN} ${pas}` : `${aN} ${pas} — ${hN} ${phs}`;
+}
+
 /* حلّ أطراف كل مباراة إقصائية: رمز الفريق إن كان معروفًا، أو فائز مباراة سابقة */
 const KO_STAGE_AR = {R32:"دور الـ 32", R16:"دور الـ 16", QF:"ربع النهائي", SF:"نصف النهائي", F:"النهائي"};
 function koWinnerCode(k){
@@ -802,8 +810,11 @@ function applyKOResults(results){
     const k=KO.find(k=>k.stage!=="R32" && k._h && k._a && ((k._h===r.h&&k._a===r.a)||(k._h===r.a&&k._a===r.h)));
     if(!k) return;
     if(k._h===r.h){k.hs=r.hs;k.as=r.as;} else {k.hs=r.as;k.as=r.hs;}
+    // لا تسمح لبيانات مؤقتة قديمة (كاش) بإرجاع مباراة منتهية إلى "مباشر"
+    if(k.st==="FT" && r.st==="LIVE") return;
     // ركلات الترجيح تُخزَّن منفصلة عن الأهداف (لا تُجمع معها)
-    if(Number.isInteger(r.phs)&&Number.isInteger(r.pas)){
+    // ترجيح متعادل = لقطة منتصف الترجيح، نتجاهلها حتى لا تمسح الفائز
+    if(Number.isInteger(r.phs)&&Number.isInteger(r.pas)&&r.phs!==r.pas){
       if(k._h===r.h){k.phs=r.phs;k.pas=r.pas;} else {k.phs=r.pas;k.pas=r.phs;}
     }
     k.st = r.st==="LIVE" ? "LIVE" : "FT";
@@ -867,7 +878,7 @@ function renderHero(){
   if(st==="LIVE"){
     label='<span class="hero-badge live">🔴 مباشر</span>';
     const pen=(Number.isInteger(next.phs)&&Number.isInteger(next.pas))
-      ? `<div class="hero-pen">🥅 ركلات الترجيح ${next.phs} - ${next.pas}</div>` : "";
+      ? `<div class="hero-pen">🥅 ركلات الترجيح: ${penText(next.h,next.a,next.phs,next.pas)}</div>` : "";
     mid=`<div class="hero-score">${hasScore?next.hs:0}<span class="sep">-</span>${hasScore?next.as:0}</div>
          <div class="clock live">${liveLabel(next)}</div>${pen}`;
   } else {
@@ -940,7 +951,7 @@ function renderMatches(){
 function matchCard(m){
   const d=pdate(m.dt), st=status(m), tm=fmtTime(d), ksa=(m.h==="KSA"||m.a==="KSA");
   let mid;
-  const penLine=(Number.isInteger(m.phs)&&Number.isInteger(m.pas))?`<div class="livemin" style="color:var(--gold);font-weight:700">🥅 ركلات الترجيح ${m.phs} - ${m.pas}</div>`:"";
+  const penLine=(Number.isInteger(m.phs)&&Number.isInteger(m.pas))?`<div class="livemin" style="color:var(--gold);font-weight:700">🥅 ركلات الترجيح: ${penText(m.h,m.a,m.phs,m.pas)}</div>`:"";
   if(st==="FT") mid=`<div class="score"><span class="${m.hs>m.as?'w':''}">${m.hs}</span> – <span class="${m.as>m.hs?'w':''}">${m.as}</span></div>${penLine}`;
   else if(st==="LIVE") mid=`<div class="score livescore">${m.hs??0} – ${m.as??0}</div><div class="livemin">${liveLabel(m)}</div>${penLine}`;
   else mid=`<div class="time">${tm.t}</div><div class="ampm">${tm.ap} بتوقيت السعودية</div>`;
@@ -1181,20 +1192,22 @@ function koStatus(k){
   return "NS";
 }
 function koRefLabel(side){ return (side&&typeof side==="object")?("الفائز · م"+side.w):"بانتظار التأهّل"; }
-function brTeamRow(code,score,win,lose,refLabel){
+function brTeamRow(code,score,win,lose,refLabel,pen){
   if(!code) return '<div class="br-row"><span class="fl">—</span><span class="nm tbd">'+(refLabel||"بانتظار التأهّل")+'</span><span class="sc"></span></div>';
   const cls=(win?"win ":"")+(lose?"lose ":"")+(code==="KSA"?"ksa":"");
   const f=T[code]?T[code].f:"🏳️", n=T[code]?T[code].n:code;
-  return '<div class="br-row '+cls+'" data-team="'+code+'"><span class="fl">'+f+'</span><span class="nm">'+n+'</span><span class="sc">'+(Number.isInteger(score)?score:"")+'</span></div>';
+  const sc=(Number.isInteger(score)?score:"")+(Number.isInteger(pen)?'<i class="br-psc">('+pen+')</i>':'');
+  return '<div class="br-row '+cls+'" data-team="'+code+'"><span class="fl">'+f+'</span><span class="nm">'+n+'</span><span class="sc">'+sc+'</span></div>';
 }
 function brCard(k){
   const w=koWinnerCode(k);
   const hWin=!!w&&w===k._h, aWin=!!w&&w===k._a;
   const live=(koStatus(k)==="LIVE")&&k.st!=="FT";
   const ksaHere=(k._h==="KSA"||k._a==="KSA");
-  const top=brTeamRow(k._h,k.hs,hWin,!!w&&!hWin,koRefLabel(k.h));
-  const bot=brTeamRow(k._a,k.as,aWin,!!w&&!aWin,koRefLabel(k.a));
-  let pen=""; if(Number.isInteger(k.phs)&&Number.isInteger(k.pas)) pen='<div class="br-pen">ركلات الترجيح '+k.phs+' - '+k.pas+'</div>';
+  const hasPen=Number.isInteger(k.phs)&&Number.isInteger(k.pas);
+  const top=brTeamRow(k._h,k.hs,hWin,!!w&&!hWin,koRefLabel(k.h),hasPen?k.phs:null);
+  const bot=brTeamRow(k._a,k.as,aWin,!!w&&!aWin,koRefLabel(k.a),hasPen?k.pas:null);
+  let pen=""; if(hasPen) pen='<div class="br-pen">🥅 حُسمت بركلات الترجيح</div>';
   let when="";
   if(live){ const lbl=Number.isInteger(k.min)?k.min+"′":"مباشر"; when='<div class="br-when livew">🔴 '+lbl+'</div>'; }
   else if(k.st==="FT"){ when='<div class="br-when">انتهت</div>'; }
@@ -1294,13 +1307,16 @@ function applyResults(results){
     const m=M.find(x=>(x.h===r.h&&x.a===r.a)||(x.h===r.a&&x.a===r.h));
     const valid = m && Number.isInteger(r.hs) && Number.isInteger(r.as) && r.hs>=0 && r.as>=0 && r.hs<=30 && r.as<=30;
     if(valid){
+      // لا تُرجِع مباراة منتهية إلى "مباشر" بسبب لقطة قديمة عالقة في الكاش
+      if(m.st==="FT" && r.st==="LIVE") return;
       const wasNS=m.st!=="FT"; const oldH=m.hs,oldA=m.as,oldSt=m.st;
       if(m.h===r.h){m.hs=r.hs;m.as=r.as}else{m.hs=r.as;m.as=r.hs}
       m.st = r.st==="LIVE" ? "LIVE" : "FT";
       // الدقيقة والشوط الحي (من API-Football)
       if(m.st==="LIVE"){ m.min=Number.isInteger(r.min)?r.min:null; m.half=r.half||null; }
       else { m.min=null; m.half=null; }
-      if(Number.isInteger(r.phs)&&Number.isInteger(r.pas)){ if(m.h===r.h){m.phs=r.phs;m.pas=r.pas}else{m.phs=r.pas;m.pas=r.phs} }
+      // ترجيح متعادل = لقطة منتصف الترجيح؛ نتجاهلها كي لا تمسح النتيجة النهائية المخزّنة
+      if(Number.isInteger(r.phs)&&Number.isInteger(r.pas)&&r.phs!==r.pas){ if(m.h===r.h){m.phs=r.phs;m.pas=r.pas}else{m.phs=r.pas;m.pas=r.phs} }
       if(r.sc && typeof r.sc==="string" && r.sc.trim()) m.goals="⚽ "+r.sc.trim();
       const changed = oldH!==m.hs||oldA!==m.as||oldSt!==m.st;
       if(m.st==="LIVE") live++;
@@ -1325,9 +1341,19 @@ function goalScore(score){
   if(!score) return {hs:null,as:null,phs:null,pas:null};
   const pen = score.penalties && Number.isInteger(score.penalties.home) && Number.isInteger(score.penalties.away);
   if(pen){
-    const rt=score.regularTime||{}, et=score.extraTime||{};
-    const hs=(Number.isInteger(rt.home)?rt.home:0)+(Number.isInteger(et.home)?et.home:0);
-    const as=(Number.isInteger(rt.away)?rt.away:0)+(Number.isInteger(et.away)?et.away:0);
+    const rt=score.regularTime, et=score.extraTime||{};
+    let hs,as;
+    if(rt && Number.isInteger(rt.home) && Number.isInteger(rt.away)){
+      hs=rt.home+(Number.isInteger(et.home)?et.home:0);
+      as=rt.away+(Number.isInteger(et.away)?et.away:0);
+    }else{
+      // لا يوجد regularTime في الرد: fullTime قد يشمل الترجيح — نطرحه إن كان الطرح منطقيًا
+      const ft=score.fullTime||{};
+      if(Number.isInteger(ft.home)&&Number.isInteger(ft.away)){
+        const sh=ft.home-score.penalties.home, sa=ft.away-score.penalties.away;
+        if(sh>=0&&sa>=0){hs=sh;as=sa;}else{hs=ft.home;as=ft.away;}
+      }else{hs=null;as=null;}
+    }
     return {hs,as,phs:score.penalties.home,pas:score.penalties.away};
   }
   const ft=score.fullTime||{};
