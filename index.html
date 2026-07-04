@@ -154,6 +154,9 @@ section.on{display:block;animation:fade .42s cubic-bezier(.22,.8,.3,1)}
 .md-tag{background:var(--panel2);border:1px solid var(--line);border-radius:999px;padding:4px 12px;font-size:.8rem;font-weight:700;color:var(--gold)}
 .md-range{font-family:'Rubik';font-weight:700;font-size:.92rem;color:var(--text)}
 .md-sub{color:var(--muted);font-size:.74rem;margin-bottom:10px;line-height:1.6}
+.md-dayhdr{margin:16px 2px 9px;font-weight:700;color:#ffe9a8;font-size:.92rem;display:flex;align-items:center;gap:10px}
+.md-dayhdr:after{content:"";flex:1;height:1px;background:linear-gradient(90deg,var(--line),transparent)}
+.md-dayhdr .hj{color:var(--muted);font-weight:400;font-size:.74rem}
 
 /* ===== Update bar ===== */
 .update-bar{display:flex;align-items:center;gap:10px;justify-content:space-between;background:var(--glass);backdrop-filter:blur(14px) saturate(140%);-webkit-backdrop-filter:blur(14px) saturate(140%);border:1px solid var(--glass-bd);border-radius:14px;padding:10px 12px;margin-bottom:16px;flex-wrap:wrap}
@@ -848,7 +851,7 @@ function ksaNow(){ return new Date(Date.now()+ (3*60+new Date().getTimezoneOffse
 function pdate(s){ return new Date(s.replace("T"," ").replace(/-/g,"/")); } // treated as KSA wall-clock
 function fmtDay(d){ return `${DAYS[d.getDay()]} ${d.getDate()} ${MONTHS[d.getMonth()]} ${d.getFullYear()}`; }
 function fmtShort(d){ return `${DAYS[d.getDay()]} ${d.getDate()}/${d.getMonth()+1}/${d.getFullYear()}`; }
-function hijri(d){ try{ return new Intl.DateTimeFormat('ar-SA-u-ca-islamic-umalqura',{day:'numeric',month:'long',year:'numeric'}).format(d)+" هـ"; }catch(e){ return ""; } }
+function hijri(d){ try{ const s=new Intl.DateTimeFormat('ar-SA-u-ca-islamic-umalqura',{day:'numeric',month:'long',year:'numeric'}).format(d); return s.includes("هـ")? s : s+" هـ"; }catch(e){ return ""; } }
 function fmtTime(d){ let h=d.getHours(),m=d.getMinutes(),ap=h<12?"ص":"م";h=h%12||12; return {t:`${h}:${String(m).padStart(2,"0")}`,ap}; }
 function isToday(d){ const n=ksaNow(); return d.getDate()===n.getDate()&&d.getMonth()===n.getMonth(); }
 function status(m){
@@ -982,7 +985,8 @@ function ksaRangeLabel(matches){
   const a=ds[0], b=ds[ds.length-1];
   const sameDay = a.getDate()===b.getDate()&&a.getMonth()===b.getMonth();
   if(sameDay) return `${fmtDay(a)}`;
-  return `${DAYS[a.getDay()]} ${a.getDate()} – ${DAYS[b.getDay()]} ${b.getDate()} ${MONTHS[b.getMonth()]} ${b.getFullYear()}`;
+  const sameMonth = a.getMonth()===b.getMonth();
+  return `${DAYS[a.getDay()]} ${a.getDate()}${sameMonth?"":" "+MONTHS[a.getMonth()]} – ${DAYS[b.getDay()]} ${b.getDate()} ${MONTHS[b.getMonth()]} ${b.getFullYear()}`;
 }
 function renderToday(){
   const now=ksaNow();
@@ -999,24 +1003,34 @@ function renderToday(){
   let activeIdx=keys.findIndex(k=>byDay[k].some(m=>status(m)!=="FT"));
   if(activeIdx<0) activeIdx=keys.length-1;
 
-  // نعرض يوم المباريات الحالي + التالي (اليوم وغدًا — متصلان)
-  const show=[keys[activeIdx]]; if(keys[activeIdx+1]) show.push(keys[activeIdx+1]);
-
+  // نعرض يوم مباريات أمريكيًا واحدًا فقط (مباريات اليوم)
   const order={LIVE:0,NS:1,FT:2};
-  let html="";
-  show.forEach((k,idx)=>{
-    const matches=byDay[k].slice().sort((a,b)=> (order[status(a)]-order[status(b)]) || (pdate(a.dt)-pdate(b.dt)));
-    const liveN=matches.filter(m=>status(m)==="LIVE").length;
-    const label = idx===0 ? "🟢 يوم المباريات الحالي" : "⏭️ يوم المباريات التالي";
-    html += `<div class="md-block">
-      <div class="md-head">
-        <span class="md-tag">${label}</span>
-        <span class="md-range">${ksaRangeLabel(matches)}</span>
-      </div>
-      <div class="md-sub">${matches.length} مباراة • يوم أمريكي واحد (يمتد على ليلتين بتوقيت السعودية)${liveN?` • <b style="color:var(--red)">${liveN} مباشرة الآن 🔴</b>`:""}</div>
-      ${matches.map(matchCard).join("")}
-    </div>`;
+  const matches=byDay[keys[activeIdx]].slice().sort((a,b)=>pdate(a.dt)-pdate(b.dt));
+  const liveN=matches.filter(m=>status(m)==="LIVE").length;
+
+  // تقسيم المباريات حسب اليوم السعودي (قد يمتد اليوم الأمريكي على يومين بتوقيت السعودية)
+  const groups=[];
+  matches.forEach(m=>{
+    const d=pdate(m.dt), key=`${d.getMonth()}-${d.getDate()}`;
+    let g=groups.find(x=>x.key===key);
+    if(!g){ g={key, d, items:[]}; groups.push(g); }
+    g.items.push(m);
   });
+  const spans=groups.length>1;
+
+  let html=`<div class="md-block">
+    <div class="md-head">
+      <span class="md-tag">🟢 مباريات اليوم</span>
+      <span class="md-range">${ksaRangeLabel(matches)}</span>
+    </div>
+    <div class="md-sub">${matches.length} مباراة • يوم مباريات أمريكي واحد${spans?` — تمتد على يومين بتوقيت السعودية 🇸🇦`:""}${liveN?` • <b style="color:var(--red)">${liveN} مباشرة الآن 🔴</b>`:""}</div>`;
+  groups.forEach(g=>{
+    // داخل كل يوم سعودي: المباشرة أولًا ثم القادمة ثم المنتهية
+    const items=g.items.slice().sort((a,b)=> (order[status(a)]-order[status(b)]) || (pdate(a.dt)-pdate(b.dt)));
+    if(spans) html+=`<div class="md-dayhdr">🇸🇦 ${fmtDay(g.d)} <span class="hj">${hijri(g.d)}</span></div>`;
+    html+=items.map(matchCard).join("");
+  });
+  html+=`</div>`;
   wrap.innerHTML=html;
 }
 function tickCountdown(target){
