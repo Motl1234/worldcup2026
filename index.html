@@ -972,6 +972,15 @@ function matchCard(m){
    </div>`;
 }
 
+/* مجمّع شامل لكل المباريات: المجموعات + دور الـ32 (داخل M) + الأدوار التالية من المشجرة عند تحدّد أطرافها */
+function allMatchesPool(){
+  if(typeof resolveKO==="function") resolveKO();
+  const pool=[...M];
+  KO.forEach(k=>{ if(k.stage!=="R32" && k._h && k._a)
+    pool.push({h:k._h,a:k._a,dt:k.dt,st:k.st,hs:k.hs,as:k.as,min:k.min,half:k.half,phs:k.phs,pas:k.pas,venue:k.venue,ko:true,koLabel:KO_STAGE_AR[k.stage]}); });
+  return pool;
+}
+
 /* =================== مباريات اليوم =================== */
 /* مفتاح "يوم المباريات الأمريكي": مباريات اليوم الأمريكي الواحد تمتد بتوقيت السعودية
    من مساء يوم حتى فجر اليوم التالي. نعتبر الحدّ منتصف نهار السعودية: أي مباراة قبل
@@ -993,19 +1002,31 @@ function renderToday(){
   document.getElementById("todayDate").textContent = `${fmtDay(now)} • ${hijri(now)}`;
   const wrap=document.getElementById("todayList");
 
-  // جمع المباريات حسب اليوم الأمريكي
+  // جمع كل المباريات (بما فيها الأدوار الإقصائية المتقدمة) حسب اليوم الأمريكي
   const byDay={};
-  M.forEach(m=>{ const k=usDayKey(m); (byDay[k]=byDay[k]||[]).push(m); });
+  allMatchesPool().forEach(m=>{ const k=usDayKey(m); (byDay[k]=byDay[k]||[]).push(m); });
   const keys=Object.keys(byDay).sort();
   if(!keys.length){ wrap.innerHTML=`<div class="today-empty"><span class="big">🏁</span> لا توجد مباريات.</div>`; return; }
 
-  // اليوم النشط = أول يوم فيه مباراة لم تنته؛ وإلا آخر يوم
-  let activeIdx=keys.findIndex(k=>byDay[k].some(m=>status(m)!=="FT"));
-  if(activeIdx<0) activeIdx=keys.length-1;
+  // مباراة "معروضة في اليوم" = جارية الآن، أو لم تبدأ بعد وموعدها لم يفت
+  // (المنتهية — أو القديمة التي لم تصلنا نتيجتها بعد — مكانها تبويب "آخر النتائج")
+  const pending=m=>{
+    const s=status(m);
+    if(s==="LIVE") return true;
+    if(s==="FT") return false;
+    return pdate(m.dt) > new Date(now.getTime()-3*3600000);
+  };
+  // اليوم النشط = أول يوم أمريكي فيه مباراة قادمة أو جارية
+  const activeIdx=keys.findIndex(k=>byDay[k].some(pending));
+  if(activeIdx<0){
+    wrap.innerHTML=`<div class="today-empty"><span class="big">📋</span> لا توجد مباريات قادمة أو جارية الآن — تجد النتائج كاملة في تبويب «آخر النتائج».</div>`;
+    return;
+  }
 
-  // نعرض يوم مباريات أمريكيًا واحدًا فقط (مباريات اليوم)
   const order={LIVE:0,NS:1,FT:2};
-  const matches=byDay[keys[activeIdx]].slice().sort((a,b)=>pdate(a.dt)-pdate(b.dt));
+  const matches=byDay[keys[activeIdx]].slice()
+    .filter(pending)
+    .sort((a,b)=>pdate(a.dt)-pdate(b.dt));
   const liveN=matches.filter(m=>status(m)==="LIVE").length;
 
   // تقسيم المباريات حسب اليوم السعودي (قد يمتد اليوم الأمريكي على يومين بتوقيت السعودية)
@@ -1023,7 +1044,7 @@ function renderToday(){
       <span class="md-tag">🟢 مباريات اليوم</span>
       <span class="md-range">${ksaRangeLabel(matches)}</span>
     </div>
-    <div class="md-sub">${matches.length} مباراة • يوم مباريات أمريكي واحد${spans?` — تمتد على يومين بتوقيت السعودية 🇸🇦`:""}${liveN?` • <b style="color:var(--red)">${liveN} مباشرة الآن 🔴</b>`:""}</div>`;
+    <div class="md-sub">${matches.length} مباراة لم تنتهِ (القادمة والجارية) • يوم مباريات أمريكي واحد${spans?` — تمتد على يومين بتوقيت السعودية 🇸🇦`:""}${liveN?` • <b style="color:var(--red)">${liveN} مباشرة الآن 🔴</b>`:""}</div>`;
   groups.forEach(g=>{
     // داخل كل يوم سعودي: المباشرة أولًا ثم القادمة ثم المنتهية
     const items=g.items.slice().sort((a,b)=> (order[status(a)]-order[status(b)]) || (pdate(a.dt)-pdate(b.dt)));
@@ -1044,19 +1065,15 @@ function tickCountdown(target){
     <div class="cd-box"><div class="n">${mm}</div><div class="l">دقيقة</div></div>`;
 }
 
-/* =================== آخر النتائج (الأحدث أولًا) =================== */
+/* =================== آخر النتائج: المنتهية فقط، الأحدث أعلى =================== */
 function renderResults(){
   const wrap=document.getElementById("resultsList");
-  const done=M.filter(m=>{const s=status(m);return s==="FT"||s==="LIVE";})
-              .sort((a,b)=> pdate(b.dt)-pdate(a.dt));   // تنازلي: الأحدث في الأعلى
-  if(!done.length){ wrap.innerHTML=`<div class="today-empty"><span class="big">⏳</span> لم تبدأ أي مباراة بعد.</div>`; return; }
-  const live=done.filter(m=>status(m)==="LIVE");
-  const ft=done.filter(m=>status(m)==="FT");
-  const ordered=[...live, ...ft];   // المباشرة أولًا، ثم المنتهية بترتيب الأحدث
-  let html=`<div class="sec-note">${ft.length} مباراة منتهية${live.length?` • ${live.length} مباشرة الآن 🔴`:""}</div>`;
-  ordered.forEach((m,i)=>{
-    const isNewest = status(m)==="FT" && i===live.length;  // أول منتهية = الأحدث
-    html += `<div class="res-wrap">${isNewest?'<span class="newest-badge">🆕 الأحدث</span>':''}${matchCard(m)}</div>`;
+  const ft=allMatchesPool().filter(m=>status(m)==="FT")
+            .sort((a,b)=> pdate(b.dt)-pdate(a.dt));   // تنازلي: الأحدث في الأعلى
+  if(!ft.length){ wrap.innerHTML=`<div class="today-empty"><span class="big">⏳</span> لم تنتهِ أي مباراة بعد.</div>`; return; }
+  let html=`<div class="sec-note">${ft.length} مباراة منتهية • مرتبة من الأحدث إلى الأقدم</div>`;
+  ft.forEach((m,i)=>{
+    html += `<div class="res-wrap">${i===0?'<span class="newest-badge">🆕 الأحدث</span>':''}${matchCard(m)}</div>`;
   });
   wrap.innerHTML=html;
 }
