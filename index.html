@@ -760,10 +760,10 @@ const KO = [
   {m:89,stage:"R16",h:{w:74},a:{w:77},dt:"2026-07-05T00:00",venue:"لينكولن فاينانشال — فيلادلفيا",hs:0,as:1,st:"FT",goals:"⚽ مبابي 70' (ركلة جزاء) — فرنسا إلى ربع النهائي لمواجهة المغرب"},
   {m:91,stage:"R16",h:{w:76},a:{w:78},dt:"2026-07-05T23:00",venue:"ملعب متلايف — نيوجيرسي",hs:1,as:2,st:"FT",goals:"⚽ هالاند (ثنائية 79' و90') يقود النرويج لأول ربع نهائي في تاريخها — نيمار 90+10 (جزاء) • البرازيل تودّع قبل ربع النهائي لأول مرة منذ 1990"},
   {m:92,stage:"R16",h:{w:79},a:{w:80},dt:"2026-07-06T03:00",venue:"ملعب أزتيكا — مكسيكو سيتي",hs:2,as:3,st:"FT",goals:"⚽ بيلينغهام (ثنائية خلال 98 ثانية) • كين (هدف وصناعة) — إنجلترا بعشرة لاعبين (طرد كوانسا) تُنهي مشوار المضيف وتُذيق المكسيك أول خسارة مونديالية في الأزتيكا"},
-  {m:93,stage:"R16",h:{w:83},a:{w:84},dt:"2026-07-06T22:00",venue:"ملعب AT&T — أرلينغتون"},
-  {m:94,stage:"R16",h:{w:81},a:{w:82},dt:"2026-07-07T03:00",venue:"لومن فيلد — سياتل"},
-  {m:95,stage:"R16",h:{w:86},a:{w:88},dt:"2026-07-07T19:00",venue:"مرسيدس-بنز — أتلانتا"},
-  {m:96,stage:"R16",h:{w:85},a:{w:87},dt:"2026-07-07T23:00",venue:"BC بليس — فانكوفر"},
+  {m:93,stage:"R16",h:{w:83},a:{w:84},dt:"2026-07-06T22:00",venue:"ملعب AT&T — أرلينغتون",hs:0,as:1,st:"FT",goals:"⚽ ميكيل مرينو 90+1 (إسبانيا) هدف قاتل — رونالدو يودّع كأس العالم في آخر مبارياته المونديالية أمام 70,649 متفرجًا"},
+  {m:94,stage:"R16",h:{w:81},a:{w:82},dt:"2026-07-07T03:00",venue:"لومن فيلد — سياتل",hs:1,as:4,st:"FT",goals:"⚽ دي كيتيلاره (ثنائية 9' و33') • فانكن 57' • لوكاكو 90+3 (بلجيكا) — تيلمان 31' (أمريكا) • المضيف الأمريكي يودّع"},
+  {m:95,stage:"R16",h:{w:86},a:{w:88},dt:"2026-07-07T19:00",venue:"مرسيدس-بنز — أتلانتا",hs:3,as:2,st:"FT",goals:"⚽ ملحمة: مصر تقدّمت 2-0 بهدفي ياسر إبراهيم 15' ومصطفى زيكو 67' 🇪🇬 — روميرو 79' • ميسي 83' (هدفه الثامن والـ21 مونديايًا) • إنزو فرنانديز 90+2 يقلبها للأرجنتين • مصر تتقدم بشكوى تحكيمية لفيفا"},
+  {m:96,stage:"R16",h:{w:85},a:{w:87},dt:"2026-07-07T23:00",venue:"BC بليس — فانكوفر",hs:0,as:0,phs:4,pas:3,st:"FT",goals:"⚽ بلا أهداف في 120 دقيقة — روبن فارغاس يسجّل ركلة الحسم وسويسرا إلى ربع النهائي"},
   // ---- ربع النهائي (97–100) — المواعيد الرسمية محوّلة لتوقيت السعودية ----
   {m:97,stage:"QF",h:{w:89},a:{w:90},dt:"2026-07-09T23:00",venue:"ملعب جيليت — بوسطن"},
   {m:98,stage:"QF",h:{w:93},a:{w:94},dt:"2026-07-10T22:00",venue:"ملعب سوفي — لوس أنجلوس"},
@@ -1159,8 +1159,8 @@ function renderKnockout(){
 /* =================== الهدّافون والحرّاس =================== */
 // أفضل الهدّافين (قائمة احتياطية تظهر فورًا، وتُستبدل تلقائيًا ببيانات الـ Worker الحية)
 const SCORERS=[
+ {name:"ليونيل ميسي",code:"ARG",goals:8},
  {name:"كيليان مبابي",code:"FRA",goals:7},
- {name:"ليونيل ميسي",code:"ARG",goals:7},
  {name:"إرلينغ هالاند",code:"NOR",goals:7},
  {name:"هاري كين",code:"ENG",goals:6},
  {name:"جود بيلينغهام",code:"ENG",goals:4},
@@ -1172,13 +1172,13 @@ const SCORERS=[
 ];
 // أفضل الحرّاس (سباق القفاز الذهبي) — حسب الشِّباك النظيفة ثم الأهداف المستقبَلة
 const KEEPERS=[
- {name:"أوناي سيمون",code:"ESP",cs:4,ga:0},
+ {name:"أوناي سيمون",code:"ESP",cs:5,ga:0},
+ {name:"كاميلو فارغاس",code:"COL",cs:4,ga:1},
  {name:"راؤول رانخيل",code:"MEX",cs:4,ga:3},
- {name:"كاميلو فارغاس",code:"COL",cs:3,ga:1},
- {name:"مايك ميغنان",code:"FRA",cs:3,ga:3},
- {name:"ديوغو كوستا",code:"POR",cs:2,ga:2},
- {name:"إيميليانو مارتينيز",code:"ARG",cs:2,ga:3},
+ {name:"مايك ميغنان",code:"FRA",cs:3,ga:2},
+ {name:"يان سومر",code:"SUI",cs:2,ga:3},
  {name:"جوردان بيكفورد",code:"ENG",cs:2,ga:5},
+ {name:"إيميليانو مارتينيز",code:"ARG",cs:2,ga:5},
 ];
 let LIVE_SCORERS=null; // تُملأ من الـ Worker إن توفّرت
 function flagName(code){ const t=T[code]; return t?{f:t.f,n:t.n}:{f:"🏳️",n:code||"—"}; }
@@ -1624,11 +1624,97 @@ setTimeout(()=>{ liveSync(false); startLive(); },700);   // مزامنة فور�
   background:var(--glass-strong);border:1px solid var(--glass-bd);border-radius:8px;padding:2px 8px;
   opacity:0;pointer-events:none;transition:opacity .2s}
 .phys-btn:hover .lbl{opacity:1}
+
+/* ===== الشخصيات المتحركة: لاعب الكرة ورائد الفضاء ===== */
+.pchar{position:absolute;left:0;top:0;pointer-events:none;will-change:transform;filter:drop-shadow(0 6px 6px rgba(0,0,0,.45))}
+.pchar,.pchar *{box-sizing:border-box}
+.pchar .pp{position:absolute}
+
+/* — لاعب الكرة (قميص أخضر سعودي) — */
+#footballer{width:44px;height:104px;--runspd:.5s}
+.f-head{width:21px;height:21px;left:11.5px;top:1px;background:#e8b98a;border-radius:50%;box-shadow:inset -3px -3px 0 rgba(0,0,0,.10)}
+.f-hair{width:21px;height:9px;left:11.5px;top:-1px;background:#231710;border-radius:10px 10px 3px 3px}
+.f-torso{width:26px;height:33px;left:9px;top:21px;background:linear-gradient(180deg,#23A05A,#137A41);border-radius:8px 8px 5px 5px}
+.f-num{width:26px;left:9px;top:27px;text-align:center;font:800 12px/1 Rubik,Arial;color:#fff;opacity:.95}
+.f-arm{width:8px;height:29px;border-radius:5px;background:linear-gradient(180deg,#1E914F 60%,#e8b98a 60%);top:23px;transform-origin:50% 4px}
+.f-arm.al{left:3px}.f-arm.ar{left:33px}
+.f-shorts{width:26px;height:11px;left:9px;top:52px;background:#f4f6f8;border-radius:4px}
+.f-leg{width:9.5px;height:36px;border-radius:5px;background:linear-gradient(180deg,#e8b98a 62%,#fff 62%,#fff 82%,#111 82%);top:61px;transform-origin:50% 4px}
+.f-leg.ll{left:10.5px}.f-leg.lr{left:24px}
+/* الجري: تأرجح متعاكس للساقين والذراعين، سرعته تتبع سرعة العدو */
+@keyframes fswing{0%{transform:rotate(34deg)}50%{transform:rotate(-30deg)}100%{transform:rotate(34deg)}}
+#footballer.run .f-leg.ll{animation:fswing var(--runspd) linear infinite}
+#footballer.run .f-leg.lr{animation:fswing var(--runspd) linear infinite;animation-delay:calc(var(--runspd)/-2)}
+#footballer.run .f-arm.al{animation:fswing var(--runspd) linear infinite;animation-delay:calc(var(--runspd)/-2)}
+#footballer.run .f-arm.ar{animation:fswing var(--runspd) linear infinite}
+/* الركلة: تمهيد للخلف ثم مرجحة قوية للأمام مع ثني الذراعين */
+@keyframes fkick{0%{transform:rotate(26deg)}30%{transform:rotate(52deg)}62%{transform:rotate(-98deg)}100%{transform:rotate(-10deg)}}
+#footballer.kick .f-leg.lr{animation:fkick .42s cubic-bezier(.5,0,.4,1) forwards}
+#footballer.kick .f-leg.ll{transform:rotate(14deg)}
+#footballer.kick .f-arm.al{transform:rotate(46deg)}
+#footballer.kick .f-arm.ar{transform:rotate(-40deg)}
+/* فرحة بعد الركلة */
+@keyframes fcheer{0%,100%{transform:rotate(0)}35%,70%{transform:rotate(168deg)}}
+#footballer.cheer .f-arm{animation:fcheer .8s ease}
+/* تسلق الشمبانزي: ذراعان تتناوبان مدًّا وقبضًا وساقان مثنيتان */
+@keyframes fclimbA{0%{transform:rotate(178deg)}50%{transform:rotate(128deg)}100%{transform:rotate(178deg)}}
+@keyframes fclimbL{0%{transform:rotate(58deg)}50%{transform:rotate(22deg)}100%{transform:rotate(58deg)}}
+#footballer.climb .f-arm.al{animation:fclimbA .55s linear infinite}
+#footballer.climb .f-arm.ar{animation:fclimbA .55s linear infinite;animation-delay:-.275s}
+#footballer.climb .f-leg.ll{animation:fclimbL .55s linear infinite;animation-delay:-.275s}
+#footballer.climb .f-leg.lr{animation:fclimbL .55s linear infinite}
+
+/* — رائد الفضاء — */
+#astro{width:48px;height:96px}
+.a-bob{position:absolute;inset:0;animation:abob 3.2s ease-in-out infinite}
+@keyframes abob{0%,100%{transform:translateY(0)}50%{transform:translateY(-4px)}}
+.a-pack{width:34px;height:40px;left:7px;top:16px;background:linear-gradient(180deg,#aeb7c0,#7d8790);border-radius:9px}
+.a-helmet{width:32px;height:32px;left:8px;top:0;background:radial-gradient(circle at 34% 30%,#ffffff,#cfd8df 70%);border-radius:50%}
+.a-visor{width:20px;height:15px;left:14px;top:9px;background:linear-gradient(135deg,#4a6785,#0b1420 70%);border-radius:9px;box-shadow:inset 2px 2px 3px rgba(255,255,255,.35)}
+.a-torso{width:30px;height:30px;left:9px;top:28px;background:linear-gradient(180deg,#f2f5f8,#d6dde3);border-radius:9px}
+.a-flag{width:9px;height:6px;left:13px;top:32px;background:#1f8a4c;border-radius:1px}
+.a-ctrl{width:12px;height:8px;left:25px;top:33px;background:#39506b;border-radius:2px}
+.a-arm{width:9px;height:28px;background:linear-gradient(180deg,#eef2f5,#cfd7dd);top:29px;transform-origin:50% 4px;border-radius:5px}
+.a-arm.al{left:2px}.a-arm.ar{left:37px}
+.a-leg{width:11px;height:32px;background:linear-gradient(180deg,#e6ebef 75%,#9aa3ad 75%);top:57px;transform-origin:50% 4px;border-radius:5px}
+.a-leg.ll{left:12px}.a-leg.lr{left:25px}
+/* مشية فضائية بطيئة */
+@keyframes aswing{0%{transform:rotate(20deg)}50%{transform:rotate(-18deg)}100%{transform:rotate(20deg)}}
+#astro.move .a-leg.ll{animation:aswing .9s ease-in-out infinite}
+#astro.move .a-leg.lr{animation:aswing .9s ease-in-out infinite;animation-delay:-.45s}
+#astro.move .a-arm.al{animation:aswing .9s ease-in-out infinite;animation-delay:-.45s}
+#astro.move .a-arm.ar{animation:aswing .9s ease-in-out infinite}
+/* لكمة كرة القمر */
+@keyframes apunch{0%{transform:rotate(6deg)}40%{transform:rotate(-96deg)}100%{transform:rotate(0)}}
+#astro.hit .a-arm.ar{animation:apunch .38s cubic-bezier(.5,0,.4,1) forwards}
+/* التحية العسكرية للمشاهد: اليد اليمنى إلى الخوذة مع ثبات الجسد */
+@keyframes asalute{0%{transform:rotate(0)}22%,80%{transform:rotate(152deg)}100%{transform:rotate(0)}}
+#astro.salute .a-arm.ar{animation:asalute 1.6s ease forwards}
+#astro.salute .a-arm.al{transform:rotate(4deg)}
+@media (prefers-reduced-motion: reduce){ .pchar{display:none !important} }
 </style>
 <div id="phys-layer">
   <div class="phys-ball" data-id="earth" role="img" aria-label="كرة الأرض">⚽</div>
   <div class="phys-ball" data-id="moon"  role="img" aria-label="كرة القمر">🌕</div>
   <div class="phys-ball" data-id="space" role="img" aria-label="كرة الفضاء">🪐</div>
+  <div class="pchar" id="footballer" aria-hidden="true">
+    <div class="pp f-arm al"></div>
+    <div class="pp f-leg ll"></div>
+    <div class="pp f-torso"></div><div class="pp f-num">10</div>
+    <div class="pp f-shorts"></div>
+    <div class="pp f-leg lr"></div>
+    <div class="pp f-arm ar"></div>
+    <div class="pp f-hair"></div><div class="pp f-head"></div>
+  </div>
+  <div class="pchar" id="astro" aria-hidden="true"><div class="a-bob">
+    <div class="pp a-pack"></div>
+    <div class="pp a-arm al"></div>
+    <div class="pp a-leg ll"></div>
+    <div class="pp a-torso"></div><div class="pp a-flag"></div><div class="pp a-ctrl"></div>
+    <div class="pp a-leg lr"></div>
+    <div class="pp a-arm ar"></div>
+    <div class="pp a-helmet"></div><div class="pp a-visor"></div>
+  </div></div>
 </div>
 <div id="phys-controls">
   <button class="phys-btn" data-id="earth" aria-pressed="true" title="كرة الأرض — جاذبية كاملة">⚽<span class="lbl">الأرض · جاذبية كاملة</span></button>
@@ -1770,6 +1856,187 @@ setTimeout(()=>{ liveSync(false); startLive(); },700);   // مزامنة فور�
     }
   }
   requestAnimationFrame(step);
+
+  /* ============================================================
+     الشخصيات: لاعب يطارد ⚽ ويركلها ويتسلق الكلمات كالشمبانزي،
+     ورائد فضاء يطارد 🌕 يلكمها ثم يؤدي التحية للمشاهد — في حلقة دائمة
+     ============================================================ */
+  const player={el:document.getElementById('footballer'), x:W()*0.5, y:H()-4, vx:0, vy:0,
+                face:1, st:'chase', t:0, climb:null, kicked:false};
+  const astro ={el:document.getElementById('astro'), x:W()*0.75, y:H()*0.4, vx:0, vy:0,
+                face:1, st:'chase', t:0};
+  const PW=44, PH=104, AW=48, AH=96, GROUND=()=>H()-4;
+
+  function setAnim(c,cls){
+    if(c.cls===cls) return; c.cls=cls;
+    c.el.className='pchar'; if(cls) c.el.classList.add(cls);
+  }
+  // انطلاق الحركة الحقيقي: تسارع نحو هدف مع احتكاك وحد أقصى للسرعة
+  function seekX(c,tx,accel,max){
+    const dx=tx-c.x;
+    c.vx += Math.sign(dx)*accel;
+    c.vx *= .90;
+    if(Math.abs(c.vx)>max) c.vx=Math.sign(c.vx)*max;
+    if(Math.abs(dx)<6) c.vx*=.6;
+    c.x += c.vx;
+    if(Math.abs(c.vx)>.4) c.face=c.vx>0?1:-1;
+  }
+  let climbAbort=false;
+  addEventListener('scroll',()=>{climbAbort=true;},{passive:true});
+
+  function pickClimbTarget(){
+    // "الكلمات": عناصر الصفحة المرئية الصالحة للتسلق
+    const cands=obstacles.filter(o=> (o.b-o.t)>34 && (o.rt-o.l)>70 && o.t>70 && o.b<H()-30 && o.t<H()-140);
+    if(!cands.length) return null;
+    return cands[(Math.random()*cands.length)|0];
+  }
+
+  function stepPlayer(dt,t){
+    const ball=byId.earth;
+    if(!ball.on){ player.el.style.display='none'; player.st='chase'; return; }
+    player.el.style.display='block';
+    player.t-=dt;
+    let lean=0;
+
+    if(player.st==='chase'){
+      // يطارد نقطة سقوط الكرة (توقّع بسيط) لا موضعها اللحظي فقط
+      const predict=ball.y<GROUND()-120 ? ball.x+ball.vx*14 : ball.x;
+      seekX(player, predict, .55, 6.2);
+      player.y=GROUND();
+      setAnim(player, Math.abs(player.vx)>.5?'run':'');
+      player.el.style.setProperty('--runspd', Math.max(.28,.62-Math.abs(player.vx)*.05)+'s');
+      lean=player.vx*1.4;
+      // شروط الركلة: الكرة في متناول القدم وغير ممسوكة باليد
+      const footX=player.x+player.face*14, reach=Math.hypot(ball.x-footX, ball.y-(player.y-16));
+      const bSpeed=Math.hypot(ball.vx,ball.vy);
+      if(!ball.dragging && reach<42){
+        player.st='kick'; player.t=.42; player.kicked=false; setAnim(player,'kick');
+      }
+      // الكرة مستقرة فوق "كلمة" عالية؟ اصعد إليها كالشمبانزي واركلها من فوق
+      else if(!ball.dragging && bSpeed<1.2 && ball.y<GROUND()-130){
+        const o=obstacles.find(o=> Math.abs((ball.y+R)-o.t)<16 && ball.x>o.l-12 && ball.x<o.rt+12 && (o.b-o.t)>18);
+        if(o){ player.climb={o, side: player.x<(o.l+o.rt)/2?'l':'r', phase:'goto', toBall:true}; player.st='climbing'; climbAbort=false; }
+      }
+      // بين الحين والآخر: نوبة تسلّق شمبانزي على الكلمات للمتعة
+      else if(Math.random()<.0007){
+        const o=pickClimbTarget();
+        if(o){ player.climb={o, side: player.x<(o.l+o.rt)/2? 'l':'r', phase:'goto'}; player.st='climbing'; climbAbort=false; }
+      }
+    }
+    else if(player.st==='kick'){
+      // لحظة التلامس (منتصف المرجحة): دفعة فيزيائية بمتجه القدم + متابعة خطوة
+      if(!player.kicked && player.t<=.24){
+        player.kicked=true;
+        const dx=(ball.x-player.x)||player.face, power=9+Math.random()*5;
+        ball.vx = Math.sign(dx)*power*(0.75+Math.random()*.3) + player.vx*.5; // زخم اللاعب ينتقل للكرة
+        ball.vy = -(7+Math.random()*5.5);
+        ball.a += ball.vx*6;
+      }
+      player.x+=player.vx*.4; player.vx*=.92;   // متابعة الخطوة دون تغيير الارتفاع (قد يركل من فوق منصّة)
+      if(player.t<=0){
+        if(player.y<GROUND()-12){ player.st='fall'; setAnim(player,''); }   // ركل من فوق كلمة: يقفز نازلًا كالقرد
+        else if(Math.random()<.35){ player.st='cheer'; player.t=.85; setAnim(player,'cheer'); }
+        else player.st='chase';
+      }
+    }
+    else if(player.st==='cheer'){
+      player.y=GROUND(); player.vx*=.9; player.x+=player.vx;
+      if(player.t<=0) player.st='chase';
+    }
+    else if(player.st==='climbing'){
+      const c=player.climb;
+      if(climbAbort || !c){ player.st='fall'; setAnim(player,''); }
+      else if(c.phase==='goto'){
+        const edgeX = c.side==='l'? c.o.l-10 : c.o.rt+10;
+        seekX(player, edgeX, .5, 5.5); player.y=GROUND();
+        setAnim(player,'run'); lean=player.vx*1.4;
+        if(Math.abs(player.x-edgeX)<8){ c.phase='up'; setAnim(player,'climb'); player.vx=0; }
+      }
+      else if(c.phase==='up'){
+        // صعود الشمبانزي: إيقاع نطّي مع تمايل جانبي خفيف
+        player.face = c.side==='l'? 1:-1;
+        player.y -= 1.7 + Math.sin(t*9)*.9;
+        player.x += Math.sin(t*9)*.5;
+        if(player.y<=c.o.t+2){ player.y=c.o.t+2; c.phase='top'; c.tx = c.side==='l'? c.o.rt+10 : c.o.l-10; setAnim(player,'run'); }
+      }
+      else if(c.phase==='top'){
+        // يمشي فوق "الكلمة" كأنها منصّة — وإن كان صاعدًا للكرة يتجه إليها مباشرة
+        const tx = c.toBall ? ball.x : c.tx;
+        seekX(player, tx, .4, 3.4); player.y=c.o.t+2;
+        player.el.style.setProperty('--runspd','.5s');
+        setAnim(player,'run'); lean=player.vx*1.2;
+        if(c.toBall){
+          if(ball.dragging || Math.abs((ball.y+R)-c.o.t)>34){ player.st='fall'; player.climb=null; setAnim(player,''); }
+          else{
+            const reach2=Math.hypot(ball.x-(player.x+player.face*14), ball.y-(player.y-16));
+            if(reach2<42){ player.st='kick'; player.t=.42; player.kicked=false; player.climb=null; setAnim(player,'kick'); }
+          }
+        }
+        else if(Math.abs(player.x-tx)<8){ c.phase='down'; setAnim(player,'climb'); player.vx=0; }
+      }
+      else if(c.phase==='down'){
+        // نزول القرد: أسرع من الصعود بقفزات صغيرة
+        player.face = c.side==='l'? -1:1;
+        player.y += 2.3 + Math.sin(t*10)*.9;
+        player.x += Math.sin(t*10)*.5;
+        if(player.y>=GROUND()){ player.y=GROUND(); player.st='chase'; player.climb=null; }
+      }
+    }
+    else if(player.st==='fall'){
+      player.vy+=.75; player.y+=player.vy; player.x+=player.vx;
+      if(player.y>=GROUND()){ player.y=GROUND(); player.vy=0; player.st='chase'; player.climb=null; }
+    }
+    player.x=Math.max(PW/2, Math.min(W()-PW/2, player.x));
+    player.el.style.transform='translate('+(player.x-PW/2)+'px,'+(player.y-PH)+'px) rotate('+lean+'deg) scaleX('+player.face+')';
+  }
+
+  function stepAstro(dt){
+    const ball=byId.moon;
+    if(!ball.on){ astro.el.style.display='none'; astro.st='chase'; return; }
+    astro.el.style.display='block';
+    astro.t-=dt;
+
+    if(astro.st==='chase'){
+      // طيران حر بحقيبة الدفع: تسارع لطيف نحو كرة القمر في المحورين
+      astro.vx += Math.sign(ball.x-astro.x)*.16;
+      astro.vy += Math.sign(ball.y-(astro.y-AH*.45))*.14;
+      astro.vx*=.945; astro.vy*=.945;
+      const sp=Math.hypot(astro.vx,astro.vy); if(sp>4.2){astro.vx*=4.2/sp;astro.vy*=4.2/sp;}
+      astro.x+=astro.vx; astro.y+=astro.vy;
+      if(Math.abs(astro.vx)>.35) astro.face=astro.vx>0?1:-1;
+      setAnim(astro, sp>.8?'move':'');
+      const d=Math.hypot(ball.x-(astro.x+astro.face*16), ball.y-(astro.y-AH*.5));
+      if(!ball.dragging && d<40){ astro.st='hit'; astro.t=.38; astro.hitDone=false; setAnim(astro,'hit'); }
+    }
+    else if(astro.st==='hit'){
+      if(!astro.hitDone && astro.t<=.22){
+        astro.hitDone=true;
+        // لكمة: دفعة بعيدًا عن قبضة الرائد (جاذبية القمر ضعيفة فتطير بعيدًا)
+        let nx=ball.x-astro.x, ny=ball.y-(astro.y-AH*.5);
+        const n=Math.hypot(nx,ny)||1; nx/=n; ny/=n;
+        ball.vx=nx*7.5+astro.vx*.4; ball.vy=ny*7.5-1.2; ball.a+=nx*40;
+      }
+      astro.x+=astro.vx*.3; astro.y+=astro.vy*.3;
+      if(astro.t<=0){ astro.st='salute'; astro.t=1.7; astro.face=1; astro.vx=astro.vy=0; setAnim(astro,'salute'); }
+    }
+    else if(astro.st==='salute'){
+      // يتوجه للمشاهد ويؤدي التحية بثبات ثم يعود للمطاردة — كل مرة نفس الطقس
+      if(astro.t<=0){ astro.st='chase'; setAnim(astro,''); }
+    }
+    astro.x=Math.max(AW/2, Math.min(W()-AW/2, astro.x));
+    astro.y=Math.max(AH, Math.min(H()-6, astro.y));
+    astro.el.style.transform='translate('+(astro.x-AW/2)+'px,'+(astro.y-AH)+'px) scaleX('+astro.face+')';
+  }
+
+  if(!reduce){
+    let lastT=performance.now();
+    (function charLoop(){
+      requestAnimationFrame(charLoop);
+      const now=performance.now(), dt=Math.min((now-lastT)/1000,.05); lastT=now;
+      stepPlayer(dt, now/1000);
+      stepAstro(dt);
+    })();
+  } else { player.el.style.display='none'; astro.el.style.display='none'; }
 
   /* ===== أزرار التحكّم (تشغيل/تعطيل حركة كل كرة) ===== */
   document.querySelectorAll('#phys-controls .phys-btn').forEach(btn=>{
