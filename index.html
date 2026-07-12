@@ -154,6 +154,24 @@ section.on{display:block;animation:fade .42s cubic-bezier(.22,.8,.3,1)}
 .md-tag{background:var(--panel2);border:1px solid var(--line);border-radius:999px;padding:4px 12px;font-size:.8rem;font-weight:700;color:var(--gold)}
 .md-range{font-family:'Rubik';font-weight:700;font-size:.92rem;color:var(--text)}
 .md-sub{color:var(--muted);font-size:.74rem;margin-bottom:10px;line-height:1.6}
+/* ===== التوقعات ===== */
+.pred-card{background:var(--panel2);border:1px solid var(--line);border-radius:14px;padding:14px 16px;margin-bottom:12px}
+.pred-head{display:flex;align-items:center;justify-content:space-between;gap:8px;flex-wrap:wrap;margin-bottom:8px}
+.pred-fx{font-weight:800;font-size:1.02rem}
+.pred-when{color:var(--muted);font-size:.74rem;font-family:'Rubik'}
+.pbar{height:16px;border-radius:9px;overflow:hidden;display:flex;background:rgba(255,255,255,.05);margin:8px 0 4px}
+.pbar>div{height:100%;transition:width .6s ease}
+.pbar .ph{background:linear-gradient(90deg,#2fa46a,#1f8a4c)}
+.pbar .pa{background:linear-gradient(90deg,#b3502f,#c96a3d)}
+.pbar-lbl{display:flex;justify-content:space-between;font-size:.76rem;color:var(--muted);font-family:'Rubik';font-weight:700}
+.pred-score{margin:8px 0 4px;font-size:.9rem;color:var(--gold);font-weight:800}
+.pred-why{color:var(--muted);font-size:.78rem;line-height:1.9;border-top:1px dashed var(--line);margin-top:8px;padding-top:8px}
+.odds-row{display:flex;align-items:center;gap:10px;margin:7px 0}
+.odds-row .fl{font-size:20px;width:26px;text-align:center}
+.odds-row .nm{width:110px;font-weight:700;font-size:.86rem}
+.odds-row .track{flex:1;height:14px;border-radius:8px;background:rgba(255,255,255,.05);overflow:hidden}
+.odds-row .fill{height:100%;background:linear-gradient(90deg,#d8a437,#ffd97a);border-radius:8px;transition:width .6s ease}
+.odds-row .val{width:52px;text-align:left;font-family:'Rubik';font-weight:800;color:var(--gold);font-size:.86rem}
 .md-dayhdr{margin:16px 2px 9px;font-weight:700;color:#ffe9a8;font-size:.92rem;display:flex;align-items:center;gap:10px}
 .md-dayhdr:after{content:"";flex:1;height:1px;background:linear-gradient(90deg,var(--line),transparent)}
 .md-dayhdr .hj{color:var(--muted);font-weight:400;font-size:.74rem}
@@ -430,6 +448,7 @@ footer{text-align:center;color:var(--muted);font-size:.7rem;padding:20px;line-he
   <button class="tab" data-t="matches" role="tab">⚽ المباريات</button>
   <button class="tab" data-t="groups" role="tab">📊 المجموعات</button>
   <button class="tab" data-t="knockout" role="tab">🏆 المتأهلون</button>
+  <button class="tab" data-t="predict" role="tab">🔮 التوقعات</button>
   <button class="tab" data-t="stars" role="tab">👟 النجوم</button>
   <button class="tab" data-t="map" role="tab">🗺️ الخريطة</button>
   <button class="tab" data-t="channels" role="tab">📺 القنوات</button>
@@ -512,6 +531,13 @@ footer{text-align:center;color:var(--muted);font-size:.7rem;padding:20px;line-he
 </section>
 
 <!-- ========== النجوم: الهدّافون والحرّاس ========== -->
+<section id="sec-predict">
+  <div class="sec-title">🔮 التوقعات والتحليلات</div>
+  <div class="share-note">🤖 توقعات محسوبة آليًا من الأداء الفعلي في البطولة (قوة الهجوم والدفاع ومعدل النقاط لكل منتخب) — تتحدّث تلقائيًا بعد كل مباراة. للمتعة والتحليل، وكرة القدم تبقى مليئة بالمفاجآت!</div>
+  <div id="champOdds"></div>
+  <div id="predList"></div>
+</section>
+
 <section id="sec-stars">
   <div class="sec-title">👟 نجوم البطولة</div>
   <div class="sec-note">سباق الحذاء الذهبي (الهدّافون) يتحدّث تلقائيًا مع كل مباراة، وأفضل الحرّاس حسب الشِّباك النظيفة.</div>
@@ -765,14 +791,15 @@ const KO = [
   {m:95,stage:"R16",h:{w:86},a:{w:88},dt:"2026-07-07T19:00",venue:"مرسيدس-بنز — أتلانتا",hs:3,as:2,st:"FT",goals:"⚽ ملحمة: مصر تقدّمت 2-0 بهدفي ياسر إبراهيم 15' ومصطفى زيكو 67' 🇪🇬 — روميرو 79' • ميسي 83' (هدفه الثامن والـ21 مونديايًا) • إنزو فرنانديز 90+2 يقلبها للأرجنتين • مصر تتقدم بشكوى تحكيمية لفيفا"},
   {m:96,stage:"R16",h:{w:85},a:{w:87},dt:"2026-07-07T23:00",venue:"BC بليس — فانكوفر",hs:0,as:0,phs:4,pas:3,st:"FT",goals:"⚽ بلا أهداف في 120 دقيقة — روبن فارغاس يسجّل ركلة الحسم وسويسرا إلى ربع النهائي"},
   // ---- ربع النهائي (97–100) — المواعيد الرسمية محوّلة لتوقيت السعودية ----
-  {m:97,stage:"QF",h:{w:89},a:{w:90},dt:"2026-07-09T23:00",venue:"ملعب جيليت — بوسطن"},
-  {m:98,stage:"QF",h:{w:93},a:{w:94},dt:"2026-07-10T22:00",venue:"ملعب سوفي — لوس أنجلوس"},
-  {m:99,stage:"QF",h:{w:91},a:{w:92},dt:"2026-07-12T00:00",venue:"هارد روك — ميامي"},
-  {m:100,stage:"QF",h:{w:95},a:{w:96},dt:"2026-07-12T04:00",venue:"أروهيد — كانساس سيتي"},
+  {m:97,stage:"QF",h:{w:89},a:{w:90},dt:"2026-07-09T23:00",venue:"ملعب جيليت — بوسطن",hs:2,as:0,st:"FT",goals:"⚽ مبابي 60' (هدفه الثامن بعد إهداره ركلة جزاء بالشوط الأول) • ديمبيلي 66' — فرنسا تُنهي مغامرة أسود الأطلس 🇲🇦"},
+  {m:98,stage:"QF",h:{w:93},a:{w:94},dt:"2026-07-10T22:00",venue:"ملعب سوفي — لوس أنجلوس",hs:2,as:1,st:"FT",goals:"⚽ فابيان رويز • مرينو 88' (بعد دقيقتين فقط من نزوله بديلًا!) — دي كيتيلاره 41' (بلجيكا) • إسبانيا إلى نصف النهائي"},
+  {m:99,stage:"QF",h:{w:91},a:{w:92},dt:"2026-07-12T00:00",venue:"هارد روك — ميامي",hs:1,as:2,st:"FT",goals:"⚽ بعد التمديد: بيلينغهام (ثنائية 45+ و93') يحسم قمة هالاند وكين لإنجلترا — شيلدروب 36' (النرويج)"},
+  {m:100,stage:"QF",h:{w:95},a:{w:96},dt:"2026-07-12T04:00",venue:"أروهيد — كانساس سيتي",hs:3,as:1,st:"FT",goals:"⚽ بعد التمديد: ماك أليستر 10' • ألفاريز 112' • لاوتارو 120+1 (الأرجنتين) — ندوي 67' وطرد إمبولو (سويسرا)"},
   // ---- نصف النهائي (101–102) ----
-  {m:101,stage:"SF",h:{w:97},a:{w:98},dt:"2026-07-14T22:00",venue:"ملعب — دالاس"},
+  {m:101,stage:"SF",h:{w:97},a:{w:98},dt:"2026-07-14T22:00",venue:"ملعب AT&T — دالاس"},
   {m:102,stage:"SF",h:{w:99},a:{w:100},dt:"2026-07-15T22:00",venue:"مرسيدس-بنز — أتلانتا"},
-  // ---- النهائي (104) ----
+  // ---- المركز الثالث (103) والنهائي (104) ----
+  {m:103,stage:"TP",h:{l:101},a:{l:102},dt:"2026-07-19T00:00",venue:"هارد روك — ميامي"},
   {m:104,stage:"F",h:{w:101},a:{w:102},dt:"2026-07-19T22:00",venue:"🏆 ملعب متلايف — نيويورك/نيوجيرسي"},
 ];
 
@@ -789,7 +816,7 @@ function penText(h,a,phs,pas){
 }
 
 /* حلّ أطراف كل مباراة إقصائية: رمز الفريق إن كان معروفًا، أو فائز مباراة سابقة */
-const KO_STAGE_AR = {R32:"دور الـ 32", R16:"دور الـ 16", QF:"ربع النهائي", SF:"نصف النهائي", F:"النهائي"};
+const KO_STAGE_AR = {R32:"دور الـ 32", R16:"دور الـ 16", QF:"ربع النهائي", SF:"نصف النهائي", TP:"مباراة المركز الثالث", F:"النهائي"};
 function koWinnerCode(k){
   if(!k || !Number.isInteger(k.hs) || !Number.isInteger(k.as)) return null;
   if(k.hs>k.as) return k._h;
@@ -797,11 +824,16 @@ function koWinnerCode(k){
   if(Number.isInteger(k.phs)&&Number.isInteger(k.pas)) return k.phs>k.pas?k._h:(k.pas>k.phs?k._a:null);
   return null;
 }
+function koLoserCode(k){
+  const w=koWinnerCode(k);
+  if(!w||!k._h||!k._a) return null;
+  return w===k._h ? k._a : k._h;
+}
 function resolveKO(){
   const map={}; KO.forEach(k=>map[k.m]=k);
   KO.forEach(k=>{
-    k._h = (typeof k.h==="string") ? k.h : koWinnerCode(map[k.h.w]);
-    k._a = (typeof k.a==="string") ? k.a : koWinnerCode(map[k.a.w]);
+    k._h = (typeof k.h==="string") ? k.h : (k.h.w!=null ? koWinnerCode(map[k.h.w]) : koLoserCode(map[k.h.l]));
+    k._a = (typeof k.a==="string") ? k.a : (k.a.w!=null ? koWinnerCode(map[k.a.w]) : koLoserCode(map[k.a.l]));
   });
 }
 /* طبّق نتائج المصدر الحي على مباريات الأدوار التالية (دور 16 فما فوق) بمطابقة الرموز */
@@ -1159,12 +1191,12 @@ function renderKnockout(){
 /* =================== الهدّافون والحرّاس =================== */
 // أفضل الهدّافين (قائمة احتياطية تظهر فورًا، وتُستبدل تلقائيًا ببيانات الـ Worker الحية)
 const SCORERS=[
+ {name:"كيليان مبابي",code:"FRA",goals:8},
  {name:"ليونيل ميسي",code:"ARG",goals:8},
- {name:"كيليان مبابي",code:"FRA",goals:7},
  {name:"إرلينغ هالاند",code:"NOR",goals:7},
  {name:"هاري كين",code:"ENG",goals:6},
- {name:"جود بيلينغهام",code:"ENG",goals:4},
- {name:"عثمان ديمبيلي",code:"FRA",goals:4},
+ {name:"جود بيلينغهام",code:"ENG",goals:6},
+ {name:"عثمان ديمبيلي",code:"FRA",goals:5},
  {name:"ميكل أويارزابال",code:"ESP",goals:4},
  {name:"فينيسيوس جونيور",code:"BRA",goals:4},
  {name:"إسماعيلا سار",code:"SEN",goals:4},
@@ -1172,13 +1204,13 @@ const SCORERS=[
 ];
 // أفضل الحرّاس (سباق القفاز الذهبي) — حسب الشِّباك النظيفة ثم الأهداف المستقبَلة
 const KEEPERS=[
- {name:"أوناي سيمون",code:"ESP",cs:5,ga:0},
+ {name:"أوناي سيمون",code:"ESP",cs:5,ga:1},
  {name:"كاميلو فارغاس",code:"COL",cs:4,ga:1},
+ {name:"مايك ميغنان",code:"FRA",cs:4,ga:2},
  {name:"راؤول رانخيل",code:"MEX",cs:4,ga:3},
- {name:"مايك ميغنان",code:"FRA",cs:3,ga:2},
- {name:"يان سومر",code:"SUI",cs:2,ga:3},
- {name:"جوردان بيكفورد",code:"ENG",cs:2,ga:5},
- {name:"إيميليانو مارتينيز",code:"ARG",cs:2,ga:5},
+ {name:"ديوغو كوستا",code:"POR",cs:2,ga:3},
+ {name:"جوردان بيكفورد",code:"ENG",cs:2,ga:6},
+ {name:"إيميليانو مارتينيز",code:"ARG",cs:2,ga:6},
 ];
 let LIVE_SCORERS=null; // تُملأ من الـ Worker إن توفّرت
 function flagName(code){ const t=T[code]; return t?{f:t.f,n:t.n}:{f:"🏳️",n:code||"—"}; }
@@ -1201,6 +1233,128 @@ function renderKeepers(){
       <span class="rk">${i+1}</span><span class="fl">${t.f}</span>
       <span class="who"><div class="nm">${k.name}</div><div class="tm">${t.n}</div></span>
       <span class="gk"><span class="stat-badge cs">${k.cs} نظيفة</span><span class="stat-badge">${k.ga} مستقبَل</span></span></div>`;
+  }).join("");
+}
+
+/* =================== 🔮 التوقعات: محرك تحليلي من الأداء الفعلي =================== */
+/* قوة كل منتخب تُحسب من مبارياته المنتهية: فارق الأهداف، معدل النقاط، غزارة الهجوم.
+   الاحتمالات لوجستية على فارق القوة، وتنتشر عبر المشجرة لاحتساب حظوظ اللقب. */
+function predTeamStats(){
+  const st={};
+  const ensure=c=>st[c]||(st[c]={p:0,w:0,gf:0,ga:0,pts:0});
+  allMatchesPool().filter(m=>status(m)==="FT"&&Number.isInteger(m.hs)).forEach(m=>{
+    const H=ensure(m.h),A=ensure(m.a);
+    H.p++;A.p++;H.gf+=m.hs;H.ga+=m.as;A.gf+=m.as;A.ga+=m.hs;
+    let hw=m.hs>m.as, aw=m.as>m.hs;
+    if(m.hs===m.as&&Number.isInteger(m.phs)&&m.phs!==m.pas){hw=m.phs>m.pas;aw=!hw;}
+    if(hw){H.w++;H.pts+=3}else if(aw){A.w++;A.pts+=3}else{H.pts++;A.pts++}
+  });
+  return st;
+}
+function predRating(s){
+  if(!s||!s.p) return 0;
+  return (s.gf-s.ga)/s.p + s.pts/s.p*.55 + (s.gf/s.p)*.22;
+}
+function predWinProb(ra,rb){ return 1/(1+Math.exp(-(ra-rb)*1.05)); }
+function predScore(sh,sa){
+  // أهداف متوقعة: هجوم الفريق مقابل دفاع خصمه (مع حدود منطقية)
+  const xh=Math.max(.25,Math.min(3.4,((sh.gf/sh.p)+(sa.ga/sa.p))/2));
+  const xa=Math.max(.25,Math.min(3.4,((sa.gf/sa.p)+(sh.ga/sh.p))/2));
+  let h=Math.round(xh), a=Math.round(xa);
+  return {h,a,xh,xa};
+}
+function predUpcoming(){
+  resolveKO();
+  const out=[];
+  KO.forEach(k=>{
+    if(k.st==="FT"||!k._h||!k._a) return;
+    if(Number.isInteger(k.hs)&&Number.isInteger(k.as)) return;
+    out.push({h:k._h,a:k._a,dt:k.dt,stage:KO_STAGE_AR[k.stage],m:k.m});
+  });
+  return out.sort((a,b)=>pdate(a.dt)-pdate(b.dt));
+}
+function predChampionOdds(){
+  resolveKO();
+  const st=predTeamStats(), map={}; KO.forEach(k=>map[k.m]=k);
+  function distOf(side,k){
+    if(typeof side==="string") return {[side]:1};
+    const src=map[side.w];
+    return src? matchDist(src) : {};
+  }
+  function matchDist(k){
+    const w=koWinnerCode(k);
+    if(w) return {[w]:1};
+    if(!k._h&&typeof k.h!=="object") return {};
+    const dh=(k._h&&typeof k.h==="string")?{[k._h]:1}:distOf(k.h,k);
+    const da=(k._a&&typeof k.a==="string")?{[k._a]:1}:distOf(k.a,k);
+    const out={};
+    for(const a in dh)for(const b in da){
+      const pa=predWinProb(predRating(st[a]),predRating(st[b]));
+      out[a]=(out[a]||0)+dh[a]*da[b]*pa;
+      out[b]=(out[b]||0)+dh[a]*da[b]*(1-pa);
+    }
+    return out;
+  }
+  return matchDist(map[104]);
+}
+function predReasons(hc,ac,sh,sa){
+  const hN=T[hc].n, aN=T[ac].n, r=[];
+  const gfH=sh.gf/sh.p, gfA=sa.gf/sa.p, gaH=sh.ga/sh.p, gaA=sa.ga/sa.p;
+  if(Math.abs(gfH-gfA)>=.35)
+    r.push(gfH>gfA? `⚔️ هجوم ${hN} أغزر: ${gfH.toFixed(1)} هدفًا/مباراة مقابل ${gfA.toFixed(1)} لمنتخب ${aN}`
+                  : `⚔️ هجوم ${aN} أغزر: ${gfA.toFixed(1)} هدفًا/مباراة مقابل ${gfH.toFixed(1)} لمنتخب ${hN}`);
+  if(Math.abs(gaH-gaA)>=.3)
+    r.push(gaH<gaA? `🛡️ دفاع ${hN} أصلب: يستقبل ${gaH.toFixed(1)} هدفًا/مباراة فقط مقابل ${gaA.toFixed(1)}`
+                  : `🛡️ دفاع ${aN} أصلب: يستقبل ${gaA.toFixed(1)} هدفًا/مباراة فقط مقابل ${gaH.toFixed(1)}`);
+  const ptsH=sh.pts/sh.p, ptsA=sa.pts/sa.p;
+  if(Math.abs(ptsH-ptsA)>=.3)
+    r.push(ptsH>ptsA? `📈 مسيرة ${hN} أثبت: ${ptsH.toFixed(1)} نقطة/مباراة مقابل ${ptsA.toFixed(1)}`
+                    : `📈 مسيرة ${aN} أثبت: ${ptsA.toFixed(1)} نقطة/مباراة مقابل ${ptsH.toFixed(1)}`);
+  const gunH=SCORERS.find(s=>s.code===hc), gunA=SCORERS.find(s=>s.code===ac);
+  if(gunH) r.push(`⭐ ${gunH.name} (${gunH.goals} أهداف) رأس حربة ${hN}`);
+  if(gunA) r.push(`⭐ ${gunA.name} (${gunA.goals} أهداف) رأس حربة ${aN}`);
+  const gkH=KEEPERS.find(x=>x.code===hc), gkA=KEEPERS.find(x=>x.code===ac);
+  if(gkH&&gkH.cs>=3) r.push(`🧤 ${gkH.name} يملك ${gkH.cs} شباك نظيفة في البطولة`);
+  if(gkA&&gkA.cs>=3) r.push(`🧤 ${gkA.name} يملك ${gkA.cs} شباك نظيفة في البطولة`);
+  return r.slice(0,4);
+}
+function renderPredictions(){
+  const oddsEl=document.getElementById("champOdds"), listEl=document.getElementById("predList");
+  if(!oddsEl||!listEl) return;
+  const st=predTeamStats();
+  // — احتمالات اللقب —
+  const dist=predChampionOdds();
+  const rows=Object.entries(dist).filter(([,p])=>p>0.001).sort((a,b)=>b[1]-a[1]).slice(0,8);
+  if(rows.length>1){
+    oddsEl.innerHTML=`<div class="pred-card"><div class="pred-fx" style="margin-bottom:6px">🏆 من يرفع الكأس؟ احتمالات اللقب</div>`+
+      rows.map(([c,p])=>`<div class="odds-row"><span class="fl">${T[c].f}</span><span class="nm">${T[c].n}</span>
+        <span class="track"><span class="fill" style="display:block;width:${Math.round(p*100)}%"></span></span>
+        <span class="val">${(p*100).toFixed(0)}%</span></div>`).join("")+`</div>`;
+  } else if(rows.length===1){
+    oddsEl.innerHTML=`<div class="pred-card"><div class="pred-fx">🏆 بطل العالم: ${T[rows[0][0]].f} ${T[rows[0][0]].n}!</div></div>`;
+  } else oddsEl.innerHTML="";
+  // — توقعات المباريات القادمة —
+  const up=predUpcoming();
+  if(!up.length){ listEl.innerHTML=`<div class="sec-note">لا توجد مباريات قادمة محدّدة الأطراف بعد.</div>`; return; }
+  listEl.innerHTML=up.map(u=>{
+    const sh=st[u.h]||{p:1,gf:1,ga:1,pts:1,w:0}, sa=st[u.a]||{p:1,gf:1,ga:1,pts:1,w:0};
+    const ph=predWinProb(predRating(sh),predRating(sa));
+    let sc=predScore(sh,sa);
+    // اجعل النتيجة المتوقعة متسقة مع الاحتمال الأرجح (لا تعادل في الإقصائيات)
+    if(ph>=.5&&sc.h<=sc.a) sc.h=sc.a+1;
+    if(ph<.5&&sc.a<=sc.h) sc.a=sc.h+1;
+    const d=pdate(u.dt), tm=fmtTime(d);
+    const fav=ph>=.5?u.h:u.a, favP=Math.max(ph,1-ph);
+    return `<div class="pred-card">
+      <div class="pred-head">
+        <span class="pred-fx">${T[u.h].f} ${T[u.h].n} <span style="color:var(--muted)">×</span> ${T[u.a].n} ${T[u.a].f}</span>
+        <span class="pred-when">${u.stage} • ${DAYS[d.getDay()]} ${d.getDate()} ${MONTHS[d.getMonth()]} • ${tm.t} ${tm.ap} 🇸🇦</span>
+      </div>
+      <div class="pbar"><div class="ph" style="width:${Math.round(ph*100)}%"></div><div class="pa" style="width:${Math.round((1-ph)*100)}%"></div></div>
+      <div class="pbar-lbl"><span>${T[u.h].n} ${(ph*100).toFixed(0)}%</span><span>${(100-ph*100).toFixed(0)}% ${T[u.a].n}</span></div>
+      <div class="pred-score">🔮 التوقع: فوز ${T[fav].n} — النتيجة الأرجح ${sc.h} - ${sc.a} (ثقة ${(favP*100).toFixed(0)}%)</div>
+      <div class="pred-why">${predReasons(u.h,u.a,sh,sa).join("<br>")}</div>
+    </div>`;
   }).join("");
 }
 
@@ -1496,7 +1650,7 @@ async function liveSync(manual){
     let extra = live?` • ${live} مباشرة 🔴`:(updated?` • ${updated} نتيجة جديدة`:"");
     msg.dataset.base=`✅ محدّث ${tm.t} ${tm.ap} (${src}) • ${count} مباراة${extra}`;
     tickClock();
-    renderMatches();renderResults();renderGroups();renderKnockout();renderToday();renderHero();renderBracket();renderScorers();
+    renderMatches();renderResults();renderGroups();renderKnockout();renderToday();renderHero();renderBracket();renderScorers();renderPredictions();
     // إن تغيّر المتأهلون، أبرز التبويب بوميض + شارة
     if(qualifiedSignature()!==beforeQ){ flashKnockoutTab(); }
     setPill(auto?"live":"off");
@@ -1597,7 +1751,7 @@ async function loadVisitors(){
 }
 
 /* init */
-renderHero();renderMatches();renderResults();renderGroups();renderKnockout();renderToday();renderMap();renderBracket();renderScorers();renderKeepers();
+renderHero();renderMatches();renderResults();renderGroups();renderKnockout();renderToday();renderMap();renderBracket();renderScorers();renderKeepers();renderPredictions();
 setInterval(renderHero,30000);
 setInterval(renderToday,30000);       // تحديث تبويب اليوم (الحالة + العدّاد)
 setInterval(tickClock,1000);          // ساعة "آخر تحديث" الحية
